@@ -1,0 +1,46 @@
+name: grab-web
+
+services:
+  grab-seller-product:
+    image: grab-web-seller-product:local
+    build:
+      context: .
+      dockerfile: grab-seller-product/Dockerfile
+    restart: unless-stopped
+    networks:
+      - seller-network
+
+  grab-seller-inventory:
+    image: grab-seller-inventory:local
+    build:
+      context: .
+      dockerfile: grab-seller-inventory/Dockerfile
+    networks:
+      - seller-network
+    restart: unless-stopped
+
+  grab-seller:
+    image: grab-seller:local
+    build:
+      context: .
+      dockerfile: grab-seller/Dockerfile
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${SELLER_PORT:-4000}:80"
+    networks:
+      - seller-network
+    depends_on:
+      grab-seller-product:
+        condition: service_started
+      grab-seller-inventory:
+        condition: service_started
+    restart: unless-stopped
+
+
+networks:
+  seller-network:
+    name: "${DOCKER_NETWORK:-grab-dev-network}"
+    external: true
