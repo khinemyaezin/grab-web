@@ -1,3 +1,12 @@
 [submodule "grab-seller-fe-platform"]
 	path = grab-seller-fe-platform
 	url = git@github.com:khinemyaezin/grab-seller-fe-platform.git
+[submodule "grab-seller-inventory-mfe"]
+	path = grab-seller-inventory-mfe
+	url = git@github.com:khinemyaezin/grab-seller-inventory-mfe.git
+[submodule "grab-seller-product-mfe"]
+	path = grab-seller-product-mfe
+	url = git@github.com:khinemyaezin/grab-seller-product-mfe.git
+[submodule "grab-seller"]
+	path = grab-seller
+	url = git@github.com:khinemyaezin/grab-seller.git
