@@ -1,0 +1,3 @@
+[submodule "grab-seller-fe-platform"]
+	path = grab-seller-fe-platform
+	url = git@github.com:khinemyaezin/grab-seller-fe-platform.git
