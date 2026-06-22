@@ -48,17 +48,3 @@ start_app() {
   pids+=("$!")
 }
 
-echo "Starting Product : http://localhost:3001"
-start_app "grab-seller-product"
-
-echo "Starting Inventory: http://localhost:3002"
-start_app "grab-seller-inventory"
-
-echo "Starting Seller   : http://localhost:3000"
-start_app "grab-seller"
-
-
-echo "Backend API is expected at http://localhost:8080"
-echo "Press Ctrl+C to stop all frontend servers."
-
-wait "${pids[@]}"

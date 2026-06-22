@@ -10,3 +10,6 @@
 [submodule "grab-seller"]
 	path = grab-seller
 	url = git@github.com:khinemyaezin/grab-seller.git
+[submodule "grab-seller-auth"]
+	path = grab-seller-auth
+	url = git@github.com:khinemyaezin/grab-seller-auth.git
