@@ -7,16 +7,23 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch grab-seller workspace",
+            "name": "grab-seller",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/grab-seller"
         },
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch grab-seller-auth workspace",
+            "name": "grab-seller-auth",
             "url": "http://localhost:3003",
             "webRoot": "${workspaceFolder}/grab-seller-auth"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "grab-seller-account",
+            "url": "http://localhost:3004",
+            "webRoot": "${workspaceFolder}/grab-seller-account"
         }
     ]
 }

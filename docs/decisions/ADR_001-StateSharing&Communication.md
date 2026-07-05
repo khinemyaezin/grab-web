@@ -92,24 +92,13 @@ flowchart TD
 
 ---
 
-## 6. Migration Plan
-
-- **Phase 1:** Implement the shared Event Bus and define the initial set of standardized contracts.
-- **Phase 2:** Update the App Shell to provide minimal context and migrate existing MFEs to use the Event Bus for cross-domain notifications.
-- **Phase 3:** Remove any legacy direct MFE-to-MFE communication or shared global state dependencies.
-
-**Rollback strategy:**  
-If the Event Bus introduces unacceptable latency or debugging complexity, we can temporarily revert to direct module imports or a lightweight shared global state while maintaining versioned payload contracts.
-
----
-
-## 7. Related Documents
+## 6. Related Documents
 
 - [Architecture Diagram](#21-visual-overview)
 
 ---
 
-## 8. Alternative Methods Considered & Rejected
+## 7. Alternative Methods Considered & Rejected
 
 **Rejected: 1. Custom Events & Web APIs (Pub/Sub)**
 - *Best for maintaining high isolation between autonomous MFEs. Micro-frontends do not share libraries; instead, they communicate by publishing and listening to native browser events on the window object.*

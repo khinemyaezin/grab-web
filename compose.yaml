@@ -1,46 +1,70 @@
 name: grab-web
 
 services:
-  grab-seller-product:
-    image: grab-web-seller-product:local
+  grab-seller-auth:
+    image: grab-seller-auth:local
     build:
       context: .
-      dockerfile: grab-seller-product/Dockerfile
-    restart: unless-stopped
+      dockerfile: grab-seller-auth/Dockerfile
+      secrets:
+        - npmrc
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${AUTH_PORT:-3003}:80"
     networks:
       - seller-network
+    restart: unless-stopped
 
-  grab-seller-inventory:
-    image: grab-seller-inventory:local
+  grab-seller-account:
+    image: grab-seller-account:local
     build:
       context: .
-      dockerfile: grab-seller-inventory/Dockerfile
+      dockerfile: grab-seller-account/Dockerfile
+      secrets:
+        - npmrc
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${ONBOARDING_PORT:-3004}:80"
     networks:
       - seller-network
     restart: unless-stopped
+
 
   grab-seller:
     image: grab-seller:local
     build:
       context: .
       dockerfile: grab-seller/Dockerfile
+      secrets:
+        - npmrc
     environment:
       API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "${SELLER_PORT:-4000}:80"
+      - "${SELLER_PORT:-3000}:80"
     networks:
       - seller-network
     depends_on:
-      grab-seller-product:
+      grab-seller-auth:
         condition: service_started
-      grab-seller-inventory:
+      grab-seller-account:
         condition: service_started
     restart: unless-stopped
+
 
 
 networks:
   seller-network:
     name: "${DOCKER_NETWORK:-grab-dev-network}"
     external: true
+
+secrets:
+  npmrc:
+    file: ~/.npmrc
