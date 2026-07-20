@@ -1,6 +1,6 @@
 [submodule "grab-seller-shared-ui"]
-	path = grab-seller-shared-ui
-	url = git@github.com:khinemyaezin/grab-seller-shared-ui.git
+	path = grab-seller-shared
+	url = git@github.com:khinemyaezin/grab-seller-shared.git
 [submodule "grab-seller-inventory"]
 	path = grab-seller-inventory
 	url = git@github.com:khinemyaezin/grab-seller-inventory.git

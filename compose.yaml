@@ -35,6 +35,39 @@ services:
       - seller-network
     restart: unless-stopped
 
+  grab-seller-product:
+    image: grab-seller-product:local
+    build:
+      context: .
+      dockerfile: grab-seller-product/Dockerfile
+      secrets:
+        - npmrc
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${PRODUCT_PORT:-3001}:80"
+    networks:
+      - seller-network
+    restart: unless-stopped
+
+  grab-seller-inventory:
+    image: grab-seller-inventory:local
+    build:
+      context: .
+      dockerfile: grab-seller-inventory/Dockerfile
+      secrets:
+        - npmrc
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${INVENTORY_PORT:-3002}:80"
+    networks:
+      - seller-network
+    restart: unless-stopped
 
   grab-seller:
     image: grab-seller:local
@@ -56,9 +89,11 @@ services:
         condition: service_started
       grab-seller-account:
         condition: service_started
+      grab-seller-product:
+        condition: service_started
+      grab-seller-inventory:
+        condition: service_started
     restart: unless-stopped
-
-
 
 networks:
   seller-network:
