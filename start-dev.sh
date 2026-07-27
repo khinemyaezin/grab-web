@@ -2,11 +2,17 @@
 
 trap 'echo "Stopping all dev servers..."; kill $(jobs -p)' SIGINT
 
-echo "Starting grab-seller-auth..."
-(cd grab-seller-auth && npm run build && npm run dev) &
+# echo "Starting grab-seller-auth..."
+# (cd grab-seller-auth && npm run build && npm run dev) &
 
-echo "Starting grab-seller-account..."
-(cd grab-seller-account && npm run build && npm run dev) &
+# echo "Starting grab-seller-account..."
+# (cd grab-seller-account && npm install && npm run build && npm run dev) &
+
+# echo "Starting grab-seller-product..."
+# (cd grab-seller-product && npm run build && npm run dev) &
+
+echo "Starting grab-seller-inventory..."
+(cd grab-seller-inventory && npm run build && npm run dev) &
 
 echo "Starting grab-seller..."
 (cd grab-seller && npm run build && npm run dev) &

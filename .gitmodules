@@ -16,3 +16,6 @@
 [submodule "grab-seller-account"]
 	path = grab-seller-account
 	url = git@github.com:khinemyaezin/grab-seller-account.git
+[submodule "grab-seller-pricing"]
+	path = grab-seller-pricing
+	url = git@github.com:khinemyaezin/grab-seller-pricing.git
