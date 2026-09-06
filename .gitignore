@@ -7,3 +7,6 @@ start-dev.sh
 start-dev.sh
 .vscode/launch.json
 .vscode/launch.json
+.idea
+.vscode
+.vercel
