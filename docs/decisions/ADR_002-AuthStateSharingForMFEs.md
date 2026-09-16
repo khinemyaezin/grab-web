@@ -228,8 +228,14 @@ interface PlatformEvents {
   ): void;
   subscribe<K extends keyof EventPayloads>(
     type: K,
-    handler: (payload: EventPayloads[K]) => void
+    handler: (payload: EventPayloads[K]) => void,
+    opts?: { replay?: boolean }
   ): () => void;
+  getSnapshot<K extends keyof EventPayloads>(
+    type: K,
+    key?: string
+  ): EventPayloads[K] | undefined;
+  clear(scope?: unknown): void;
 }
 
 interface PlatformNavigation {
@@ -352,4 +358,5 @@ For same-origin deployments (Shell and gateway share the same domain), `SameSite
 
 ## 5. Related Documents
 
-- [ADR 001: MFE State Sharing and Communication](ADR-001_StateSharing&Communication.md)
+- [ADR 001: MFE State Sharing and Communication](./ADR_001-StateSharing&Communication.md)
+- [ADR 003: Host-Mediated Session-Durable Event Bus](./ADR_003-HostMediatedSessionDurableEventBus.md) — extends `PlatformEvents` with session last-value cache, replay, and domain envelopes; auth/toast remain signal topics as defined here.
