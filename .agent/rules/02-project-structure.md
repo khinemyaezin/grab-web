@@ -27,6 +27,7 @@ src/
 Choose the module model based on the bounded context:
 - **Screen Modules** (few entities, several distinct screens): Used in catalog/product (`list/`, `create/`, `edit/`, `variant-edit/`).
 - **Entity Modules** (many discrete resources with CRUD operations): Used in inventory (`location/`, `zone/`, `bin/`, `item/`, `dashboard/`).
+- **Mixed (only when the domain demands it)**: Merchant uses onboarding screen modules (`selection/`, `c2c-onboarding/`, `retailer-onboarding/`) plus a storefront entity module.
 
 Do not mix both models in the same feature unless the domain legitimately demands it.
 

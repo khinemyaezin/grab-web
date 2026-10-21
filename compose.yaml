@@ -1,106 +1,82 @@
 name: grab-web
 
+x-app-common: &app-common
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  networks:
+    - seller-network
+  restart: unless-stopped
+  environment:
+    API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
+
+x-app-build: &app-build
+  context: .
+  dockerfile: docker/app.Dockerfile
+  secrets:
+    - npmrc
+
 services:
   grab-seller-auth:
+    <<: *app-common
     image: grab-seller-auth:local
     build:
-      context: .
-      dockerfile: grab-seller-auth/Dockerfile
-      secrets:
-        - npmrc
-    environment:
-      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      <<: *app-build
+      args:
+        APP_DIR: grab-seller-auth
     ports:
       - "${AUTH_PORT:-3003}:80"
-    networks:
-      - seller-network
-    restart: unless-stopped
 
   grab-seller-account:
+    <<: *app-common
     image: grab-seller-account:local
     build:
-      context: .
-      dockerfile: grab-seller-account/Dockerfile
-      secrets:
-        - npmrc
-    environment:
-      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      <<: *app-build
+      args:
+        APP_DIR: grab-seller-account
     ports:
       - "${ONBOARDING_PORT:-3004}:80"
-    networks:
-      - seller-network
-    restart: unless-stopped
 
   grab-seller-product:
+    <<: *app-common
     image: grab-seller-product:local
     build:
-      context: .
-      dockerfile: grab-seller-product/Dockerfile
-      secrets:
-        - npmrc
-    environment:
-      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      <<: *app-build
+      args:
+        APP_DIR: grab-seller-product
     ports:
       - "${PRODUCT_PORT:-3001}:80"
-    networks:
-      - seller-network
-    restart: unless-stopped
 
   grab-seller-inventory:
+    <<: *app-common
     image: grab-seller-inventory:local
     build:
-      context: .
-      dockerfile: grab-seller-inventory/Dockerfile
-      secrets:
-        - npmrc
-    environment:
-      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      <<: *app-build
+      args:
+        APP_DIR: grab-seller-inventory
     ports:
       - "${INVENTORY_PORT:-3002}:80"
-    networks:
-      - seller-network
-    restart: unless-stopped
 
   grab-seller-pricing:
+    <<: *app-common
     image: grab-seller-pricing:local
     build:
-      context: .
-      dockerfile: grab-seller-pricing/Dockerfile
-      secrets:
-        - npmrc
-    environment:
-      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      <<: *app-build
+      args:
+        APP_DIR: grab-seller-pricing
     ports:
       - "${PRICING_PORT:-3005}:80"
-    networks:
-      - seller-network
-    restart: unless-stopped
 
   grab-seller:
+    <<: *app-common
     image: grab-seller:local
     build:
-      context: .
-      dockerfile: grab-seller/Dockerfile
-      secrets:
-        - npmrc
-    environment:
-      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8080}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      <<: *app-build
+      args:
+        APP_DIR: grab-seller
+        NGINX_CONF: gateway/nginx.conf
+        HEALTHCHECK_PATH: /
     ports:
       - "${SELLER_PORT:-3000}:80"
-    networks:
-      - seller-network
     depends_on:
       grab-seller-auth:
         condition: service_started
@@ -112,7 +88,6 @@ services:
         condition: service_started
       grab-seller-pricing:
         condition: service_started
-    restart: unless-stopped
 
 networks:
   seller-network:

@@ -23,10 +23,22 @@ docker network create grab-dev-network
 ```
 
 ### 2. Start the Services
-Run the following command to build and start the host shell and remote MFEs:
+First time (or after dependency changes), build images and start the host shell and remote MFEs:
 ```bash
 docker compose up --build
 ```
+
+After images exist, start without rebuilding:
+```bash
+docker compose up
+```
+
+Rebuild a single app after source changes:
+```bash
+docker compose up --build grab-seller-inventory
+```
+
+Use `--build` again when `package-lock.json` changes, or when you want a fresh image. Day-to-day boots should use `docker compose up` so Compose reuses cached images.
 
 ### 3. Ports Configuration
 Once the containers are running, you can access the application via the following ports:

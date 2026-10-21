@@ -1,26 +1,30 @@
 #!/bin/bash
 
-trap 'echo "Stopping all dev servers..."; kill $(jobs -p)' SIGINT
+set -euo pipefail
 
-# echo "Starting grab-seller-auth..."
-# (cd grab-seller-auth && npm run build && npm run dev) &
+WORKSPACES=(
+  # grab-seller-auth
+  # grab-seller-product
+  # grab-seller-pricing
+  grab-seller-account
+  # grab-seller-inventory
+  grab-seller
+)
 
-# echo "Starting grab-seller-account..."
-# (cd grab-seller-account && npm install && npm run build && npm run dev) &
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# echo "Starting grab-seller-product..."
-# (cd grab-seller-product && npm run build && npm run dev) &
-
-echo "Starting grab-seller-inventory..."
-(cd grab-seller-inventory && npm run build && npm run dev) &
-
-echo "Starting grab-seller..."
-(cd grab-seller && npm run build && npm run dev) &
+trap 'echo "Stopping all dev servers..."; kill $(jobs -p) 2>/dev/null || true' SIGINT SIGTERM
 
 echo ""
-echo "🚀 All dev servers started successfully!"
+echo "Starting dev servers..."
+for ws in "${WORKSPACES[@]}"; do
+  echo "→ Starting ${ws}..."
+  (cd "${ROOT_DIR}/${ws}" && npm run build && npm run dev) &
+done
+
+echo ""
+echo "All dev servers started."
 echo "Press Ctrl+C to stop all of them."
 echo ""
 
-# Wait for all background jobs to finish
 wait

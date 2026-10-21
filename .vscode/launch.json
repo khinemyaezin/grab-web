@@ -11,6 +11,7 @@
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/grab-seller",
             "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
+
         },
         {
             "type": "chrome",
@@ -31,9 +32,9 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "grab-seller-auth",
+            "name": "grab-seller-pricing",
             "url": "http://localhost:3003",
-            "webRoot": "${workspaceFolder}/grab-seller-auth",
+            "webRoot": "${workspaceFolder}/grab-seller-pricing",
             "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
         },
         {
@@ -42,7 +43,7 @@
             "name": "grab-seller-account",
             "url": "http://localhost:3004",
             "webRoot": "${workspaceFolder}/grab-seller-account",
-            "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
+            "runtimeExecutable": "/Applications/DuckDuckGo.app/Contents/MacOS/DuckDuckGo"
         }
     ]
 }
