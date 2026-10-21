@@ -1,0 +1,3 @@
+
+    export type RemoteKeys = 'grab_seller_auth/Routes' | 'grab_seller_auth/AuthService' | 'grab_seller_auth/UserMenuWidget';
+    type PackageType<T> = T extends 'grab_seller_auth/UserMenuWidget' ? typeof import('grab_seller_auth/UserMenuWidget') :T extends 'grab_seller_auth/AuthService' ? typeof import('grab_seller_auth/AuthService') :T extends 'grab_seller_auth/Routes' ? typeof import('grab_seller_auth/Routes') :any;

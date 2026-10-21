@@ -1,0 +1,40 @@
+{
+  "name": "grab-seller",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3000",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 3000",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@khinemyaezin/seller-api": "^1.0.1-canary-df97964",
+    "@khinemyaezin/seller-contracts": "^1.0.1-canary-df97964",
+    "@khinemyaezin/seller-ui": "^1.0.1-canary-df97964",
+    "@tanstack/react-query": "5.99.2",
+    "lucide-react": "1.8.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.74.0",
+    "react-router": "7.18.0",
+    "recharts": "^3.10.1"
+  },
+  "devDependencies": {
+    "@module-federation/vite": "1.16.9",
+    "@tailwindcss/vite": "^4.3.2",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "shadcn": "4.3.1",
+    "tailwindcss": "4.1.18",
+    "tw-animate-css": "1.4.0",
+    "typescript": "5.9.3",
+    "vite": "8.0.16"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
