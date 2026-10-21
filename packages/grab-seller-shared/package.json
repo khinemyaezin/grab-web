@@ -1,0 +1,27 @@
+{
+  "name": "grab-seller-shared-ui",
+  "version": "1.0.0",
+  "packageManager": "npm@11.16.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "changeset": "changeset",
+    "version:packages": "changeset version && npm_config_cache=.npm-cache npm install --package-lock-only",
+    "version:canary": "changeset version --snapshot canary && npm_config_cache=.npm-cache npm install --package-lock-only",
+    "release:check": "npm run build && npm run typecheck && npm_config_cache=.npm-cache npm pack --workspaces --dry-run",
+    "publish:packages": "changeset publish",
+    "publish:canary": "changeset publish --tag canary"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.31.0",
+    "turbo": "^2.9.18"
+  }
+}

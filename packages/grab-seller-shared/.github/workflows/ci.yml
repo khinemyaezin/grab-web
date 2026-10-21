@@ -1,0 +1,21 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: 
+          node-version: 22
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@khinemyaezin'
+          cache: npm 
+      - run: npm ci
+      - run: npm run build
+      - run: npm run typecheck
