@@ -11,12 +11,10 @@ export interface AccessContextResponse {
     assignmentId: string,
     scopeKey: string,
     scopeId: string,
+    title?: string | null,
+    subtitle?: string | null,
     roleCodes: string[]
-    display: {
-        title: string,
-        subtitle: string,
-        status: string,
-    }
+    expiresAt?: string | null,
     _links: HalLinks
 }
 

@@ -1,12 +1,22 @@
-import { api, HateoasLink } from "@khinemyaezin/seller-api";
+import { api, HateoasLink, resolveLink } from "@khinemyaezin/seller-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AccessContextListResponse, AccessContextSelectionResponse } from "../types";
+import { AccessContext, AccessContextListResponse, AccessContextSelectionResponse } from "../types";
 
 export function useAccessContextList(link?: HateoasLink) {
-    return useQuery<AccessContextListResponse>({
+    return useQuery<AccessContextListResponse, Error, AccessContext[]>({
         queryKey: ["access-context-list", link?.href],
-        queryFn: () => api.followLink(link!,"GET",),
-        enabled: !!link
+        queryFn: () => api.followLink(link!, "GET",),
+        enabled: !!link,
+        select: (response) => {
+            return (response?._embedded?.accessContextResponseList ?? [])
+                .map(context => {
+                    return {
+                        assignmentId: context.assignmentId,
+                        title: context.title,
+                        accessLink: resolveLink(context._links, "select-access-context")
+                    };
+                });
+        }
     })
 }
 

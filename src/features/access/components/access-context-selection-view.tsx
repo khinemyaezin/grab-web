@@ -1,18 +1,10 @@
 import { useAccessContextList, useAccessContextSelection } from "@/features/access/hooks/use-access-context";
-import { HateoasLink, resolveLink } from "@khinemyaezin/seller-api";
-import { Item, ItemContent, ItemTitle, ItemDescription, ItemActions } from "@khinemyaezin/seller-ui/components/item";
+import { HateoasLink } from "@khinemyaezin/seller-api";
+import { Item, ItemContent, ItemTitle, ItemActions } from "@khinemyaezin/seller-ui/components/item";
 import { ChevronRight} from "lucide-react";
-import { AccessContext, AccessContextListResponse, AccessContextSelectionResponse } from "../types";
+import { AccessContext, AccessContextSelectionResponse } from "../types";
 import { ButtonStatus } from "@khinemyaezin/seller-ui/components/index";
-import { useId, useEffect, useRef, useState } from "react";
-
-const accessContextResponseToModel = (response: AccessContextListResponse | undefined): AccessContext[] => {
-    const accessResponse = response?._embedded?.accessContextResponseList ?? [];
-    return accessResponse.map((access) => ({
-        ...access,
-        accessLink: resolveLink(access._links, "select-access-context")
-    }));
-}
+import { useEffect, useRef, useState } from "react";
 
 type AccessContextItemProps = {
     selectionLink: HateoasLink,
@@ -55,10 +47,7 @@ function AccessContextItem({ selectionLink, value, onSelect, disabled, onPending
         <Item variant="outline" size="sm" asChild>
             <button onClick={handleOnSelect} disabled={disabled} className="cursor-pointer hover:bg-muted text-left disabled:opacity-50 disabled:pointer-events-none">
                 <ItemContent>
-                    <ItemTitle>{value.display.title}</ItemTitle>
-                    <ItemDescription>
-                        {value.display.subtitle}
-                    </ItemDescription>
+                    <ItemTitle>{value.title}</ItemTitle>
                 </ItemContent>
                 <ItemActions>
                     <ButtonStatus
@@ -86,17 +75,16 @@ export type AccessContextSelectionViewProps = {
 }
 
 export default function AccessContextSelectionView({ link, onSuccess }: AccessContextSelectionViewProps) {
-    const { data } = useAccessContextList(link);
-    const id = useId();
+    const { data: contexts } = useAccessContextList(link);
     const [isSelecting, setIsSelecting] = useState(false);
 
     return (
         <div className="flex w-full max-w-md flex-col gap-3 ">
-            {accessContextResponseToModel(data)
+            {(contexts ?? [])
                 .filter((value) => value.accessLink)
-                .map((value, index) => (
+                .map((value) => (
                     <AccessContextItem 
-                        key={`${id}-${index}`} 
+                        key={value.assignmentId}
                         selectionLink={value.accessLink!} 
                         value={value} 
                         onSelect={onSuccess} 

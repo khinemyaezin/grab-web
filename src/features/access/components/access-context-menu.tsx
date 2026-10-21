@@ -2,25 +2,14 @@ import { DropdownMenuGroup, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownM
 import { useAccessContextList, useAccessContextSelection } from "../hooks/use-access-context";
 import { useIdentityGet } from "@/features/shared/hook/use-identity";
 import { usePlatform } from "@khinemyaezin/seller-ui";
-import { AccessContext, AccessContextListResponse } from "../types";
-import { resolveLink } from "@khinemyaezin/seller-api";
-import { useEffect, useId, useState } from "react";
-
-const accessContextResponseToModel = (response: AccessContextListResponse | undefined): AccessContext[] => {
-    const accessResponse = response?._embedded?.accessContextResponseList ?? [];
-    return accessResponse.map((access) => ({
-        ...access,
-        accessLink: resolveLink(access._links, "select-access-context")
-    }));
-}
+import { useEffect, useState } from "react";
 
 export default function AccessContextMenu() {
     const { data: identity } = useIdentityGet();
     const platform = usePlatform();
-    const id = useId();
     const { data: accessContext, isPending } = useAccessContextList(identity?.listAccessContext);
     const selectAccessContext = useAccessContextSelection();
-    const contextList = accessContextResponseToModel(accessContext);
+    const contextList = accessContext ?? [];
 
     const currentSession = platform?.session.getSnapshot();
     const currentAssignmentId = currentSession?.status === 'authenticated'
@@ -72,9 +61,11 @@ export default function AccessContextMenu() {
                 </div>
             ) : (
                 <DropdownMenuRadioGroup value={selectedAssignmentId} onValueChange={handleValueChange}>
-                    {contextList.map((context, index) => (
-                        <DropdownMenuRadioItem key={`${id}-${index}`} value={context.assignmentId}>
-                            {context.display?.title ?? ""}
+                    {contextList.map((context) => (
+                        <DropdownMenuRadioItem key={context.assignmentId} value={context.assignmentId}>
+                            <span className="flex flex-col">
+                                <span>{context.title}</span>
+                            </span>
                         </DropdownMenuRadioItem>
                     ))}
                 </DropdownMenuRadioGroup>
