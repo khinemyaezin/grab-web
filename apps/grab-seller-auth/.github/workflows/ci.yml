@@ -1,0 +1,27 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: 
+          path: grab-seller-auth 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@khinemyaezin'
+          cache: npm
+          cache-dependency-path: grab-seller-auth/package-lock.json
+      - run: npm ci
+        working-directory: grab-seller-auth
+      - run: npm run typecheck && npm test && npm run build
+        working-directory: grab-seller-auth
+      - run: node -e "const m=require('./dist/mf-manifest.json');if(!JSON.stringify(m).includes('./Routes'))process.exit(1)"
+        working-directory: grab-seller-auth
