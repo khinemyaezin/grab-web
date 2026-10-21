@@ -33,4 +33,10 @@ export const locationService = {
 
   update: (link: HateoasLink, body: UpdateLocationRequest, headers?: Record<string, string>) =>
     api.followLink<LocationResponse>(link, "PATCH", body, undefined, headers),
+
+  linkToChannel: (link: HateoasLink, request: { salesChannelId: string }, headers?: Record<string, string>) =>
+    api.followLink<LocationResponse>(link, "POST", request, undefined, headers),
+
+  unlinkFromChannel: (link: HateoasLink, request: { salesChannelId: string }, headers?: Record<string, string>) =>
+    api.followLink<LocationResponse>(link, "POST", request, undefined, headers),
 };

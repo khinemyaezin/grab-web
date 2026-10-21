@@ -7,6 +7,7 @@ import { resolveLink } from "@khinemyaezin/seller-api";
 import { useUpdateLocationMutation, useActivateLocationMutation, useDeactivateLocationMutation, useLocation } from "@/features/inventory/api/use-locations";
 import { useEffect } from "react";
 import { LocationBasicFieldSet } from "./location-basic-fieldset";
+import { LocationChannelFieldSet } from "./location-channel-fieldset";
 import { useInventoryLink } from "@/features/inventory/api/use-root";
 
 export type LocationEditFormProps = {
@@ -130,6 +131,7 @@ export default function LocationEditForm({ locationId, onLifecycleEvent }: Locat
                 <Card>
                     <CardContent>
                         <LocationBasicFieldSet />
+                        <LocationChannelFieldSet location={location} />
                     </CardContent>
                     <CardFooter className="flex justify-end">
                         <ButtonGroup>

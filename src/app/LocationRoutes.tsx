@@ -16,12 +16,14 @@ import "../styles-location.css";
 export default function LocationRoutes({
   link,
   platform,
+  salesChannelLink,
 }: {
   link: HateoasLink;
   platform?: SellerPlatform;
+  salesChannelLink?: HateoasLink | null;
 }) {
   return (
-    <InventoryProviders link={link} platform={platform}>
+    <InventoryProviders link={link} platform={platform} salesChannelLink={salesChannelLink}>
       <Routes>
         <Route index element={<LocationsPage />} />
         <Route path="new" element={<NewLocationPage />} />

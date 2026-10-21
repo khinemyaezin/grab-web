@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
         name: "grab_seller_inventory",
         filename: "remoteEntry.js",
         manifest: true,
-        dts: { generateTypes: { tsConfigPath: "./tsconfig.app.json", abortOnError: true } },
+        dts: process.env.MF_DTS === "0" ? false : { generateTypes: { tsConfigPath: "./tsconfig.app.json", abortOnError: true } },
         exposes: {
           "./DashboardRoutes": "./src/app/DashboardRoutes.tsx",
           "./LocationRoutes": "./src/app/LocationRoutes.tsx",

@@ -73,6 +73,28 @@ export function useDeactivateLocationMutation() {
   });
 }
 
+export function useLinkLocationToChannelMutation() {
+  const queryClient = useQueryClient();
+  return useMutation<LocationResponse, Error, { link: HateoasLink; salesChannelId: string }>({
+    mutationFn: ({ link, salesChannelId }) => locationService.linkToChannel(link, { salesChannelId }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["location", data.id] });
+    },
+  });
+}
+
+export function useUnlinkLocationFromChannelMutation() {
+  const queryClient = useQueryClient();
+  return useMutation<LocationResponse, Error, { link: HateoasLink; salesChannelId: string }>({
+    mutationFn: ({ link, salesChannelId }) => locationService.unlinkFromChannel(link, { salesChannelId }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["location", data.id] });
+    },
+  });
+}
+
 export function useDeleteLocationMutation() {
   const queryClient = useQueryClient();
   return useMutation<void, Error, HateoasLink>({

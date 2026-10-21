@@ -173,6 +173,7 @@ export interface LocationResponse {
   type: LocationType;
   active: boolean;
   address: LocationAddress;
+  salesChannelIds?: string[];
   _links: Record<string, HateoasLink>;
 }
 
