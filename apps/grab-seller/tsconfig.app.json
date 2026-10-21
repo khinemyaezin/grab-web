@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "grab_seller_auth/*": ["@mf-types/grab_seller_auth/*"],
+      "grab_seller_account/*": ["@mf-types/grab_seller_account/*"],
+      "grab_seller_product/*": ["@mf-types/grab_seller_product/*"],
+      "grab_seller_inventory/*": ["@mf-types/grab_seller_inventory/*"],
+      "grab_seller_pricing/*": ["@mf-types/grab_seller_pricing/*"]
+    },
+    "types": ["vite/client"]
+  },
+  "include": ["src", "@mf-types"]
+}

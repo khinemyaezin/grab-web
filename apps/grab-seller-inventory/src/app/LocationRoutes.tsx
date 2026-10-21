@@ -1,0 +1,41 @@
+import { Navigate, Route, Routes } from "react-router";
+import { NotFoundPage } from "@khinemyaezin/seller-ui";
+import { HateoasLink } from "@khinemyaezin/seller-api";
+import { SellerPlatform } from "@khinemyaezin/seller-contracts";
+import LocationsPage from "@/features/inventory/location/location-list-page";
+import NewLocationPage from "@/features/inventory/location/locaiton-new-page";
+import EditLocationPage from "@/features/inventory/location/location-edit-page";
+import ZonesPage from "@/features/inventory/zone/zone-list-page";
+import NewZonePage from "@/features/inventory/zone/zones-new-page";
+import EditZonePage from "@/features/inventory/zone/zone-edit-page";
+import NewBinPage from "@/features/inventory/bin/bins-new-page";
+import EditBinPage from "@/features/inventory/bin/bin-edit-page";
+import InventoryProviders from "./InventoryProviders";
+import "../styles-location.css";
+
+export default function LocationRoutes({
+  link,
+  platform,
+  salesChannelLink,
+}: {
+  link: HateoasLink;
+  platform?: SellerPlatform;
+  salesChannelLink?: HateoasLink | null;
+}) {
+  return (
+    <InventoryProviders link={link} platform={platform} salesChannelLink={salesChannelLink}>
+      <Routes>
+        <Route index element={<LocationsPage />} />
+        <Route path="new" element={<NewLocationPage />} />
+        <Route path=":locationId" element={<EditLocationPage />} />
+        <Route path=":locationId/zones" element={<ZonesPage />} />
+        <Route path=":locationId/zones/new" element={<NewZonePage />} />
+        <Route path=":locationId/zones/:zoneId" element={<EditZonePage />} />
+        <Route path=":locationId/zones/:zoneId/bins/new" element={<NewBinPage />} />
+        <Route path=":locationId/zones/:zoneId/bins" element={<Navigate to="../.." relative="path" />} />
+        <Route path=":locationId/zones/:zoneId/bins/:binId" element={<EditBinPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </InventoryProviders>
+  );
+}

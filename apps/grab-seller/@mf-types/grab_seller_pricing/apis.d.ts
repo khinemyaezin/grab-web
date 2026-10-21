@@ -1,0 +1,3 @@
+
+    export type RemoteKeys = 'grab_seller_pricing/Routes' | 'grab_seller_pricing/PricingCreateWidget' | 'grab_seller_pricing/PricingEditWidget';
+    type PackageType<T> = T extends 'grab_seller_pricing/PricingEditWidget' ? typeof import('grab_seller_pricing/PricingEditWidget') :T extends 'grab_seller_pricing/PricingCreateWidget' ? typeof import('grab_seller_pricing/PricingCreateWidget') :T extends 'grab_seller_pricing/Routes' ? typeof import('grab_seller_pricing/Routes') :any;

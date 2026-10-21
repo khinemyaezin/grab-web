@@ -1,38 +1,106 @@
-# Seller Frontend Platform
+# Seller Frontend Platform (Monorepo)
 
-Welcome to the **Seller Frontend Platform**. It is a comprehensive ecosystem designed to allow sellers to manage their operations. This application is built using a modern Micro-Frontend (MFE) architecture to enable independent development, deployment, and scalability of different business domains.
-
-For details on our system structure, boundaries, and how MFEs communicate, please refer to the [Current System Architecture](/docs/Current_System_Architecture.md) documentation.
+Welcome to the **Seller Frontend Platform**. It is a comprehensive ecosystem designed for seller operations, built using a modern **Micro-Frontend (MFE)** architecture powered by **Vite Module Federation**, **pnpm workspaces**, and **Turborepo**.
 
 ---
 
-## Running with Docker
+## 🏗️ Repository Layout
 
-The platform is designed to be easily run locally using Docker Compose.
+```text
+grab-web/
+├── apps/
+│   ├── grab-seller/             # Host / Shell Container (Port 3000)
+│   ├── grab-seller-product/     # Product Remote MFE (Port 3001)
+│   ├── grab-seller-inventory/   # Inventory Remote MFE (Port 3002)
+│   ├── grab-seller-auth/        # Auth Remote MFE (Port 3003)
+│   ├── grab-seller-account/     # Account / Onboarding Remote MFE (Port 3004)
+│   └── grab-seller-pricing/     # Pricing Remote MFE (Port 3005)
+├── packages/
+│   ├── seller-contracts/        # Shared API schemas, event topics & routes (@khinemyaezin/seller-contracts)
+│   ├── seller-api/              # HTTP transport & TanStack Query clients (@khinemyaezin/seller-api)
+│   ├── seller-ui/               # Shared design system, UI components & slots (@khinemyaezin/seller-ui)
+│   └── spark-mascot-ui/         # Mascot animations & visual assets (@grab/spark-mascot-ui)
+├── docker/
+│   └── app.Dockerfile           # Optimized multi-stage build using turbo prune
+├── compose.yaml                 # Local containerized orchestration
+├── pnpm-workspace.yaml          # pnpm workspace definition
+└── turbo.json                   # Root task pipeline and caching rules
+```
 
-### Prerequisites
+---
 
-1. **Docker & Docker Compose** installed.
-2. **NPM Registry Authentication** (`~/.npmrc`) containing access tokens to private grab registries/scopes (used as a Docker build secret).
-3. **External Docker Network**: The compose services depend on an external network named `grab-dev-network`.
+## ⚡ Quick Start (Local Development)
 
-### 1. Create the Docker Network
-Before starting the containers for the first time, you must create the external developer network:
+### 1. Prerequisites
+- **Node.js**: `>= 20.19.0`
+- **pnpm**: `>= 9.0.0` (Installed via `brew install pnpm` or `corepack enable`)
+
+### 2. Install Dependencies
+```bash
+pnpm install
+```
+All shared packages (`seller-contracts`, `seller-api`, `seller-ui`) are automatically linked via `workspace:*`. **No canary publishing or manual install scripts required.**
+
+### 3. Start Development Servers
+Start all applications concurrently:
+```bash
+pnpm dev
+# or
+./start-dev.sh
+```
+
+Start specific applications only:
+```bash
+./start-dev.sh grab-seller grab-seller-account
+# or
+pnpm turbo dev --filter=grab-seller --filter=seller-account
+```
+
+### 4. Build, Typecheck, and Test
+```bash
+# Build all apps and packages in parallel
+pnpm build
+
+# Typecheck the entire monorepo
+pnpm typecheck
+
+# Run test suites across all packages
+pnpm test
+
+# Build only a specific app (e.g., pricing)
+pnpm turbo run build --filter=grab-seller-pricing
+```
+
+---
+
+## 🐳 Running with Docker
+
+### 1. Create Docker Network
 ```bash
 docker network create grab-dev-network
 ```
 
-### 2. Start the Services
-Run the following command to build and start the host shell and remote MFEs:
+### 2. Start Services
 ```bash
+# Build and start all containers
 docker compose up --build
+
+# Start existing images
+docker compose up
+
+# Rebuild only a single service
+docker compose up --build grab-seller-inventory
 ```
 
-### 3. Ports Configuration
-Once the containers are running, you can access the application via the following ports:
+---
 
-| Service | Port | Description |
-| :--- | :--- | :--- |
-| **`grab-seller`** | `3000` | Host / Shell Application |
-| **`grab-seller-auth`** | `3003` | Authentication Remote MFE |
-| **`grab-seller-account`** | `3004` | Onboarding / Account Remote MFE |
+## 🌐 Port Allocations
+
+| Application | Port | Type | Description |
+| :--- | :--- | :--- | :--- |
+| **`grab-seller`** | `3000` | Host Shell | Gateway shell, navigation & context providers |
+| **`grab-seller-product`** | `3001` | Remote MFE | Catalog, product variants, and listings |
+| **`grab-seller-inventory`**| `3002` | Remote MFE | Locations, stock balances, item management |
+| **`grab-seller-auth`** | `3003` | Remote MFE | Authentication & User menu widget |
+| **`grab-seller-account`** | `3004` | Remote MFE | Merchant onboarding & account settings |
+| **`grab-seller-pricing`** | `3005` | Remote MFE | Price lists, tier rules, and pricing widgets |

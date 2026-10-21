@@ -41,7 +41,7 @@ flowchart TD
    - Merges valid contributions via `mergeContributions()`.
    - Calls the pure adapter in `lib/` to build the request DTO.
    - Calls `command.execute(payload)`.
-   - Executes secondary operations (media attachment, description updates).
+   - Composes the command and secondary operations (media attachment, description updates) with `runWorkflowChain` instead of inline `await` sequences.
    - Invalidates relevant React Query cache keys.
    - Emits a past-tense lifecycle event.
 3. **Command** (`use-<entity>-<op>-command.ts`):

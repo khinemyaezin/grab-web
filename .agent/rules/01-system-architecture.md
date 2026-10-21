@@ -53,7 +53,7 @@ flowchart TD
 |:---|:---|:---|:---|
 | **`grab-seller`** | Host / Shell | `3000` | Owns global route mounting, layouts, session, `SellerPlatform`, remote boundaries, backend event stream, and extension widget registration. |
 | **`grab-seller-auth`** | Remote | `3003` | Authentication and access-context remote. Exposes `./Routes`, `./AuthService`, and `./UserMenuWidget`. |
-| **`grab-seller-account`** | Remote | `3004` | Merchant selection and seller onboarding. Exposes `./Routes` and `./Service`. |
+| **`grab-seller-account`** | Remote | `3004` | Merchant selection, seller onboarding, and storefront admin. Exposes `./Routes`, `./StorefrontRoutes`, and `./Service`. |
 | **`grab-seller-product`** | Remote | `3001` | Catalog and products domain; parent of product extension slots. Exposes `./Routes`. |
 | **`grab-seller-inventory`** | Remote | `3002` | Stock, bins, zones, and locations. Exposes `./DashboardRoutes`, `./LocationRoutes`, `./StockRoutes`, `./ProductInventoryWidget`, and `./InventoryItemEditWidget`. |
 | **`grab-seller-pricing`** | Remote | `3005` | Price sets and currency rules. Exposes `./Routes`, `./PricingCreateWidget`, and `./PricingEditWidget`. |

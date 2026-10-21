@@ -1,26 +1,17 @@
 #!/bin/bash
+set -euo pipefail
 
-trap 'echo "Stopping all dev servers..."; kill $(jobs -p)' SIGINT
+# Runs development servers across the monorepo via Turborepo
+# Usage:
+#   ./start-dev.sh                                # Starts all applications
+#   ./start-dev.sh grab-seller grab-seller-account # Starts specific apps
 
-# echo "Starting grab-seller-auth..."
-# (cd grab-seller-auth && npm run build && npm run dev) &
-
-# echo "Starting grab-seller-account..."
-# (cd grab-seller-account && npm install && npm run build && npm run dev) &
-
-# echo "Starting grab-seller-product..."
-# (cd grab-seller-product && npm run build && npm run dev) &
-
-echo "Starting grab-seller-inventory..."
-(cd grab-seller-inventory && npm run build && npm run dev) &
-
-echo "Starting grab-seller..."
-(cd grab-seller && npm run build && npm run dev) &
-
-echo ""
-echo "🚀 All dev servers started successfully!"
-echo "Press Ctrl+C to stop all of them."
-echo ""
-
-# Wait for all background jobs to finish
-wait
+if [ $# -eq 0 ]; then
+  pnpm turbo dev --filter=./apps/*
+else
+  FILTERS=""
+  for app in "$@"; do
+    FILTERS="$FILTERS --filter=*$app*"
+  done
+  pnpm turbo dev $FILTERS
+fi

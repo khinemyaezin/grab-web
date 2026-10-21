@@ -1,6 +1,12 @@
 **/node_modules
 **/dist
 **/.git
+**/.turbo
+**/.github
+**/coverage
 **/.DS_Store
 .agent
 .vscode
+docs
+spark-mascot-ui
+grab-seller-shared
