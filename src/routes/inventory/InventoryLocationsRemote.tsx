@@ -7,6 +7,7 @@ const loadInventoryLocations = () => import("grab_seller_inventory/LocationRoute
 export function InventoryLocationsRemote() {
   const { platform } = useAuth();
   const inventoryLink = useEntryLink("inventory");
+  const salesChannelLink = useEntryLink("salesChannel");
 
   if (!inventoryLink) {
     return null;
@@ -20,6 +21,7 @@ export function InventoryLocationsRemote() {
       remoteProps={{
         platform,
         link: inventoryLink,
+        salesChannelLink,
       }}
     />
   );

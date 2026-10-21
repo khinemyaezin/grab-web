@@ -11,6 +11,7 @@ export function CatalogRemote() {
   const catalogLink = useEntryLink("catalog");
   const pricingLink = useEntryLink("pricing");
   const inventoryLink = useEntryLink("inventory");
+  const salesChannelLink = useEntryLink("salesChannel");
 
   useSseStream(platform, snapshot);
 
@@ -33,6 +34,7 @@ export function CatalogRemote() {
         platform,
         link: catalogLink,
         extensions,
+        salesChannelLink,
       }}
     />
   );
