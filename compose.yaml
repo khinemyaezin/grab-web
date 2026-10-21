@@ -22,7 +22,8 @@ services:
     build:
       <<: *app-build
       args:
-        APP_DIR: grab-seller-auth
+        APP_NAME: seller-auth
+        APP_DIR: apps/grab-seller-auth
     ports:
       - "${AUTH_PORT:-3003}:80"
 
@@ -32,7 +33,8 @@ services:
     build:
       <<: *app-build
       args:
-        APP_DIR: grab-seller-account
+        APP_NAME: seller-account
+        APP_DIR: apps/grab-seller-account
     ports:
       - "${ONBOARDING_PORT:-3004}:80"
 
@@ -42,7 +44,8 @@ services:
     build:
       <<: *app-build
       args:
-        APP_DIR: grab-seller-product
+        APP_NAME: grab-seller-product
+        APP_DIR: apps/grab-seller-product
     ports:
       - "${PRODUCT_PORT:-3001}:80"
 
@@ -52,7 +55,8 @@ services:
     build:
       <<: *app-build
       args:
-        APP_DIR: grab-seller-inventory
+        APP_NAME: grab-seller-inventory
+        APP_DIR: apps/grab-seller-inventory
     ports:
       - "${INVENTORY_PORT:-3002}:80"
 
@@ -62,7 +66,8 @@ services:
     build:
       <<: *app-build
       args:
-        APP_DIR: grab-seller-pricing
+        APP_NAME: grab-seller-pricing
+        APP_DIR: apps/grab-seller-pricing
     ports:
       - "${PRICING_PORT:-3005}:80"
 
@@ -72,7 +77,8 @@ services:
     build:
       <<: *app-build
       args:
-        APP_DIR: grab-seller
+        APP_NAME: grab-seller
+        APP_DIR: apps/grab-seller
         NGINX_CONF: gateway/nginx.conf
         HEALTHCHECK_PATH: /
     ports:

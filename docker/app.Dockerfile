@@ -1,21 +1,32 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22.23-alpine AS build
+FROM node:22-alpine AS pruner
+WORKDIR /app
+RUN npm install -g turbo@^2
+COPY . .
+ARG APP_NAME
+RUN turbo prune ${APP_NAME} --docker
 
-WORKDIR /workspace
+FROM node:22-alpine AS build
+WORKDIR /app
 
-ARG APP_DIR
-COPY ${APP_DIR}/package.json ${APP_DIR}/package-lock.json ${APP_DIR}/
-WORKDIR /workspace/${APP_DIR}
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=pruner /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
 RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
-    --mount=type=cache,id=grab-npm,target=/root/.npm \
-    npm ci
+    --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm install --frozen-lockfile
 
-COPY ${APP_DIR}/ ./
+COPY --from=pruner /app/out/full/ .
 
+ARG APP_NAME
 ENV MF_DTS=0
-RUN npx vite build
+RUN pnpm turbo run build --filter=${APP_NAME}
 
 FROM nginx:1.27-alpine AS runtime
 
@@ -24,7 +35,7 @@ ARG NGINX_CONF=nginx.conf
 ARG HEALTHCHECK_PATH=/mf-manifest.json
 
 COPY ${APP_DIR}/${NGINX_CONF} /etc/nginx/templates/default.conf.template
-COPY --from=build /workspace/${APP_DIR}/dist /usr/share/nginx/html
+COPY --from=build /app/${APP_DIR}/dist /usr/share/nginx/html
 
 ENV API_UPSTREAM=host.docker.internal:8080 \
     NGINX_ENVSUBST_FILTER=API_UPSTREAM \

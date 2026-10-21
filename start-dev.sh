@@ -1,30 +1,17 @@
 #!/bin/bash
-
 set -euo pipefail
 
-WORKSPACES=(
-  # grab-seller-auth
-  # grab-seller-product
-  # grab-seller-pricing
-  grab-seller-account
-  # grab-seller-inventory
-  grab-seller
-)
+# Runs development servers across the monorepo via Turborepo
+# Usage:
+#   ./start-dev.sh                                # Starts all applications
+#   ./start-dev.sh grab-seller grab-seller-account # Starts specific apps
 
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
-
-trap 'echo "Stopping all dev servers..."; kill $(jobs -p) 2>/dev/null || true' SIGINT SIGTERM
-
-echo ""
-echo "Starting dev servers..."
-for ws in "${WORKSPACES[@]}"; do
-  echo "→ Starting ${ws}..."
-  (cd "${ROOT_DIR}/${ws}" && npm run build && npm run dev) &
-done
-
-echo ""
-echo "All dev servers started."
-echo "Press Ctrl+C to stop all of them."
-echo ""
-
-wait
+if [ $# -eq 0 ]; then
+  pnpm turbo dev --filter=./apps/*
+else
+  FILTERS=""
+  for app in "$@"; do
+    FILTERS="$FILTERS --filter=*$app*"
+  done
+  pnpm turbo dev $FILTERS
+fi

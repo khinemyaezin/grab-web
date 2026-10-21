@@ -1,12 +1,34 @@
-.vscode/launch.json
-start-dev.sh
-.agent/project-rules.md
-.vscode/launch.json
-npm-install.sh
-start-dev.sh
-start-dev.sh
-.vscode/launch.json
-.vscode/launch.json
-.idea
-.vscode
-.vercel
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Production & Build outputs
+dist/
+dist-ssr/
+*.local
+.turbo/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Vercel / Deploy
+.vercel/

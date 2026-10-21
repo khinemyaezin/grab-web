@@ -33,7 +33,6 @@ export default defineConfig(({ mode }) => {
           "react-dom": { singleton: true, requiredVersion: "19.2.4" },
           "react-router": { singleton: true, requiredVersion: "7.18.0" },
           "react-hook-form": { singleton: true, requiredVersion: "7.74.0" },
-          "recharts": { singleton: true },
           "@tanstack/react-query": { singleton: true, requiredVersion: "5.99.2" },
           "@khinemyaezin/seller-api": { singleton: true },
           "@khinemyaezin/seller-ui": { singleton: true },

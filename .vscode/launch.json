@@ -7,18 +7,17 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "grab-seller",
+            "name": "grab-seller (Host Shell)",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/grab-seller",
+            "webRoot": "${workspaceFolder}/apps/grab-seller",
             "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
-
         },
         {
             "type": "chrome",
             "request": "launch",
             "name": "grab-seller-product",
             "url": "http://localhost:3001",
-            "webRoot": "${workspaceFolder}/grab-seller-product",
+            "webRoot": "${workspaceFolder}/apps/grab-seller-product",
             "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
         },
         {
@@ -26,15 +25,15 @@
             "request": "launch",
             "name": "grab-seller-inventory",
             "url": "http://localhost:3002",
-            "webRoot": "${workspaceFolder}/grab-seller-inventory",
+            "webRoot": "${workspaceFolder}/apps/grab-seller-inventory",
             "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
         },
         {
             "type": "chrome",
             "request": "launch",
             "name": "grab-seller-pricing",
-            "url": "http://localhost:3003",
-            "webRoot": "${workspaceFolder}/grab-seller-pricing",
+            "url": "http://localhost:3005",
+            "webRoot": "${workspaceFolder}/apps/grab-seller-pricing",
             "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
         },
         {
@@ -42,8 +41,16 @@
             "request": "launch",
             "name": "grab-seller-account",
             "url": "http://localhost:3004",
-            "webRoot": "${workspaceFolder}/grab-seller-account",
+            "webRoot": "${workspaceFolder}/apps/grab-seller-account",
             "runtimeExecutable": "/Applications/DuckDuckGo.app/Contents/MacOS/DuckDuckGo"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "grab-seller-auth",
+            "url": "http://localhost:3003",
+            "webRoot": "${workspaceFolder}/apps/grab-seller-auth",
+            "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
         }
     ]
 }
