@@ -10,4 +10,10 @@ export declare const locationService: {
     activate: (link: HateoasLink, headers?: Record<string, string>) => Promise<LocationResponse>;
     deactivate: (link: HateoasLink, headers?: Record<string, string>) => Promise<LocationResponse>;
     update: (link: HateoasLink, body: UpdateLocationRequest, headers?: Record<string, string>) => Promise<LocationResponse>;
+    linkToChannel: (link: HateoasLink, request: {
+        salesChannelId: string;
+    }, headers?: Record<string, string>) => Promise<LocationResponse>;
+    unlinkFromChannel: (link: HateoasLink, request: {
+        salesChannelId: string;
+    }, headers?: Record<string, string>) => Promise<LocationResponse>;
 };

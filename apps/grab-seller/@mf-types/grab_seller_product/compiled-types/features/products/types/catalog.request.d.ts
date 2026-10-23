@@ -1,3 +1,4 @@
+import type { ReplaceProductDescriptionsRequest, ReplaceProductMediaRequest } from "./catalog.response";
 export type VariationMatrixRequestVariation = {
     typeId: string;
     optionId: string;
@@ -30,6 +31,7 @@ export type CreateProductRequestProduct = {
     categoryId: string;
     condition: string;
     slug: string;
+    status?: string;
     variants: {
         sku: string | undefined;
         variations: CreateProductRequestVariation[];
@@ -43,6 +45,9 @@ export type CreateProductRequest = {
 export type CreateSellableProductRequest = CreateProductRequest & {
     pricingLines: CreateSellableProductPricingLine[];
     inventoryLines?: CreateSellableProductInventoryLine[];
+    publicationLines?: UpdateSellableProductPublicationLine[];
+    medias?: ReplaceProductMediaRequest["medias"];
+    descriptions?: ReplaceProductDescriptionsRequest["descriptions"];
     idempotencyKey?: string;
 };
 export type CreateSellableProductPricingLine = {
@@ -59,8 +64,8 @@ export type CreateSellableProductPricingLine = {
         priority?: number;
     }[];
 };
-export type ProductContributions = Partial<Pick<CreateSellableProductRequest, "pricingLines" | "inventoryLines">>;
-export type UpdateProductContributions = Partial<Pick<UpdateSellableProductRequest, "pricingLines" | "inventoryLines">>;
+export type ProductContributions = Partial<Pick<CreateSellableProductRequest, "pricingLines" | "inventoryLines" | "publicationLines">>;
+export type UpdateProductContributions = Partial<Pick<UpdateSellableProductRequest, "pricingLines" | "inventoryLines" | "publicationLines" | "unpublishLines" | "medias" | "descriptions">>;
 export type CreateSellableProductInventoryLine = {
     sku: string;
     locationId: string;
@@ -76,6 +81,7 @@ export interface UpdateProductRequest {
     categoryId: string;
     condition: string;
     slug: string;
+    status?: string;
     variantSync: {
         intent: UPDATE_INTENT;
         overrides: {
@@ -128,11 +134,19 @@ export type UpdateSellableProductPricingLine = {
         priority?: number;
     }[];
 };
+export type UpdateSellableProductPublicationLine = {
+    sku: string;
+    salesChannelId: string;
+};
 export type UpdateSellableProductRequest = {
     productId: string;
     product: UpdateProductRequest;
     inventoryLines?: UpdateSellableProductInventoryLine[];
     pricingLines?: UpdateSellableProductPricingLine[];
+    publicationLines?: UpdateSellableProductPublicationLine[];
+    unpublishLines?: UpdateSellableProductPublicationLine[];
+    medias?: ReplaceProductMediaRequest["medias"];
+    descriptions?: ReplaceProductDescriptionsRequest["descriptions"];
     idempotencyKey?: string;
 };
 export type UpdateProductVariantPrice = {

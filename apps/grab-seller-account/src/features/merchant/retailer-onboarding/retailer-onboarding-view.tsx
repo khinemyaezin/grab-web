@@ -9,8 +9,10 @@ import AccountBasicForm from "@/features/merchant/ui/account-basic-form";
 import RetailerProfileForm from "./retailer-profile-form";
 import AccountOnboardingSubmit from "@/features/merchant/ui/account-onboarding-submit";
 import { Skeleton } from "@khinemyaezin/seller-ui/components/index";
+import { useRoot } from "@/features/merchant/api/use-root";
 
 export type AccountOnboardingViewProps = {
+    listRegionCountriesLink?: HateoasLink,
     createApplicationLink?: HateoasLink,
     getApplicationLink?: HateoasLink,
     onSuccess?: () => void,
@@ -27,7 +29,7 @@ function LockedStep({ children }: { children: ReactNode }) {
     );
 }
 
-export default function RetailerAccountOnboardingView({ createApplicationLink, getApplicationLink, onSuccess }: AccountOnboardingViewProps) {
+export default function RetailerAccountOnboardingView({ createApplicationLink, getApplicationLink, listRegionCountriesLink, onSuccess }: AccountOnboardingViewProps) {
     const [completeProfileLink, setCompleteProfileLink] = useState<HateoasLink | undefined>(undefined);
     const [submitApplicationLink, setSubmitApplicationLink] = useState<HateoasLink | undefined>(undefined);
     const { data: applicationState, error, refetch } = useRetailerApplicationGet(getApplicationLink);
@@ -87,6 +89,7 @@ export default function RetailerAccountOnboardingView({ createApplicationLink, g
             content: createApplicationLink ?
                 <AccountBasicForm
                     link={createApplicationLink}
+                    countriesLink={listRegionCountriesLink}
                     onSuccess={(link) => handleOnAccountRegistrationSuccess(link, DELAY_STEP_MS)} />
                 : <LockedStep>Account setup is not available right now.</LockedStep>
         },

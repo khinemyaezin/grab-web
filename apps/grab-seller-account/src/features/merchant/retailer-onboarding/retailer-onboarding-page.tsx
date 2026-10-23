@@ -27,6 +27,7 @@ export default function RetailerOnboardingPage({ }: RetailerOnboardingPageProps)
                             <RetailerAccountOnboardingView
                                 getApplicationLink={root?.getRetailerApplication}
                                 createApplicationLink={root?.createRetailerApplication}
+                                listRegionCountriesLink={root?.listRegionCountries}
                                 onSuccess={() => platform?.events?.emit("seller-merchant:registration-success:v1", {})
                                 }
                             />

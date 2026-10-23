@@ -9,6 +9,7 @@ import { useC2CApplicationGet } from "@/features/merchant/api/use-account";
 import C2cAccountProfileForm from "./c2c-profile-form";
 import AccountOnboardingStatus from "@/features/merchant/ui/account-onboarding-status";
 import { Skeleton } from "@khinemyaezin/seller-ui/components/index";
+import { useRoot } from "@/features/merchant/api/use-root";
 
 export type AccountOnboardingViewProps = {
     createApplicationLink?: HateoasLink,
@@ -28,6 +29,7 @@ function LockedStep({ children }: { children: ReactNode }) {
 }
 
 export default function C2cAccountOnboardingView({ createApplicationLink, getApplicationLink, onSuccess }: AccountOnboardingViewProps) {
+    const root = useRoot().data;
     const [completeProfileLink, setCompleteProfileLink] = useState<HateoasLink | undefined>(undefined);
     const [submitApplicationLink, setSubmitApplicationLink] = useState<HateoasLink | undefined>(undefined);
     const { data: applicationState, error, refetch } = useC2CApplicationGet(getApplicationLink);
@@ -86,6 +88,7 @@ export default function C2cAccountOnboardingView({ createApplicationLink, getApp
             content: createApplicationLink ? (
                 <AccountBasicForm
                     link={createApplicationLink}
+                    countriesLink={root?.listRegionCountries}
                     onSuccess={(links) => handleOnAccountRegistrationSuccess(links, DELAY_STEP_MS)}
                 />
             ) : (

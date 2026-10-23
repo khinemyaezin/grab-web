@@ -1,9 +1,12 @@
 import type { SlotValidationErrors } from "@khinemyaezin/seller-contracts";
+import type { UpdateSellableProductPublicationLine } from "./catalog.request";
 export type Product = {
     name: string;
+    status?: ProductStatus;
     category: Category | null;
     variants: Variant[];
     standaloneVariant: Partial<Variant>;
+    publicationLines?: UpdateSellableProductPublicationLine[];
 };
 export type Category = {
     id: string;
@@ -51,9 +54,17 @@ export type ProductLifecycleEvent = {
     type: "titleResolved";
     title: string;
 } | {
+    type: "productTitleResolved";
+    title: string;
+} | {
     type: "created";
+    productId: string;
 } | {
     type: "createMediaFailed";
+    productId: string;
+} | {
+    type: "createDescriptionFailed";
+    productId: string;
 } | {
     type: "createFailed";
 } | {
@@ -66,6 +77,8 @@ export type ProductLifecycleEvent = {
     type: "updated";
 } | {
     type: "updateMediaFailed";
+} | {
+    type: "updateDescriptionFailed";
 } | {
     type: "updateFailed";
 } | {
@@ -91,6 +104,18 @@ export type ProductLifecycleEvent = {
     name?: string;
 } | {
     type: "deleteFailed";
+    name?: string;
+} | {
+    type: "publish";
+    name?: string;
+} | {
+    type: "publishedFailed";
+    name?: string;
+} | {
+    type: "suspend";
+    name?: string;
+} | {
+    type: "suspendedFailed";
     name?: string;
 };
 export type ProductStatus = "DRAFT" | "ACTIVE" | "ARCHIVED" | "SUSPENDED";

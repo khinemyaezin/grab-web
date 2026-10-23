@@ -5,6 +5,7 @@ export interface SellerAccountResponse {
     merchantId: string,
     applicantUserId: string,
     type: string,
+    primaryMarketCountryCode: string,
     legalName: string,
     displayName: string,
     registration: {

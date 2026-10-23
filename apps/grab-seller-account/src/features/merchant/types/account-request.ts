@@ -1,5 +1,6 @@
 export interface CreateAccountRequest {
     displayName: string;
+    primaryMarketCountryCode: string;
 }
 
 export interface UpdateBasicMerchantProfileRequest {

@@ -7,6 +7,7 @@ export interface CatalogRoot {
     createProductMediaUpload?: HateoasLink;
     createStagedMediaUpload?: HateoasLink;
     replaceProductMedia?: HateoasLink;
+    replaceProductDescriptions?: HateoasLink;
     getProduct?: HateoasLink;
     getVariant?: HateoasLink;
     searchCategoryLeaves?: HateoasLink;
@@ -16,6 +17,7 @@ export interface CatalogRoot {
     createSellableProduct?: HateoasLink;
     updateSellableProduct?: HateoasLink;
     updateProductVariant?: HateoasLink;
+    batchVariantImages?: HateoasLink;
 }
 export type VariationMatrixResponseVariation = {
     optionId: string;
@@ -39,6 +41,9 @@ export type VariationMatrixResponse = {
 export type CreateProductResponse = {};
 export interface UpdateProductResponse {
 }
+export type ProductPublication = {
+    salesChannelId: string;
+};
 export interface ProductResponse {
     productId: string;
     productName: string;
@@ -46,6 +51,8 @@ export interface ProductResponse {
     slug: string;
     categoryName: string;
     categoryId: string;
+    thumbnail?: ProductMedia | null;
+    publications?: ProductPublication[];
     _links?: Record<string, HateoasLink>;
 }
 export interface ProductSearchResponse {
@@ -69,6 +76,8 @@ export interface GetVariantResponse {
         typeName: string;
     }[];
     manageInventory: boolean;
+    mediaIds?: string[];
+    thumbnailMediaId?: string | null;
     _links?: Record<string, HateoasLink>;
 }
 export type ProductMedia = {
@@ -104,6 +113,36 @@ export type CreateProductMediaUploadRequest = {
     contentType: string;
     sizeBytes: number;
 };
+export type ProductDescription = {
+    id?: string;
+    name: string;
+    title?: string;
+    description: string;
+};
+export type BatchVariantImagesRequest = {
+    mediaIds: string[];
+    thumbnailMediaId?: string | null;
+};
+export type BatchVariantImagesResponse = {
+    productId: string;
+    variantId: string;
+    mediaIds: string[];
+    thumbnailMediaId?: string | null;
+    _links?: Record<string, HateoasLink>;
+};
+export type ReplaceProductDescriptionsRequest = {
+    descriptions: {
+        id?: string;
+        name: string;
+        title?: string;
+        description: string;
+    }[];
+};
+export type ReplaceProductDescriptionsResponse = {
+    productId: string;
+    descriptions: ProductDescription[];
+    _links?: Record<string, HateoasLink>;
+};
 export interface GetFullProductResponse {
     id: string;
     name: string;
@@ -116,10 +155,10 @@ export interface GetFullProductResponse {
     sellerType: string;
     condition: string;
     offerEligible: boolean;
-    status: string;
+    status: "DRAFT" | "ACTIVE" | "ARCHIVED" | "SUSPENDED";
     slug: string;
     featured: boolean;
-    descriptions: null;
+    descriptions: ProductDescription[] | null;
     medias: ProductMedia[] | null;
     moderationNote: null;
     variants: {
@@ -128,6 +167,9 @@ export interface GetFullProductResponse {
         status: string;
         matrixKey: string;
         manageInventory?: boolean;
+        mediaIds?: string[];
+        thumbnailMediaId?: string | null;
+        publications?: ProductPublication[];
         variations: {
             optionId: string;
             optionName: string;
@@ -199,6 +241,18 @@ export type CreateSellableProductResponse = {
     _links?: Record<string, HateoasLink>;
 };
 export type UpdateSellableProductResponse = CreateSellableProductResponse;
+export type UnpublishProductFromChannelRequest = {
+    variantId: string;
+    salesChannelId: string;
+};
+export type ProductPublicationResponse = {
+    productId: string;
+    publications: {
+        variantId: string;
+        salesChannelId: string;
+    }[];
+    _links?: Record<string, HateoasLink>;
+};
 export type UpdateProductVariantResponse = {
     workflowId: string;
     status: string;

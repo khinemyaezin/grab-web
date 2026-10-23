@@ -13,10 +13,8 @@ export default function AccountProviders({
   children: ReactNode;
 }) {
   return (
-    <div className="seller-account-mfe">
-      <PlatformProvider platform={platform}>
-        <EntryLinkProvider link={link}>{children}</EntryLinkProvider>
-      </PlatformProvider>
-    </div>
+    <PlatformProvider platform={platform}>
+      <EntryLinkProvider link={link}>{children}</EntryLinkProvider>
+    </PlatformProvider>
   );
 }

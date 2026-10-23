@@ -13,4 +13,12 @@ export declare function useUpdateLocationMutation(): import("@tanstack/react-que
 }, unknown>;
 export declare function useActivateLocationMutation(): import("@tanstack/react-query").UseMutationResult<LocationResponse, Error, HateoasLink, unknown>;
 export declare function useDeactivateLocationMutation(): import("@tanstack/react-query").UseMutationResult<LocationResponse, Error, HateoasLink, unknown>;
+export declare function useLinkLocationToChannelMutation(): import("@tanstack/react-query").UseMutationResult<LocationResponse, Error, {
+    link: HateoasLink;
+    salesChannelId: string;
+}, unknown>;
+export declare function useUnlinkLocationFromChannelMutation(): import("@tanstack/react-query").UseMutationResult<LocationResponse, Error, {
+    link: HateoasLink;
+    salesChannelId: string;
+}, unknown>;
 export declare function useDeleteLocationMutation(): import("@tanstack/react-query").UseMutationResult<void, Error, HateoasLink, unknown>;

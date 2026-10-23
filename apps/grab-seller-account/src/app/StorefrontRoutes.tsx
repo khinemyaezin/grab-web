@@ -16,13 +16,15 @@ export default function StorefrontRoutes({
   platform?: SellerPlatform;
 }) {
   return (
-    <AccountProviders link={link} platform={platform}>
-      <Routes>
-        <Route index element={<StorefrontListPage />} />
-        <Route path="new" element={<StorefrontNewPage />} />
-        <Route path=":storefrontId" element={<StorefrontEditPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </AccountProviders>
+    <div className="seller-account-mfe">
+      <AccountProviders link={link} platform={platform}>
+        <Routes>
+          <Route index element={<StorefrontListPage />} />
+          <Route path="new" element={<StorefrontNewPage />} />
+          <Route path=":storefrontId" element={<StorefrontEditPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AccountProviders>
+    </div >
   );
 }
