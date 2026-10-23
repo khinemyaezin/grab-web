@@ -18,8 +18,7 @@ grab-web/
 ├── packages/
 │   ├── seller-contracts/        # Shared API schemas, event topics & routes (@khinemyaezin/seller-contracts)
 │   ├── seller-api/              # HTTP transport & TanStack Query clients (@khinemyaezin/seller-api)
-│   ├── seller-ui/               # Shared design system, UI components & slots (@khinemyaezin/seller-ui)
-│   └── spark-mascot-ui/         # Mascot animations & visual assets (@grab/spark-mascot-ui)
+│   └── seller-ui/               # Shared design system, UI components & slots (@khinemyaezin/seller-ui)
 ├── docker/
 │   └── app.Dockerfile           # Optimized multi-stage build using turbo prune
 ├── compose.yaml                 # Local containerized orchestration
