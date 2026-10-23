@@ -10,6 +10,7 @@ export type MerchantRoot = {
     getC2cApplication?: HateoasLink;
     createRetailerApplication?: HateoasLink;
     getRetailerApplication?: HateoasLink;
+    listRegionCountries?: HateoasLink;
     getCurrentMerchant?: HateoasLink;
     listStorefronts?: HateoasLink;
     createStorefront?: HateoasLink;

@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
         name: "grab_seller_auth",
         filename: "remoteEntry.js",
         manifest: true,
+        bundleAllCSS: true,
         dts: process.env.MF_DTS === "0" ? false : {
           generateTypes: {
             tsConfigPath: "./tsconfig.app.json",

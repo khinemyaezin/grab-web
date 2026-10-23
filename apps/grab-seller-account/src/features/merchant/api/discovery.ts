@@ -9,6 +9,7 @@ export async function fetchMerchantRoot(link: HateoasLink): Promise<MerchantRoot
         getC2cApplication: resolveLink(response?._links, "get-c2c-application"),
         createRetailerApplication: resolveLink(response?._links, "create-first-party-retailer-application"),
         getRetailerApplication: resolveLink(response?._links, "get-first-party-retailer-application"),
+        listRegionCountries: resolveLink(response?._links, "list-region-countries"),
         getCurrentMerchant: resolveLink(response?._links, "get-current-merchant"),
         listStorefronts: resolveLink(response?._links, "list-storefronts"),
         createStorefront: resolveLink(response?._links, "create-storefront"),

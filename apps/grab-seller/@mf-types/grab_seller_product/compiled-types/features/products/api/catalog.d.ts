@@ -1,4 +1,4 @@
-import type { CategoryLeavesResult, CreateProductMediaUploadRequest, CreateProductRequest, CreateSellableProductRequest, CreateSellableProductResponse, GetFullProductResponse, GetVariantResponse, GetVariationOptionResult, GetVariationTypeResult, UpdateProductRequest, UpdateProductResponse, UpdateSellableProductRequest, UpdateProductVariantRequest, UpdateProductVariantResponse, VariationMatrixRequest, VariationMatrixResponse, DeleteProductResponse, ProductMediaUploadResponse, ProductModerationResponse, ProductSearchRequest, ProductSearchResponse, ReplaceProductMediaRequest, ReplaceProductMediaResponse } from "@/features/products/types";
+import type { CategoryLeavesResult, CreateProductMediaUploadRequest, CreateProductRequest, CreateSellableProductRequest, CreateSellableProductResponse, GetFullProductResponse, GetVariantResponse, GetVariationOptionResult, GetVariationTypeResult, UpdateProductRequest, UpdateProductResponse, UpdateSellableProductRequest, UpdateProductVariantRequest, UpdateProductVariantResponse, VariationMatrixRequest, VariationMatrixResponse, DeleteProductResponse, ProductMediaUploadResponse, ProductModerationResponse, ProductSearchRequest, ProductSearchResponse, ReplaceProductMediaRequest, ReplaceProductMediaResponse, ReplaceProductDescriptionsRequest, ReplaceProductDescriptionsResponse, BatchVariantImagesRequest, BatchVariantImagesResponse, UnpublishProductFromChannelRequest, ProductPublicationResponse } from "@/features/products/types";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 export declare const catalogService: {
     createVariationMatrix: (link: HateoasLink, request: VariationMatrixRequest, headers?: Record<string, string>) => Promise<VariationMatrixResponse>;
@@ -13,12 +13,16 @@ export declare const catalogService: {
     deleteProduct: (link: HateoasLink, headers?: Record<string, string>) => Promise<DeleteProductResponse>;
     restoreProduct: (link: HateoasLink, headers?: Record<string, string>) => Promise<ProductModerationResponse>;
     publishProduct: (link: HateoasLink, headers?: Record<string, string>) => Promise<ProductModerationResponse>;
+    suspendProduct: (link: HateoasLink, headers?: Record<string, string>) => Promise<ProductModerationResponse>;
     getCreateSellableProduct: (link: HateoasLink, headers?: Record<string, string>) => Promise<CreateSellableProductResponse>;
     createProductMediaUpload: (link: HateoasLink, request: CreateProductMediaUploadRequest, headers?: Record<string, string>) => Promise<ProductMediaUploadResponse>;
     replaceProductMedia: (link: HateoasLink, request: ReplaceProductMediaRequest, headers?: Record<string, string>) => Promise<ReplaceProductMediaResponse>;
+    replaceProductDescriptions: (link: HateoasLink, request: ReplaceProductDescriptionsRequest, headers?: Record<string, string>) => Promise<ReplaceProductDescriptionsResponse>;
     createSellableProduct: (link: HateoasLink, request: CreateSellableProductRequest, headers?: Record<string, string>) => Promise<CreateSellableProductResponse>;
     updateSellableProduct: (link: HateoasLink, request: UpdateSellableProductRequest, headers?: Record<string, string>) => Promise<CreateSellableProductResponse>;
     updateProductVariant: (link: HateoasLink, request: UpdateProductVariantRequest, headers?: Record<string, string>) => Promise<UpdateProductVariantResponse>;
     deleteProductVariant: (link: HateoasLink, headers?: Record<string, string>) => Promise<void>;
     restoreProductVariant: (link: HateoasLink, headers?: Record<string, string>) => Promise<void>;
+    unpublishProductFromChannel: (link: HateoasLink, request: UnpublishProductFromChannelRequest, headers?: Record<string, string>) => Promise<ProductPublicationResponse>;
+    setVariantMedia: (link: HateoasLink, request: BatchVariantImagesRequest, headers?: Record<string, string>) => Promise<BatchVariantImagesResponse>;
 };

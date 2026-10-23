@@ -1,5 +1,5 @@
 import { HateoasLink } from "@khinemyaezin/seller-api";
-import { SellerAccount } from "../types/seller-account-model";
+import { SellerAccount } from "@/features/merchant/types";
 export interface SellerAccountServiceFacade {
     getAccount: () => Promise<SellerAccount>;
 }

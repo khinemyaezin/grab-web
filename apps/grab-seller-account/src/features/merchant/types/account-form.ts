@@ -1,5 +1,6 @@
 export type AccountBasicFormValues = {
     displayName: string;
+    primaryMarketCountryCode: string;
 };
 
 export type AccountProfileFormValues = {

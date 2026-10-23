@@ -1,8 +1,2 @@
-import type { HateoasLink } from "@khinemyaezin/seller-api";
-import type { SellerPlatform } from "@khinemyaezin/seller-contracts";
-import type { JSX } from "react";
-
-export default function StorefrontRoutes(props: {
-  link: HateoasLink;
-  platform?: SellerPlatform;
-}): JSX.Element;
+export * from './compiled-types/app/StorefrontRoutes';
+export { default } from './compiled-types/app/StorefrontRoutes';

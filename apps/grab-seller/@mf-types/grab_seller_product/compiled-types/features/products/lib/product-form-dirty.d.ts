@@ -1,4 +1,2 @@
-export declare function isCatalogFormDirty(dirtyFields: Partial<{
-    product?: unknown;
-    variationTypes?: unknown;
-}>, extensionDirty: boolean): boolean;
+import type { ProductFormValue } from "@/features/products/types";
+export declare function isCatalogFormDirty(dirtyFields: Partial<Record<keyof ProductFormValue, unknown>>, extensionDirty: boolean): boolean;
