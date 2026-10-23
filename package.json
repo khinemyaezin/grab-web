@@ -9,6 +9,7 @@
     "build": "turbo build",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "verify": "turbo typecheck test build",
     "clean": "turbo clean && rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist"
   },
   "devDependencies": {
