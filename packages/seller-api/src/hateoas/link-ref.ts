@@ -1,9 +1,12 @@
+import { SellerDiscoveryApiLinks } from "./api-links.js";
+
+/** @deprecated Use SellerDiscoveryApiLinks instead. */
 export const ref = {
-    ROOT_INDENTITY: "get-identity-root",
-    ROOT_MERCHANT: "get-merchant-root",
-    ROOT_CATALOG: "get-catalog-root",
-    ROOT_INVENTORY: "get-inventory-root",
-    ROOT_PRICING: "get-pricing-root",
-    ROOT_WORKFLOWS: "get-workflows-root",
-    ROOT_SALES_CHANNEL: "get-sales-channel-root",
+    ROOT_INDENTITY: SellerDiscoveryApiLinks.identityRoot,
+    ROOT_MERCHANT: SellerDiscoveryApiLinks.merchantRoot,
+    ROOT_CATALOG: SellerDiscoveryApiLinks.catalogRoot,
+    ROOT_INVENTORY: SellerDiscoveryApiLinks.inventoryRoot,
+    ROOT_PRICING: SellerDiscoveryApiLinks.pricingRoot,
+    ROOT_WORKFLOWS: SellerDiscoveryApiLinks.workflowsRoot,
+    ROOT_SALES_CHANNEL: SellerDiscoveryApiLinks.salesChannelRoot,
 } as const;

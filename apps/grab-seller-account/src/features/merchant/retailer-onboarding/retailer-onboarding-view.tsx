@@ -1,4 +1,4 @@
-import { ApiError, HalLinks, HateoasLink, resolveLink } from "@khinemyaezin/seller-api";
+import { ApiError, HalLinks, HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useEffect, useState, type ReactNode } from "react";
 import OnboardingWizard, {
     type OnboardingWizardStep,
@@ -59,14 +59,14 @@ export default function RetailerAccountOnboardingView({ createApplicationLink, g
     }
 
     function handleOnAccountRegistrationSuccess(value: HalLinks, delayStep = DELAY_STEP_MS) {
-        const link = resolveLink(value, "edit-merchant-application");
+        const link = resolveLink(value, SellerApiLinks.merchant.updateMerchantProfile);
         if (link) setCompleteProfileLink(link);
         onNextStep("profile-registration", delayStep);
     }
 
 
     function handleOnUpdateAccountSuccess(value: HalLinks, delayStep = DELAY_STEP_MS) {
-        const link = resolveLink(value, "submit-merchant-application");
+        const link = resolveLink(value, SellerApiLinks.merchantApplication.submitMerchantApplication);
         if (link) setSubmitApplicationLink(link);
         onNextStep("submit-application", delayStep);
     }

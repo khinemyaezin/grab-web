@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
-import { resolveLink, type HateoasLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import {
   attachProductMedia,
   isGalleryDirty,
@@ -87,7 +87,7 @@ export function useProductMediaSync({
       }
 
       const replaceMediaLink =
-        resolveLink(actions, "replace-product-media") ?? rootReplaceLink;
+        resolveLink(actions, SellerApiLinks.pending.replaceProductMedia) ?? rootReplaceLink;
 
       if (!replaceMediaLink) {
         return { status: "failed", error: new Error("Missing media links") };

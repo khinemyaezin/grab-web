@@ -1,14 +1,15 @@
 import type { HalLinks, HateoasLink, PaginationLinks } from "../hateoas.js";
 import { parseTemplate } from "url-template";
+import type { SellerRelation } from "./api-links.js";
 
 export function resolveLink(
   links: HalLinks | undefined,
-  rel: string
+  rel: SellerRelation
 ): HateoasLink | undefined {
   return links?.[rel];
 }
 
-export function hasLink(links: HalLinks | undefined, rel: string): boolean {
+export function hasLink(links: HalLinks | undefined, rel: SellerRelation): boolean {
   return !!links && !!links[rel];
 }
 

@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@khinemyaezin/seller-ui/components/table";
 import { Link } from "react-router";
-import { hasLink } from "@khinemyaezin/seller-api";
+import { hasLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { Pager } from "@khinemyaezin/seller-ui/components/pager";
 import { ImageIcon } from "lucide-react";
 import { useItems } from "@/features/inventory/api/use-items";
@@ -86,7 +86,7 @@ function ItemTableRow({ item }: { item: InventoryItemResponse }) {
           </div>
           <div className="min-w-0 space-y-1">
             <div className="font-medium leading-tight">
-              {hasLink(item._links, "self") ? (
+              {hasLink(item._links, SellerApiLinks.discovery.self) ? (
                 <Link to={item.id} className="hover:underline">
                   {item.productName}
                 </Link>

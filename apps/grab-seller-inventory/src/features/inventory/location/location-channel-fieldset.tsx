@@ -1,6 +1,6 @@
 import { Checkbox } from "@khinemyaezin/seller-ui/components/checkbox";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSeparator, FieldSet } from "@khinemyaezin/seller-ui/components/field";
-import { resolveLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useSalesChannelLink } from "@/features/inventory/api/sales-channel-link";
 import { useSalesChannels } from "@/features/inventory/api/use-sales-channels";
 import {
@@ -30,8 +30,8 @@ export function LocationChannelFieldSet({ location }: LocationChannelFieldSetPro
   const linkMutation = useLinkLocationToChannelMutation();
   const unlinkMutation = useUnlinkLocationFromChannelMutation();
 
-  const linkChannel = resolveLink(location?._links, "link-location-to-channel");
-  const unlinkChannel = resolveLink(location?._links, "unlink-location-from-channel");
+  const linkChannel = resolveLink(location?._links, SellerApiLinks.pending.linkLocationToChannel);
+  const unlinkChannel = resolveLink(location?._links, SellerApiLinks.pending.unlinkLocationFromChannel);
   const linked = new Set(location?.salesChannelIds ?? []);
   const pending = linkMutation.isPending || unlinkMutation.isPending;
   const rows = channels.filter((channel) => isSellerFacingChannel(channel.type));

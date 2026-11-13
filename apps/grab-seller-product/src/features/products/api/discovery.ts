@@ -1,4 +1,4 @@
-import { api, resolveLink, type HalLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import { api, resolveLink, SellerApiLinks, type HalLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import type { CatalogRoot } from "@/features/products/types";
 
 type RootResponse = { _links: HalLinks };
@@ -6,22 +6,22 @@ type RootResponse = { _links: HalLinks };
 export async function fetchCatalogRoot(link: HateoasLink): Promise<CatalogRoot> {
   const response = await api.followLink<RootResponse>(link);
   return {
-    self: resolveLink(response._links, "self"),
-    searchProducts: resolveLink(response._links, "search-products"),
-    getProduct: resolveLink(response._links, "get-product"),
-    getVariant: resolveLink(response._links, "get-variant"),
-    createProduct: resolveLink(response._links, "create-product"),
-    createProductMediaUpload: resolveLink(response._links, "create-product-media-upload"),
-    createStagedMediaUpload: resolveLink(response._links, "create-staged-media-upload"),
-    replaceProductMedia: resolveLink(response._links, "replace-product-media"),
-    replaceProductDescriptions: resolveLink(response._links, "replace-product-descriptions"),
-    searchCategoryLeaves: resolveLink(response._links, "search-category-leaves"),
-    searchVariantTypes: resolveLink(response._links, "search-variant-types"),
-    searchVariantOptions: resolveLink(response._links, "search-variant-options"),
-    generateVariationMatrix: resolveLink(response._links, "generate-variation-matrix"),
-    createSellableProduct: resolveLink(response._links, "create-sellable-product"),
-    updateSellableProduct: resolveLink(response._links, "update-sellable-product"),
-    updateProductVariant: resolveLink(response._links, "update-product-variant"),
-    batchVariantImages: resolveLink(response._links, "batch-variant-images"),
+    self: resolveLink(response._links, SellerApiLinks.discovery.self),
+    searchProducts: resolveLink(response._links, SellerApiLinks.product.searchProducts),
+    getProduct: resolveLink(response._links, SellerApiLinks.product.getProduct),
+    getVariant: resolveLink(response._links, SellerApiLinks.product.getVariant),
+    createProduct: resolveLink(response._links, SellerApiLinks.product.createProduct),
+    createProductMediaUpload: resolveLink(response._links, SellerApiLinks.pending.createProductMediaUpload),
+    createStagedMediaUpload: resolveLink(response._links, SellerApiLinks.pending.createStagedMediaUpload),
+    replaceProductMedia: resolveLink(response._links, SellerApiLinks.pending.replaceProductMedia),
+    replaceProductDescriptions: resolveLink(response._links, SellerApiLinks.pending.replaceProductDescriptions),
+    searchCategoryLeaves: resolveLink(response._links, SellerApiLinks.category.searchLeaves),
+    searchVariantTypes: resolveLink(response._links, SellerApiLinks.variantOption.searchTypes),
+    searchVariantOptions: resolveLink(response._links, SellerApiLinks.variantOption.searchOptions),
+    generateVariationMatrix: resolveLink(response._links, SellerApiLinks.pending.generateVariationMatrix),
+    createSellableProduct: resolveLink(response._links, SellerApiLinks.workflow.createSellableProduct),
+    updateSellableProduct: resolveLink(response._links, SellerApiLinks.workflow.updateSellableProduct),
+    updateProductVariant: resolveLink(response._links, SellerApiLinks.workflow.updateProductVariant),
+    batchVariantImages: resolveLink(response._links, SellerApiLinks.pending.batchVariantImages),
   };
 }

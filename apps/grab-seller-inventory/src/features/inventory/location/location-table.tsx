@@ -10,7 +10,7 @@ import {
 } from "@khinemyaezin/seller-ui/components/table";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { Link } from "react-router";
-import { hasLink, resolveLink } from "@khinemyaezin/seller-api";
+import { hasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@khinemyaezin/seller-ui/components/dropdown-menu";
 import { Ellipsis } from "lucide-react";
 import { Button } from "@khinemyaezin/seller-ui/components/index";
@@ -93,9 +93,9 @@ type LocationTableRowProps = {
 };
 
 function LocationTableRow({ location, onLifecycleEvent }: LocationTableRowProps) {
-  const activateLink = resolveLink(location._links, "activate-location");
-  const deactivateLink = resolveLink(location._links, "deactivate-location");
-  const deleteLink = resolveLink(location._links, "delete-location");
+  const activateLink = resolveLink(location._links, SellerApiLinks.facility.activateLocation);
+  const deactivateLink = resolveLink(location._links, SellerApiLinks.facility.deactivateLocation);
+  const deleteLink = resolveLink(location._links, SellerApiLinks.facility.deleteLocation);
   const activateMutation = useActivateLocationMutation();
   const deactivateMutation = useDeactivateLocationMutation();
   const deleteMutation = useDeleteLocationMutation();
@@ -131,7 +131,7 @@ function LocationTableRow({ location, onLifecycleEvent }: LocationTableRowProps)
     <TableRow>
       <TableCell className="grid grid-rows-2 gap-1">
         <span className="font-medium">
-          {hasLink(location._links, "self") ? (
+          {hasLink(location._links, SellerApiLinks.discovery.self) ? (
             <Link
               to={`${location.id}/zones`}
               className="hover:underline"
@@ -163,7 +163,7 @@ function LocationTableRow({ location, onLifecycleEvent }: LocationTableRowProps)
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
-              {hasLink(location._links, "edit-location") && (
+          {hasLink(location._links, SellerApiLinks.pending.editLocation) && (
                 <DropdownMenuItem asChild>
                   <Link to={location.id}>Edit</Link>
                 </DropdownMenuItem>

@@ -54,7 +54,7 @@ export function createAuthService(entryLink: HateoasLink): AuthServiceFacade {
     async refreshToken(): Promise<void> {
       const root = await ensureDiscovery();
       if (!root.refreshToken) {
-        throw new Error("Identity root does not expose a 'refresh-token' link");
+        throw new Error("Identity root does not expose a 'refresh' link");
       }
       return authService.refreshToken(root.refreshToken);
     },

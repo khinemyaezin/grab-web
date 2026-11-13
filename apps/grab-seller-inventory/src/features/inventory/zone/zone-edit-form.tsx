@@ -8,7 +8,7 @@ import ZoneFieldSet from "./zone-fieldset";
 import { Card, CardContent, CardFooter } from "@khinemyaezin/seller-ui/components/card";
 import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
 import { Button, ButtonStatus } from "@khinemyaezin/seller-ui/components/index";
-import { resolveLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 
 export type ZoneEditFormProps = {
     link: HateoasLink,
@@ -31,9 +31,9 @@ export default function ZoneEditForm({ link, id, onLifecycleEvent }: ZoneEditFor
 
     const { handleSubmit, formState: { isDirty }, reset } = form;
     const { data: zone } = useZone(link, id);
-    const editZoneLink = resolveLink(zone?._links, "edit-zone");
-    const activateZoneLink = resolveLink(zone?._links, "activate-zone");
-    const deactivateZoneLink = resolveLink(zone?._links, "deactivate-zone");
+    const editZoneLink = resolveLink(zone?._links, SellerApiLinks.pending.editZone);
+    const activateZoneLink = resolveLink(zone?._links, SellerApiLinks.facility.activateZone);
+    const deactivateZoneLink = resolveLink(zone?._links, SellerApiLinks.facility.deactivateZone);
 
     const updateZoneMutation = useUpdateZoneMutation();
     const activateZoneMutation = useActivateZoneMutation();

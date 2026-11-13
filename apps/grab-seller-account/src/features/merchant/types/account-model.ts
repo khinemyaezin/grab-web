@@ -11,7 +11,7 @@ export type MerchantRoot = {
     createRetailerApplication?: HateoasLink;
     getRetailerApplication?: HateoasLink;
     listRegionCountries?: HateoasLink;
-    getCurrentMerchant?: HateoasLink;
+    getMerchant?: HateoasLink;
     listStorefronts?: HateoasLink;
     createStorefront?: HateoasLink;
     getStorefront?: HateoasLink;

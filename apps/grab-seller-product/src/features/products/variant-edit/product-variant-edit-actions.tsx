@@ -1,4 +1,4 @@
-import { HateoasLink, resolveLink } from "@khinemyaezin/seller-api";
+import { HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useProductVariantDeleteMutation, useProductVariantRestoreMutation } from "@/features/products/api/use-products";
 import { ProductLifecycleEvent } from "@/features/products/types";
 import { Ellipsis, RotateCcw, Trash2 } from "lucide-react";
@@ -22,8 +22,8 @@ export default function ProductVariantActionsMenu({
   links,
   onLifecycleEvent,
 }: ProductVariantActionsMenuProps) {
-  const variantDeleteLink = resolveLink(links, "delete-variant");
-  const variantRestoreLink = resolveLink(links, "restore-variant");
+  const variantDeleteLink = resolveLink(links, SellerApiLinks.pending.deleteVariant);
+  const variantRestoreLink = resolveLink(links, SellerApiLinks.pending.restoreVariant);
 
   const deleteVariantMutation = useProductVariantDeleteMutation();
   const restoreVariantMutation = useProductVariantRestoreMutation();

@@ -1,4 +1,4 @@
-import { resolveLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useInventoryLink } from "@/features/inventory/api/use-root";
 import { useLocation } from "@/features/inventory/api/use-locations";
 import { useZone } from "@/features/inventory/api/use-zones";
@@ -13,9 +13,9 @@ export function useLocationZoneLinks(locationId?: string, zoneId?: string) {
     const locationQuery = useLocation(locationLink, locationId);
     const location = locationQuery.data;
 
-    const searchZones = resolveLink(location?._links, "search-zones");
-    const createZone = resolveLink(location?._links, "create-zone");
-    const zoneGetLink = resolveLink(location?._links, "zone");
+    const searchZones = resolveLink(location?._links, SellerApiLinks.pending.searchZones);
+    const createZone = resolveLink(location?._links, SellerApiLinks.pending.createZone);
+    const zoneGetLink = resolveLink(location?._links, SellerApiLinks.pending.zone);
 
     const zoneQuery = useZone(zoneGetLink, zoneId);
     const zone = zoneQuery.data;
@@ -28,8 +28,8 @@ export function useLocationZoneLinks(locationId?: string, zoneId?: string) {
         searchZones,
         createZone,
         zoneGetLink,
-        createBin: resolveLink(zone?._links, "create-bin"),
-        binGetLink: resolveLink(zone?._links, "bin"),
+        createBin: resolveLink(zone?._links, SellerApiLinks.pending.createBin),
+        binGetLink: resolveLink(zone?._links, SellerApiLinks.pending.bin),
         isLocationLoading: locationQuery.isLoading,
         isZoneLoading: zoneQuery.isLoading,
     };

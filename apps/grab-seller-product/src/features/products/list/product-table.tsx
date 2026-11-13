@@ -2,7 +2,7 @@
 import { Link } from "react-router";
 import { useCallback, useMemo } from "react";
 import { useProductSearch, useProductDeleteMutation, useProductRestoreMutation } from "@/features/products/api/use-products";
-import { HateoasLink } from "@khinemyaezin/seller-api";
+import { HateoasLink, hasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { ProductFilterFormValue, ProductLifecycleEvent, ProductSearchResponse } from "@/features/products/types";
 import { Pager } from "@khinemyaezin/seller-ui/components/pager";
 import {
@@ -16,7 +16,6 @@ import {
 } from "@khinemyaezin/seller-ui/components/table";
 import { Badge, Button } from "@khinemyaezin/seller-ui/components/index";
 import { DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenu } from "@khinemyaezin/seller-ui/components/dropdown-menu";
-import { hasLink, resolveLink } from "@khinemyaezin/seller-api";
 import { Ellipsis, ImageIcon } from "lucide-react";
 import { formatProductStatus } from "@/features/products/ui/product-status";
 import { useSalesChannelLink } from "@/features/products/api/sales-channel-link";
@@ -152,18 +151,18 @@ export default function ProductTable({ link, filter, onPageChange, onLifecycleEv
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuGroup>
-                      {resolveLink(product._links, "delete-product") && (
+                      {resolveLink(product._links, SellerApiLinks.product.deleteProduct) && (
                         <DropdownMenuItem variant="destructive"
                           disabled={deleteProductMutation.isPending}
-                          onClick={() => handleArchive(resolveLink(product._links, "delete-product")!, product.name)}>
+                          onClick={() => handleArchive(resolveLink(product._links, SellerApiLinks.product.deleteProduct)!, product.name)}>
                           Archive
                         </DropdownMenuItem>
                       )}
 
-                      {hasLink(product._links, "restore-product") && (
+                      {hasLink(product._links, SellerApiLinks.pending.restoreProduct) && (
                         <DropdownMenuItem
                           disabled={restoreProductMutation.isPending}
-                          onClick={() => handleOnRestore(resolveLink(product._links, "restore-product")!)}>
+                          onClick={() => handleOnRestore(resolveLink(product._links, SellerApiLinks.pending.restoreProduct)!)}>
                           Restore
                         </DropdownMenuItem>
                       )}

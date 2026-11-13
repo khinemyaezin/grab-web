@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Card, CardContent, CardFooter } from "@khinemyaezin/seller-ui/components/card";
 import { Button, ButtonStatus } from "@khinemyaezin/seller-ui/components/index";
 import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
-import { resolveLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useUpdateLocationMutation, useActivateLocationMutation, useDeactivateLocationMutation, useLocation } from "@/features/inventory/api/use-locations";
 import { useEffect } from "react";
 import { LocationBasicFieldSet } from "./location-basic-fieldset";
@@ -58,9 +58,9 @@ export default function LocationEditForm({ locationId, onLifecycleEvent }: Locat
     const activateMutation = useActivateLocationMutation();
     const deactivateMutation = useDeactivateLocationMutation();
 
-    const updateLink = resolveLink(location?._links, "edit-location");
-    const activateLink = resolveLink(location?._links, "activate-location");
-    const deactivateLink = resolveLink(location?._links, "deactivate-location");
+    const updateLink = resolveLink(location?._links, SellerApiLinks.pending.editLocation);
+    const activateLink = resolveLink(location?._links, SellerApiLinks.facility.activateLocation);
+    const deactivateLink = resolveLink(location?._links, SellerApiLinks.facility.deactivateLocation);
 
     useEffect(() => {
         if (location?.name) {

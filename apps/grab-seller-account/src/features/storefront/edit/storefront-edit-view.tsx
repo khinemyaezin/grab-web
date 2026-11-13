@@ -6,7 +6,7 @@ import { Button } from "@khinemyaezin/seller-ui/components/button";
 import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
 import { QueryState } from "@khinemyaezin/seller-ui/components/query-state";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
-import { resolveLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useMerchantLink } from "@/features/merchant/api/use-root";
 import { useStorefront } from "@/features/storefront/api/use-storefronts";
 import type { StorefrontLifecycleEvent } from "@/features/storefront/types";
@@ -25,7 +25,7 @@ export function StorefrontEditView({
   const getStorefrontLink = useMerchantLink("getStorefront");
   const { data: storefront, isLoading, isError } = useStorefront(getStorefrontLink, storefrontId);
 
-  const updateLink = resolveLink(storefront?._links, "update-storefront");
+  const updateLink = resolveLink(storefront?._links, SellerApiLinks.storefront.updateStorefront);
 
   useEffect(() => {
     if (storefront?.name) {
