@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { createBackendEventStream, resolveLink } from "@khinemyaezin/seller-api";
+import { createBackendEventStream, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import type {
   SellerPlatform,
   SessionSnapshot,
@@ -44,7 +44,7 @@ export function useSseStream(
   );
 
   const streamUrl = useMemo(() => {
-    const discovered = resolveLink(data?._links, "event-stream")?.href;
+    const discovered = resolveLink(data?._links, SellerApiLinks.pending.eventStream)?.href;
     if (discovered) {
       return discovered;
     }

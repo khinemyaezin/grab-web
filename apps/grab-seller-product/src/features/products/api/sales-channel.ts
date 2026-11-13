@@ -1,4 +1,4 @@
-import { api, resolveLink, type HateoasLink } from "@khinemyaezin/seller-api";
+import { api, resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import type {
   SalesChannelRoot,
   SalesChannelResponse,
@@ -22,8 +22,8 @@ export const salesChannelService = {
 export async function fetchSalesChannelRoot(link: HateoasLink): Promise<SalesChannelRoot> {
   const response = await salesChannelService.root(link);
   return {
-    self: resolveLink(response._links, "self"),
-    listSalesChannels: resolveLink(response._links, "list-sales-channels"),
-    getSalesChannel: resolveLink(response._links, "get-sales-channel"),
+    self: resolveLink(response._links, SellerApiLinks.discovery.self),
+    listSalesChannels: resolveLink(response._links, SellerApiLinks.salesChannel.listSalesChannels),
+    getSalesChannel: resolveLink(response._links, SellerApiLinks.salesChannel.getSalesChannel),
   };
 }

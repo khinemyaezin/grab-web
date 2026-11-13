@@ -3,4 +3,4 @@ import { SellerAccount } from "@/features/merchant/types";
 export interface SellerAccountServiceFacade {
     getAccount: () => Promise<SellerAccount>;
 }
-export declare function createSellerAccountService(entryLink: HateoasLink): SellerAccountServiceFacade;
+export declare function createSellerAccountService(entryLink: HateoasLink, merchantId?: string): SellerAccountServiceFacade;

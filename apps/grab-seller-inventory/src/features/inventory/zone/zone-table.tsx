@@ -2,7 +2,7 @@
 import { Button } from "@khinemyaezin/seller-ui/components/button";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { BoxesIcon, LayersIcon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
-import { hasLink, resolveLink } from "@khinemyaezin/seller-api";
+import { hasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { Link, useSearchParams } from "react-router";
 import { ZoneResponse } from "@/features/inventory/types/inventory.response";
 import { HateoasLink, ZoneLifecycleEvent, BinLifecycleEvent } from "@/types";
@@ -135,11 +135,11 @@ function ZoneAccordionItem({
   onDelete,
   onLifecycleEvent,
 }: ZoneAccordionItemProps) {
-  const pagedBinLink = resolveLink(zone._links, "search-bins") ?? resolveLink(zone._links, "paged-bin");
-  const createBinLink = resolveLink(zone._links, "create-bin");
-  const activateLink = resolveLink(zone._links, "activate-zone");
-  const deactivateLink = resolveLink(zone._links, "deactivate-zone");
-  const deleteLink = resolveLink(zone._links, "delete-zone");
+  const pagedBinLink = resolveLink(zone._links, SellerApiLinks.pending.searchBins) ?? resolveLink(zone._links, SellerApiLinks.pending.pagedBin);
+  const createBinLink = resolveLink(zone._links, SellerApiLinks.pending.createBin);
+  const activateLink = resolveLink(zone._links, SellerApiLinks.facility.activateZone);
+  const deactivateLink = resolveLink(zone._links, SellerApiLinks.facility.deactivateZone);
+  const deleteLink = resolveLink(zone._links, SellerApiLinks.facility.deleteZone);
   const { filter, updateCriteria, updatePage } = useBinFilter({ zoneId: zone.id });
 
   return (
@@ -172,7 +172,7 @@ function ZoneAccordionItem({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuGroup>
-              {hasLink(zone._links, "edit-zone") && (
+              {hasLink(zone._links, SellerApiLinks.pending.editZone) && (
                 <DropdownMenuItem asChild>
                   <Link to={zone.id}>Edit</Link>
                 </DropdownMenuItem>

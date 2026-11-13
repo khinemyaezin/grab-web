@@ -11,7 +11,7 @@ describe("merchant discovery", () => {
       _links: {
         self: { href: "/merchants" },
         "list-merchants": { href: "/merchants/accounts" },
-        "get-current-merchant": { href: "/merchants/me" },
+        "get-merchant": { href: "/api/v1/merchants/{merchantId}", templated: true },
         "list-storefronts": { href: "/merchants/storefronts" },
         "create-storefront": { href: "/merchants/storefronts" },
         "get-storefront": { href: "/merchants/storefronts/{id}", templated: true },
@@ -23,6 +23,7 @@ describe("merchant discovery", () => {
     expect(root.createStorefront?.href).toBe("/merchants/storefronts");
     expect(root.getStorefront?.href).toBe("/merchants/storefronts/{id}");
     expect(root.getStorefront?.templated).toBe(true);
-    expect(root.getCurrentMerchant?.href).toBe("/merchants/me");
+    expect(root.getMerchant?.href).toBe("/api/v1/merchants/{merchantId}");
+    expect(root.getMerchant?.templated).toBe(true);
   });
 });

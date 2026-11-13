@@ -16,7 +16,7 @@ import {
   PackageCheck,
   Settings2,
 } from "lucide-react";
-import { resolveLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useItem } from "@/features/inventory/api/use-items";
 import { useInventoryLink } from "@/features/inventory/api/use-root";
 import type { ItemLifecycleEvent } from "@/features/inventory/types";
@@ -42,20 +42,20 @@ export default function ItemDetailView({ itemId, onLifecycleEvent }: ItemDetailV
   const itemLink = useInventoryLink("inventoryItem");
   const { data: item } = useItem(itemLink, itemId);
 
-  const receiveLink = resolveLink(item?._links, "receive-inventory-item");
-  const adjustLink = resolveLink(item?._links, "adjust-inventory-item");
-  const damageLink = resolveLink(item?._links, "damage-inventory-item");
-  const writeOffLink = resolveLink(item?._links, "write-off-inventory-item");
-  const returnLink = resolveLink(item?._links, "return-inventory-item-to-vendor");
-  const transferLink = resolveLink(item?._links, "transfer-inventory-item");
-  const announceInTransitLink = resolveLink(item?._links, "announce-in-transit");
-  const receiveInTransitLink = resolveLink(item?._links, "receive-in-transit");
-  const reorderConfigLink = resolveLink(item?._links, "update-reorder-config");
-  const suspendLink = resolveLink(item?._links, "suspend-inventory-item");
-  const activateLink = resolveLink(item?._links, "activate-inventory-item");
-  const discontinueLink = resolveLink(item?._links, "discontinue-inventory-item");
-  const movementsLink = resolveLink(item?._links, "list-inventory-item-movements");
-  const reservationsLink = resolveLink(item?._links, "list-inventory-item-reservations");
+  const receiveLink = resolveLink(item?._links, SellerApiLinks.pending.receiveInventoryItem);
+  const adjustLink = resolveLink(item?._links, SellerApiLinks.pending.adjustInventoryItem);
+  const damageLink = resolveLink(item?._links, SellerApiLinks.pending.damageInventoryItem);
+  const writeOffLink = resolveLink(item?._links, SellerApiLinks.pending.writeOffInventoryItem);
+  const returnLink = resolveLink(item?._links, SellerApiLinks.pending.returnInventoryItemToVendor);
+  const transferLink = resolveLink(item?._links, SellerApiLinks.pending.transferInventoryItem);
+  const announceInTransitLink = resolveLink(item?._links, SellerApiLinks.pending.announceInTransit);
+  const receiveInTransitLink = resolveLink(item?._links, SellerApiLinks.pending.receiveInTransit);
+  const reorderConfigLink = resolveLink(item?._links, SellerApiLinks.pending.updateReorderConfig);
+  const suspendLink = resolveLink(item?._links, SellerApiLinks.pending.suspendInventoryItem);
+  const activateLink = resolveLink(item?._links, SellerApiLinks.pending.activateInventoryItem);
+  const discontinueLink = resolveLink(item?._links, SellerApiLinks.pending.discontinueInventoryItem);
+  const movementsLink = resolveLink(item?._links, SellerApiLinks.pending.listInventoryItemMovements);
+  const reservationsLink = resolveLink(item?._links, SellerApiLinks.pending.listInventoryItemReservations);
 
   const hasInboundActions = !!(receiveLink || announceInTransitLink || receiveInTransitLink);
   const hasCorrectionActions = !!(adjustLink || damageLink || writeOffLink);

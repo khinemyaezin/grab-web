@@ -1,15 +1,15 @@
 import { IdentityLinks } from "@/features/shared/types/identity-model";
-import { api, HalLinks, HateoasLink, resolveLink } from "@khinemyaezin/seller-api";
+import { api, HalLinks, HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 
 const convertToModel = (resp: { _links: HalLinks }): IdentityLinks => {
     return {
-        self: resolveLink(resp._links, "self"),
-        getProfile: resolveLink(resp._links, "get-profile"),
-        login: resolveLink(resp._links, "login"),
-        register: resolveLink(resp._links, "register"),
-        logout: resolveLink(resp._links, "logout"),
-        refreshToken: resolveLink(resp._links, "refresh-token"),
-        listAccessContext: resolveLink(resp._links, "list-access-contexts")
+        self: resolveLink(resp._links, SellerApiLinks.discovery.self),
+        getProfile: resolveLink(resp._links, SellerApiLinks.session.getProfile),
+        login: resolveLink(resp._links, SellerApiLinks.auth.login),
+        register: resolveLink(resp._links, SellerApiLinks.auth.register),
+        logout: resolveLink(resp._links, SellerApiLinks.auth.logout),
+        refreshToken: resolveLink(resp._links, SellerApiLinks.auth.refresh),
+        listAccessContext: resolveLink(resp._links, SellerApiLinks.session.listAccessContexts)
     }
 };
 

@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@khinemyaezin/seller-ui/components/dropdown-menu";
 import { Archive, CheckCircle, Ellipsis, Pause, RotateCcw } from "lucide-react";
-import { resolveLink, type HateoasLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import type { StorefrontLifecycleEvent } from "@/features/storefront/types";
 import {
   useActivateStorefrontMutation,
@@ -39,10 +39,10 @@ export function StorefrontLifecycleActions({
   links,
   onLifecycleEvent,
 }: StorefrontLifecycleActionsProps) {
-  const activateLink = resolveLink(links, "activate-storefront");
-  const suspendLink = resolveLink(links, "suspend-storefront");
-  const reactivateLink = resolveLink(links, "reactivate-storefront");
-  const closeLink = resolveLink(links, "close-storefront");
+  const activateLink = resolveLink(links, SellerApiLinks.storefront.activateStorefront);
+  const suspendLink = resolveLink(links, SellerApiLinks.pending.suspendStorefront);
+  const reactivateLink = resolveLink(links, SellerApiLinks.pending.reactivateStorefront);
+  const closeLink = resolveLink(links, SellerApiLinks.storefront.closeStorefront);
 
   const activateMutation = useActivateStorefrontMutation();
   const reactivateMutation = useReactivateStorefrontMutation();

@@ -1,13 +1,13 @@
-import { ref } from "./hateoas/link-ref.js";
+import { SellerDiscoveryApiLinks } from "./hateoas/api-links.js";
 
 export const ModuleDiscovery = {
-    "identity": ref.ROOT_INDENTITY,
-    "merchant": ref.ROOT_MERCHANT,
-    "catalog": ref.ROOT_CATALOG,
-    "inventory": ref.ROOT_INVENTORY,
-    "pricing": ref.ROOT_PRICING,
-    "workflows": ref.ROOT_WORKFLOWS,
-    "salesChannel": ref.ROOT_SALES_CHANNEL,
+    "identity": SellerDiscoveryApiLinks.identityRoot,
+    "merchant": SellerDiscoveryApiLinks.merchantRoot,
+    "catalog": SellerDiscoveryApiLinks.catalogRoot,
+    "inventory": SellerDiscoveryApiLinks.inventoryRoot,
+    "pricing": SellerDiscoveryApiLinks.pricingRoot,
+    "workflows": SellerDiscoveryApiLinks.workflowsRoot,
+    "salesChannel": SellerDiscoveryApiLinks.salesChannelRoot,
 } as const; 
 export type ModuleDiscoveryType = typeof ModuleDiscovery;
 export type ModuleName = keyof ModuleDiscoveryType; 

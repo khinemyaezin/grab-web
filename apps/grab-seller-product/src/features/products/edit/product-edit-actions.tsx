@@ -1,4 +1,4 @@
-import { HateoasLink, resolveLink } from "@khinemyaezin/seller-api";
+import { HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useProductDeleteMutation, useProductPublishMutation, useProductRestoreMutation, useProductSuspendMutation } from "@/features/products/api/use-products";
 import { ProductLifecycleEvent } from "@/features/products/types";
 import { Archive, CircleCheck, CirclePause, Ellipsis, RotateCcw } from "lucide-react";
@@ -18,10 +18,10 @@ export type ProductActionsMenuProps = {
 }
 
 export default function ProductActionsMenu({ links, onLifecycleEvent }: ProductActionsMenuProps) {
-    const productDeleteLink = resolveLink(links, "delete-product");
-    const productRestoreLink = resolveLink(links, "restore-product");
-    const publishProductLink = resolveLink(links, "publish-product");
-    const suspendProductLink = resolveLink(links, "suspend-product")
+    const productDeleteLink = resolveLink(links, SellerApiLinks.product.deleteProduct);
+    const productRestoreLink = resolveLink(links, SellerApiLinks.pending.restoreProduct);
+    const publishProductLink = resolveLink(links, SellerApiLinks.pending.publishProduct);
+    const suspendProductLink = resolveLink(links, SellerApiLinks.pending.suspendProduct)
 
     const deleteProductMutation = useProductDeleteMutation();
     const restoreProductMutation = useProductRestoreMutation();

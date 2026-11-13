@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
-import { resolveLink, type HateoasLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import {
   attachProductDescriptions,
   isDescriptionsDirty,
@@ -43,7 +43,7 @@ export function useProductDescriptionSync({
       }
 
       const replaceDescriptionsLink =
-        resolveLink(actions, "replace-product-descriptions") ?? rootReplaceLink;
+        resolveLink(actions, SellerApiLinks.pending.replaceProductDescriptions) ?? rootReplaceLink;
 
       if (!replaceDescriptionsLink) {
         return { status: "failed", error: new Error("Missing description links") };

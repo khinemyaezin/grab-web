@@ -148,11 +148,11 @@ describe("AuthServiceFacade", () => {
       expect(authService.refreshToken).toHaveBeenCalledWith(mockIdentityRoot.refreshToken);
     });
 
-    it("throws if identity root does not expose refresh-token", async () => {
+    it("throws if identity root does not expose refresh", async () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce({} as IdentityLinks);
       const facade = createAuthService(mockEntryLink);
 
-      await expect(facade.refreshToken()).rejects.toThrow("Identity root does not expose a 'refresh-token' link");
+      await expect(facade.refreshToken()).rejects.toThrow("Identity root does not expose a 'refresh' link");
     });
   });
 });

@@ -8,7 +8,7 @@ import {
 } from "@khinemyaezin/seller-ui/components/table";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { Link } from "react-router";
-import { hasLink, resolveLink, type HateoasLink } from "@khinemyaezin/seller-api";
+import { hasLink, resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,7 +80,7 @@ type StorefrontTableRowProps = {
 };
 
 function StorefrontTableRow({ storefront }: StorefrontTableRowProps) {
-  const canOpen = hasLink(storefront._links, "self") || hasLink(storefront._links, "update-storefront");
+  const canOpen = hasLink(storefront._links, SellerApiLinks.discovery.self) || hasLink(storefront._links, SellerApiLinks.storefront.updateStorefront);
 
   return (
     <TableRow>
@@ -106,7 +106,7 @@ function StorefrontTableRow({ storefront }: StorefrontTableRowProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
-              {resolveLink(storefront._links, "self") && (
+              {resolveLink(storefront._links, SellerApiLinks.discovery.self) && (
                 <DropdownMenuItem asChild>
                   <Link to={storefront.storefrontId}>Open</Link>
                 </DropdownMenuItem>

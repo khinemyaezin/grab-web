@@ -8,7 +8,7 @@ import BinFieldSet from "./bin-fieldset";
 import { Card, CardContent, CardFooter } from "@khinemyaezin/seller-ui/components/card";
 import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
 import { Button, ButtonStatus, Skeleton } from "@khinemyaezin/seller-ui/components/index";
-import { resolveLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 
 export type BinEditFormProps = {
   link: HateoasLink;
@@ -30,9 +30,9 @@ export default function BinEditForm({ link, id, onLifecycleEvent }: BinEditFormP
 
   const { handleSubmit, formState: { isDirty }, reset } = form;
   const { data: bin, isLoading } = useBin(link, id);
-  const editBinLink = resolveLink(bin?._links, "edit-bin");
-  const activateBinLink = resolveLink(bin?._links, "activate-bin");
-  const deactivateBinLink = resolveLink(bin?._links, "deactivate-bin");
+  const editBinLink = resolveLink(bin?._links, SellerApiLinks.pending.editBin);
+  const activateBinLink = resolveLink(bin?._links, SellerApiLinks.facility.activateBin);
+  const deactivateBinLink = resolveLink(bin?._links, SellerApiLinks.facility.deactivateBin);
 
   const updateBinMutation = useUpdateBinMutation();
   const activateBinMutation = useActivateBinMutation();

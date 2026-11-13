@@ -1,4 +1,4 @@
-import { api, HateoasLink, resolveLink } from "@khinemyaezin/seller-api";
+import { api, HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AccessContext, AccessContextListResponse, AccessContextSelectionResponse } from "../types";
 
@@ -13,7 +13,7 @@ export function useAccessContextList(link?: HateoasLink) {
                     return {
                         assignmentId: context.assignmentId,
                         title: context.title,
-                        accessLink: resolveLink(context._links, "select-access-context")
+                        accessLink: resolveLink(context._links, SellerApiLinks.session.selectContext)
                     };
                 });
         }

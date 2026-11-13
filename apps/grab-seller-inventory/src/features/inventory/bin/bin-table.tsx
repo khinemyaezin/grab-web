@@ -2,7 +2,7 @@
 import { Button } from "@khinemyaezin/seller-ui/components/button";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { BoxIcon, GaugeIcon, MoreHorizontalIcon, PackageIcon } from "lucide-react";
-import { hasLink, resolveLink } from "@khinemyaezin/seller-api";
+import { hasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { Link } from "react-router";
 import type { HateoasLink, BinLifecycleEvent, BinResponse } from "@/types";
 import { useBins, useActivateBinMutation, useDeactivateBinMutation, useDeleteBinMutation } from "@/features/inventory/api/use-bins";
@@ -98,9 +98,9 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
     <div className="space-y-3">
       <div className="grid w-full gap-3 grid-cols-1 lg:grid-cols-2">
         {bins._embedded.binResponseList.map((bin: BinResponse) => {
-          const activateLink = resolveLink(bin._links, "activate-bin");
-          const deactivateLink = resolveLink(bin._links, "deactivate-bin");
-          const deleteLink = resolveLink(bin._links, "delete-bin");
+          const activateLink = resolveLink(bin._links, SellerApiLinks.facility.activateBin);
+          const deactivateLink = resolveLink(bin._links, SellerApiLinks.facility.deactivateBin);
+          const deleteLink = resolveLink(bin._links, SellerApiLinks.facility.deleteBin);
 
           return (
             <Card key={bin.id} className="bg-muted dark:bg-background">
@@ -128,7 +128,7 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-40">
                       <DropdownMenuGroup>
-                        {hasLink(bin._links, "edit-bin") && (
+                        {hasLink(bin._links, SellerApiLinks.pending.editBin) && (
                           <DropdownMenuItem asChild>
                             <Link to={`${zoneId}/bins/${bin.id}`}>Edit</Link>
                           </DropdownMenuItem>

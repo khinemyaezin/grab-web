@@ -7,7 +7,7 @@ import {
   useValidateAllSlots,
 } from "@khinemyaezin/seller-ui";
 import { PRODUCT_CONTRIBUTION_SLICES } from "@khinemyaezin/seller-contracts";
-import { resolveLink, type HateoasLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import { invalidateProductQueries } from "@/features/products/api/use-products";
 import { attachVariantMedia } from "@/features/products/api/variant-media";
 import { buildUpdateProductVariantRequest } from "@/features/products/lib/update-product-variant-request";
@@ -77,7 +77,7 @@ export function useProductVariantUpdateSubmit({
       values,
       contributions,
     );
-    const batchLink = resolveLink(actions, "batch-variant-images");
+    const batchLink = resolveLink(actions, SellerApiLinks.pending.batchVariantImages);
 
     const chain = await runWorkflowChain<VariantUpdateChainCtx>(
       [
