@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useApi } from "@khinemyaezin/seller-ui";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 import { useCreateSellableProductMutation } from "@/features/products/api/use-products";
 import { resolveWorkflowProductId } from "@/features/products/api/workflow-product-id";
@@ -15,6 +16,7 @@ export type UseCreateSellableProductCommandResult = {
 export function useCreateSellableProductCommand(
   link: HateoasLink,
 ): UseCreateSellableProductCommandResult {
+  const api = useApi();
   const { mutateAsync, reset, isPending } = useCreateSellableProductMutation();
   const { awaitWorkflow } = useWorkflowAwaiter({
     workflowName: CREATE_SELLABLE_PRODUCT_WORKFLOW,
@@ -28,11 +30,11 @@ export function useCreateSellableProductCommand(
           request: { ...payload, idempotencyKey },
         }),
       );
-      const productId = await resolveWorkflowProductId(result);
+      const productId = await resolveWorkflowProductId(api, result);
       reset();
       return { productId };
     },
-    [awaitWorkflow, link, mutateAsync, reset],
+    [api, awaitWorkflow, link, mutateAsync, reset],
   );
 
   return { execute, reset, isPending };

@@ -1,4 +1,5 @@
-import { api, resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type {
   SalesChannelRoot,
   SalesChannelResponse,
@@ -14,13 +15,13 @@ export function salesChannelsFromCollection(data?: SalesChannelsResponse): Sales
 }
 
 export const salesChannelService = {
-  root: (link: HateoasLink) => api.followLink<RootResponse>(link, "GET"),
+  root: (api: PlatformApiClient, link: HateoasLink) => api.followLink<RootResponse>(link, "GET"),
 
-  list: (link: HateoasLink) => api.followLink<SalesChannelsResponse>(link, "GET"),
+  list: (api: PlatformApiClient, link: HateoasLink) => api.followLink<SalesChannelsResponse>(link, "GET"),
 };
 
-export async function fetchSalesChannelRoot(link: HateoasLink): Promise<SalesChannelRoot> {
-  const response = await salesChannelService.root(link);
+export async function fetchSalesChannelRoot(api: PlatformApiClient, link: HateoasLink): Promise<SalesChannelRoot> {
+  const response = await salesChannelService.root(api, link);
   return {
     self: resolveLink(response._links, SellerApiLinks.discovery.self),
     listSalesChannels: resolveLink(response._links, SellerApiLinks.salesChannel.listSalesChannels),

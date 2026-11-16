@@ -1,28 +1,24 @@
-import { ReactNode, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router";
-import { configureApi, createHostEventBus } from "@khinemyaezin/seller-api";
+import { ReactNode, useMemo } from "react";
 import {
-  type PlatformEvents,
   SellerRuntimeConfig,
   SessionApi,
-  SellerPlatform,
 } from "@khinemyaezin/seller-contracts";
 
 import { AuthContextValue, AuthContext } from "./AuthContext";
 import { useAuthService, useSessionEffects, useSessionOperations, useSessionState } from "../hooks";
+import { useShellPlatform } from "./ShellPlatformProvider";
 
 export function AuthProvider({
   children,
-  runtimeConfig,
   onSessionCleared,
 }: {
   children: ReactNode;
-  runtimeConfig: Readonly<SellerRuntimeConfig>;
+  runtimeConfig?: Readonly<SellerRuntimeConfig>;
   onSessionCleared?: () => void;
 }) {
-  const navigate = useNavigate();
-  const authService = useAuthService();
-  const events = useMemo<PlatformEvents>(() => createHostEventBus(), []);
+  const { platform, sessionRef, events } = useShellPlatform();
+
+  const authService = useAuthService(platform.api!);
   const { snapshot, snapshotRef, publishSnapshot, subscribe } = useSessionState();
 
   const { loadSession, expireSession, refresh, logout } = useSessionOperations({
@@ -40,24 +36,7 @@ export function AuthProvider({
     logout,
   }), [logout, refresh, snapshotRef, subscribe]);
 
-  const platform = useMemo<SellerPlatform>(() => Object.freeze({
-    version: "1.0.0",
-    session,
-    events,
-    navigation: {
-      navigate(path: string, options?: { replace?: boolean }) {
-        navigate(path, { replace: options?.replace });
-      },
-    },
-    config: runtimeConfig,
-  }), [events, navigate, runtimeConfig, session]);
-
-  useEffect(() => {
-    configureApi({
-      baseUrl: runtimeConfig.apiBaseUrl,
-      platform,
-    });
-  }, [platform, runtimeConfig.apiBaseUrl]);
+  sessionRef.current = session;
 
   useSessionEffects({
     snapshot,
@@ -65,7 +44,6 @@ export function AuthProvider({
     onSessionCleared,
     events,
   });
-
 
   const value = useMemo<AuthContextValue>(() => ({
     snapshot,
@@ -81,7 +59,7 @@ export function AuthProvider({
 
   return (
     <AuthContext.Provider value={value}>
-     {children}
+      {children}
     </AuthContext.Provider>
   );
 }

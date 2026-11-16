@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   collectSlotFieldErrors,
   mergeContributions,
+  useApi,
   useValidateAllSlots,
 } from "@khinemyaezin/seller-ui";
 import { PRODUCT_CONTRIBUTION_SLICES } from "@khinemyaezin/seller-contracts";
@@ -51,6 +52,7 @@ export function useProductVariantUpdateSubmit({
   actions,
   onLifecycleEvent,
 }: UseProductVariantUpdateSubmitOptions): UseProductVariantUpdateSubmitResult {
+  const api = useApi();
   const queryClient = useQueryClient();
   const { getValues } = useFormContext<ProductVariantForm>();
   const { validate } = useValidateAllSlots();
@@ -92,6 +94,7 @@ export function useProductVariantUpdateSubmit({
         {
           id: "attachVariantMedia",
           run: async () => toWorkflowStepResult(await attachVariantMedia({
+            api,
             link: batchLink,
             mediaIds: values.mediaIds ?? [],
             thumbnailMediaId: values.thumbnailMediaId,

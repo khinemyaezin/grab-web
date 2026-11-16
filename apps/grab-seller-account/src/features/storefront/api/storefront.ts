@@ -1,5 +1,5 @@
-import { api } from "@khinemyaezin/seller-api";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type {
   CreateStorefrontRequest,
   StorefrontLifecycleRequest,
@@ -9,27 +9,27 @@ import type {
 } from "@/features/storefront/types";
 
 export const storefrontService = {
-  list: (link: HateoasLink) =>
+  list: (api: PlatformApiClient, link: HateoasLink) =>
     api.followLink<StorefrontsResponse>(link, "GET"),
 
-  get: (link: HateoasLink) =>
+  get: (api: PlatformApiClient, link: HateoasLink) =>
     api.followLink<StorefrontResponse>(link, "GET"),
 
-  create: (link: HateoasLink, request: CreateStorefrontRequest) =>
+  create: (api: PlatformApiClient, link: HateoasLink, request: CreateStorefrontRequest) =>
     api.followLink<StorefrontResponse>(link, "POST", request),
 
-  update: (link: HateoasLink, request: UpdateStorefrontProfileRequest) =>
+  update: (api: PlatformApiClient, link: HateoasLink, request: UpdateStorefrontProfileRequest) =>
     api.followLink<StorefrontResponse>(link, "PATCH", request),
 
-  activate: (link: HateoasLink) =>
+  activate: (api: PlatformApiClient, link: HateoasLink) =>
     api.followLink<StorefrontResponse>(link, "POST"),
 
-  reactivate: (link: HateoasLink) =>
+  reactivate: (api: PlatformApiClient, link: HateoasLink) =>
     api.followLink<StorefrontResponse>(link, "POST"),
 
-  suspend: (link: HateoasLink, request: StorefrontLifecycleRequest) =>
+  suspend: (api: PlatformApiClient, link: HateoasLink, request: StorefrontLifecycleRequest) =>
     api.followLink<StorefrontResponse>(link, "POST", request),
 
-  close: (link: HateoasLink, request: StorefrontLifecycleRequest) =>
+  close: (api: PlatformApiClient, link: HateoasLink, request: StorefrontLifecycleRequest) =>
     api.followLink<StorefrontResponse>(link, "POST", request),
 };

@@ -20,7 +20,11 @@ export type AuthContextValue = {
   logout: () => Promise<void>;
 };
 
-export const AuthContext = createContext<AuthContextValue | null>(null);
+const AUTH_CONTEXT_KEY = Symbol.for("@khinemyaezin/grab-seller/AuthContext");
+
+export const AuthContext: React.Context<AuthContextValue | null> =
+  (globalThis as any)[AUTH_CONTEXT_KEY] ??
+  ((globalThis as any)[AUTH_CONTEXT_KEY] = createContext<AuthContextValue | null>(null));
 
 export function useAuth(): AuthContextValue {
   const value = useContext(AuthContext);

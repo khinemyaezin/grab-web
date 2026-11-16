@@ -1,6 +1,8 @@
 import { type HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { ProductDescription, ReplaceProductDescriptionsRequest } from "@/features/products/types";
 export type AttachProductDescriptionsOptions = {
+    api: PlatformApiClient;
     productId: string;
     items: ProductDescription[];
     seed?: ProductDescription[];
@@ -11,4 +13,4 @@ export declare function overviewDescription(descriptions: ProductDescription[] |
 export declare function withOverviewDescription(descriptions: ProductDescription[] | undefined, body: string): ProductDescription[];
 export declare function toReplaceDescriptionsPayload(descriptions: ProductDescription[] | undefined): ReplaceProductDescriptionsRequest["descriptions"];
 export declare function isDescriptionsDirty(items: ProductDescription[] | undefined, seed?: ProductDescription[] | undefined): boolean;
-export declare function attachProductDescriptions({ productId, items, seed, replaceDescriptionsLink, }: AttachProductDescriptionsOptions): Promise<void>;
+export declare function attachProductDescriptions({ api, productId, items, seed, replaceDescriptionsLink, }: AttachProductDescriptionsOptions): Promise<void>;

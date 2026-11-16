@@ -1,7 +1,8 @@
-import { api, resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { PricingRoot, PricingRootResponse } from "../types";
 
-export async function fetchPricingRoot(link: HateoasLink): Promise<PricingRoot> {
+export async function fetchPricingRoot(api: PlatformApiClient, link: HateoasLink): Promise<PricingRoot> {
   const response = await api.followLink<PricingRootResponse>(link);
 
   return {

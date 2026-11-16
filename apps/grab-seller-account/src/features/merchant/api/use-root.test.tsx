@@ -10,6 +10,7 @@ import { fetchMerchantRoot } from "./discovery";
 
 vi.mock("@khinemyaezin/seller-ui", () => ({
     useEntryLink: vi.fn(),
+    useApi: vi.fn(),
 }));
 
 vi.mock("./discovery", () => ({
@@ -27,9 +28,16 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe("useRoot", () => {
+    const mockApi = {
+        request: vi.fn(),
+        followLink: vi.fn(),
+        withConfig: vi.fn(),
+    };
+
     beforeEach(() => {
         queryClient.clear();
         vi.clearAllMocks();
+        vi.mocked(sellerUi.useApi).mockReturnValue(mockApi as any);
     });
 
     it("should not fetch if entryLink is missing", () => {
@@ -54,7 +62,7 @@ describe("useRoot", () => {
             expect(result.current.isSuccess).toBe(true);
         });
 
-        expect(fetchMerchantRoot).toHaveBeenCalledWith(mockLink);
+        expect(fetchMerchantRoot).toHaveBeenCalledWith(mockApi, mockLink);
         expect(result.current.data).toEqual(mockData);
     });
 });

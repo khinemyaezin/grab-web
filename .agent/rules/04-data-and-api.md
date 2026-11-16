@@ -35,20 +35,21 @@ Shell entry link
 Every domain feature maintains pure TypeScript services under `api/`:
 
 ```ts
-import { api, type HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
+import type { HateoasLink } from "@khinemyaezin/seller-api";
 
 export const catalogService = {
-  getFullProduct: (link: HateoasLink, headers?: Record<string, string>) =>
+  getFullProduct: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<GetFullProductResponse>(link, "GET", undefined, undefined, headers),
 
-  createSellableProduct: (link: HateoasLink, request: CreateSellableProductRequest) =>
+  createSellableProduct: (api: PlatformApiClient, link: HateoasLink, request: CreateSellableProductRequest) =>
     api.followLink<CreateSellableProductResponse>(link, "POST", request),
 };
 ```
 
 ### Rules:
 - Services MUST be React-free (no hooks, no JSX).
-- Services MUST accept a typed `HateoasLink`, method payload, and optional headers.
+- Services MUST accept `api: PlatformApiClient` as first parameter, typed `HateoasLink`, method payload, and optional headers.
 - Services MUST NOT show toasts, trigger navigation, or manipulate React state.
 
 ---
@@ -78,14 +79,15 @@ export function invalidateProductQueries(queryClient: QueryClient, productId?: s
 }
 ```
 
-### B. Enabled Guards
-Queries that require a valid link or entity ID MUST guard execution with `enabled`:
+### B. Enabled Guards & API Client Injection
+Queries obtain the client instance via `useApi()` from `@khinemyaezin/seller-ui` and guard execution with `enabled`:
 
 ```ts
 export function useProductGet(link?: HateoasLink, productId?: string) {
+  const api = useApi();
   return useQuery({
     queryKey: ["product", productId],
-    queryFn: () => catalogService.getFullProduct(resolvedLink),
+    queryFn: () => catalogService.getFullProduct(api, resolvedLink),
     enabled: Boolean(link && productId),
   });
 }

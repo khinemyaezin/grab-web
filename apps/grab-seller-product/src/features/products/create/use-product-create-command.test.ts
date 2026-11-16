@@ -9,6 +9,10 @@ const mockAwaitWorkflow = vi.fn();
 const mockResolveWorkflowProductId = vi.fn();
 const mockUseWorkflowAwaiter = vi.fn();
 
+vi.mock("@khinemyaezin/seller-ui", () => ({
+  useApi: () => ({}),
+}));
+
 vi.mock("@/features/products/api/use-products", () => ({
   useCreateSellableProductMutation: () => ({
     mutateAsync: mockMutateAsync,

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useApi } from "@khinemyaezin/seller-ui";
 import { itemService } from "./item";
 import { resolveUrlTemplate } from "@khinemyaezin/seller-api";
 import type { HateoasLink, Pageable } from "@khinemyaezin/seller-api";
@@ -27,15 +28,17 @@ import type {
 import { useInventoryLink } from "./use-root";
 
 export function useItems(searchLink?: HateoasLink, filters?: ItemsFilterForm & Pageable) {
+  const api = useApi();
   return useQuery<InventoryItemsResponse>({
     queryKey: ["inventory-items", searchLink?.href, filters],
-    queryFn: () => itemService.searchItems(searchLink!, filters),
+    queryFn: () => itemService.searchItems(api, searchLink!, filters),
     enabled: !!searchLink,
     staleTime: 1000 * 60 * 5,
   });
 }
 
 export function useInventoryExistence(locationId?: string, skus?: string[]) {
+  const api = useApi();
   const checkExistenceLink = useInventoryLink("checkInventoryExistence");
   const uniqueSkus = Array.from(new Set((skus ?? []).map((sku) => sku.trim()).filter(Boolean))).slice(0, 100);
   const request: CheckInventoryExistenceRequest = {
@@ -44,46 +47,50 @@ export function useInventoryExistence(locationId?: string, skus?: string[]) {
   };
   return useQuery<CheckInventoryExistenceResponse>({
     queryKey: ["inventory-items", "existence", locationId, uniqueSkus],
-    queryFn: () => itemService.checkExistence(checkExistenceLink!, request),
+    queryFn: () => itemService.checkExistence(api, checkExistenceLink!, request),
     enabled: !!checkExistenceLink,
     staleTime: 1000 * 60,
   });
 }
 
 export function useItem(link?: HateoasLink, itemId?: string) {
+  const api = useApi();
   const expandedLink = link && itemId
     ? resolveUrlTemplate({ inventoryItemId: itemId }, link)
     : undefined;
 
   return useQuery<InventoryItemResponse>({
     queryKey: ["inventory-item", itemId],
-    queryFn: () => itemService.getItem(expandedLink!),
+    queryFn: () => itemService.getItem(api, expandedLink!),
     enabled: !!expandedLink,
   });
 }
 
 export function useItemMovements(link?: HateoasLink, pageable?: Pageable) {
+  const api = useApi();
   return useQuery<StockMovementsResponse>({
     queryKey: ["inventory-item-movements", link?.href, pageable],
-    queryFn: () => itemService.getMovements(link!, pageable),
+    queryFn: () => itemService.getMovements(api, link!, pageable),
     enabled: !!link,
     staleTime: 1000 * 60,
   });
 }
 
 export function useItemReservations(link?: HateoasLink, pageable?: Pageable) {
+  const api = useApi();
   return useQuery<InventoryReservationsResponse>({
     queryKey: ["inventory-item-reservations", link?.href, pageable],
-    queryFn: () => itemService.getReservations(link!, pageable),
+    queryFn: () => itemService.getReservations(api, link!, pageable),
     enabled: !!link,
     staleTime: 1000 * 60,
   });
 }
 
 export function useCreateItemMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: CreateInventoryRequest }>({
-    mutationFn: ({ link, request }) => itemService.createItem(link, request),
+    mutationFn: ({ link, request }) => itemService.createItem(api, link, request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inventory-items"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-items-for-variant-id"] });
@@ -93,9 +100,10 @@ export function useCreateItemMutation() {
 }
 
 export function useReceiveStockMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: ReceiveStockRequest }>({
-    mutationFn: ({ link, request }) => itemService.receiveStock(link, request),
+    mutationFn: ({ link, request }) => itemService.receiveStock(api, link, request),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["inventory-items"] });
       queryClient.invalidateQueries({ queryKey: ["inventory-item", data.id] });
@@ -105,9 +113,10 @@ export function useReceiveStockMutation() {
 }
 
 export function useAdjustStockMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: AdjustStockRequest }>({
-    mutationFn: ({ link, request }) => itemService.adjustStock(link, request),
+    mutationFn: ({ link, request }) => itemService.adjustStock(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
@@ -122,57 +131,64 @@ function invalidateItemQueries(queryClient: ReturnType<typeof useQueryClient>, i
 }
 
 export function useMarkDamagedMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: MarkDamagedRequest }>({
-    mutationFn: ({ link, request }) => itemService.markDamaged(link, request),
+    mutationFn: ({ link, request }) => itemService.markDamaged(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
 
 export function useWriteOffMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: WriteOffStockRequest }>({
-    mutationFn: ({ link, request }) => itemService.writeOff(link, request),
+    mutationFn: ({ link, request }) => itemService.writeOff(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
 
 export function useReturnToVendorMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: ReturnToVendorRequest }>({
-    mutationFn: ({ link, request }) => itemService.returnToVendor(link, request),
+    mutationFn: ({ link, request }) => itemService.returnToVendor(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
 
 export function useSuspendInventoryMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink }>({
-    mutationFn: ({ link }) => itemService.suspend(link),
+    mutationFn: ({ link }) => itemService.suspend(api, link),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
 
 export function useActivateInventoryMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink }>({
-    mutationFn: ({ link }) => itemService.activate(link),
+    mutationFn: ({ link }) => itemService.activate(api, link),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
 
 export function useDiscontinueInventoryMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink }>({
-    mutationFn: ({ link }) => itemService.discontinue(link),
+    mutationFn: ({ link }) => itemService.discontinue(api, link),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
 
 export function useTransferInventoryMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<TransferInventoryResponse, Error, { link: HateoasLink; request: TransferInventoryRequest }>({
-    mutationFn: ({ link, request }) => itemService.transfer(link, request),
+    mutationFn: ({ link, request }) => itemService.transfer(api, link, request),
     onSuccess: (data) => {
       invalidateItemQueries(queryClient, data.source.id);
       invalidateItemQueries(queryClient, data.destination.id);
@@ -181,25 +197,28 @@ export function useTransferInventoryMutation() {
 }
 
 export function useAnnounceInTransitMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: AnnounceInTransitRequest }>({
-    mutationFn: ({ link, request }) => itemService.announceInTransit(link, request),
+    mutationFn: ({ link, request }) => itemService.announceInTransit(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
 
 export function useReceiveInTransitMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: ReceiveInTransitRequest }>({
-    mutationFn: ({ link, request }) => itemService.receiveInTransit(link, request),
+    mutationFn: ({ link, request }) => itemService.receiveInTransit(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
 }
 
 export function useUpdateReorderConfigMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: UpdateReorderConfigRequest }>({
-    mutationFn: ({ link, request }) => itemService.updateReorderConfig(link, request),
+    mutationFn: ({ link, request }) => itemService.updateReorderConfig(api, link, request),
     onSuccess: (data) => {
       invalidateItemQueries(queryClient, data.id);
       queryClient.invalidateQueries({ queryKey: ["reorder-suggestions"] });
@@ -208,18 +227,20 @@ export function useUpdateReorderConfigMutation() {
 }
 
 export function useReorderSuggestions(link?: HateoasLink, params?: { locationId?: string; sku?: string }) {
+  const api = useApi();
   return useQuery<ReorderSuggestionsResponse>({
     queryKey: ["reorder-suggestions", link?.href, params],
-    queryFn: () => itemService.getReorderSuggestions(link!, params),
+    queryFn: () => itemService.getReorderSuggestions(api, link!, params),
     enabled: !!link,
     staleTime: 1000 * 60,
   });
 }
 
 export function useInventorySummary(link?: HateoasLink, locationId?: string) {
+  const api = useApi();
   return useQuery<InventorySummaryResponse>({
     queryKey: ["inventory-summary", link?.href, locationId ?? null],
-    queryFn: () => itemService.getSummary(link!, locationId),
+    queryFn: () => itemService.getSummary(api, link!, locationId),
     enabled: !!link,
     staleTime: 1000 * 60,
   });

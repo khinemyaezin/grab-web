@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { useApi } from "@khinemyaezin/seller-ui";
 import { catalogService } from ".";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 import type {
@@ -39,39 +40,43 @@ export function invalidateProductQueries(queryClient: QueryClient, productId?: s
 }
 
 export function useCreateSellableProductMutation() {
+  const api = useApi();
   return useMutation<
     CreateSellableProductResponse,
     Error,
     { link: HateoasLink; request: CreateSellableProductRequest }
   >({
-    mutationFn: ({ link, request }) => catalogService.createSellableProduct(link, request),
+    mutationFn: ({ link, request }) => catalogService.createSellableProduct(api, link, request),
   });
 }
 
 export function useUpdateSellableProductMutation() {
+  const api = useApi();
   return useMutation<
     UpdateSellableProductResponse,
     Error,
     { link: HateoasLink; request: UpdateSellableProductRequest }
   >({
-    mutationFn: ({ link, request }) => catalogService.updateSellableProduct(link, request),
+    mutationFn: ({ link, request }) => catalogService.updateSellableProduct(api, link, request),
   });
 }
 
 export function useUpdateProductVariantMutation() {
+  const api = useApi();
   return useMutation<
     UpdateProductVariantResponse,
     Error,
     { link: HateoasLink; request: UpdateProductVariantRequest }
   >({
-    mutationFn: ({ link, request }) => catalogService.updateProductVariant(link, request),
+    mutationFn: ({ link, request }) => catalogService.updateProductVariant(api, link, request),
   });
 }
 
 export function useProductUpdateMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<UpdateProductResponse, Error, { link: HateoasLink; request: UpdateProductRequest }>({
-    mutationFn: ({ link, request }) => catalogService.updateProduct(link, request),
+    mutationFn: ({ link, request }) => catalogService.updateProduct(api, link, request),
     onSuccess: () => {
       invalidateProductsQueries(queryClient);
     },
@@ -79,9 +84,10 @@ export function useProductUpdateMutation() {
 }
 
 export function useProductDeleteMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<DeleteProductResponse, Error, { link: HateoasLink }>({
-    mutationFn: ({ link }) => catalogService.deleteProduct(link),
+    mutationFn: ({ link }) => catalogService.deleteProduct(api, link),
     onSuccess: (resp) => {
       invalidateProductQueries(queryClient, resp.productId);
     },
@@ -89,9 +95,10 @@ export function useProductDeleteMutation() {
 }
 
 export function useProductRestoreMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<ProductModerationResponse, Error, { link: HateoasLink }>({
-    mutationFn: ({ link }) => catalogService.restoreProduct(link),
+    mutationFn: ({ link }) => catalogService.restoreProduct(api, link),
     onSuccess: (resp) => {
       invalidateProductQueries(queryClient, resp.productId);
     },
@@ -99,9 +106,10 @@ export function useProductRestoreMutation() {
 }
 
 export function useProductVariantDeleteMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<void, Error, { link: HateoasLink; productId?: string }>({
-    mutationFn: ({ link }) => catalogService.deleteProductVariant(link),
+    mutationFn: ({ link }) => catalogService.deleteProductVariant(api, link),
     onSuccess: (_, variables) => {
       invalidateProductsQueries(queryClient);
       if (variables.productId) {
@@ -112,9 +120,10 @@ export function useProductVariantDeleteMutation() {
 }
 
 export function useProductVariantRestoreMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<void, Error, { link: HateoasLink; productId?: string }>({
-    mutationFn: ({ link }) => catalogService.restoreProductVariant(link),
+    mutationFn: ({ link }) => catalogService.restoreProductVariant(api, link),
     onSuccess: (_, variables) => {
       invalidateProductsQueries(queryClient);
       if (variables.productId) {
@@ -125,13 +134,14 @@ export function useProductVariantRestoreMutation() {
 }
 
 export function useProductSearch(productsLink: HateoasLink, filters: ProductFilterFormValue) {
+  const api = useApi();
   const request: ProductSearchRequest = {
     ...filters,
     productStatus: filters.productStatus || undefined,
   };
   return useQuery<ProductSearchResponse>({
     queryKey: ["products", "search", productsLink?.href, filters],
-    queryFn: async () => catalogService.searchProducts(productsLink!, request),
+    queryFn: async () => catalogService.searchProducts(api, productsLink!, request),
     enabled: !!productsLink,
     placeholderData: (previousData) => previousData,
     staleTime: 5 * 60 * 1000,
@@ -139,10 +149,11 @@ export function useProductSearch(productsLink: HateoasLink, filters: ProductFilt
 }
 
 export function useProductGet(productLink: HateoasLink | undefined, productId: string) {
+  const api = useApi();
   const extendedLink = productLink && resolveUrlTemplate({ productId }, productLink);
   return useQuery<GetFullProductResponse, Error>({
     queryKey: ["product", productId],
-    queryFn: async () => catalogService.getFullProduct(extendedLink!),
+    queryFn: async () => catalogService.getFullProduct(api, extendedLink!),
     enabled: !!productLink,
     staleTime: 5 * 60 * 1000,
   });
@@ -152,6 +163,7 @@ export function useProductVariantGet(
   variantLink: HateoasLink | undefined,
   request: GetVariantRequest,
 ) {
+  const api = useApi();
   const extendedLink =
     variantLink &&
     resolveUrlTemplate(
@@ -160,17 +172,18 @@ export function useProductVariantGet(
     );
   return useQuery<GetVariantResponse, Error>({
     queryKey: ["product", request.productId, "variant", request.variantId],
-    queryFn: async () => catalogService.getVariant(extendedLink!),
+    queryFn: async () => catalogService.getVariant(api, extendedLink!),
     enabled: !!variantLink && !!request.productId && !!request.variantId,
     staleTime: 5 * 60 * 1000,
   });
 }
 
 export function useProductPublishMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
 
   return useMutation<ProductModerationResponse, Error, { link: HateoasLink }>({
-    mutationFn: ({ link }) => catalogService.publishProduct(link),
+    mutationFn: ({ link }) => catalogService.publishProduct(api, link),
     onSuccess: (resp) => {
       invalidateProductQueries(queryClient, resp.productId);
     },
@@ -178,10 +191,11 @@ export function useProductPublishMutation() {
 }
 
 export function useProductSuspendMutation() {
+  const api = useApi();
   const queryClient = useQueryClient();
 
   return useMutation<ProductModerationResponse, Error, { link: HateoasLink }>({
-    mutationFn: ({ link }) => catalogService.suspendProduct(link),
+    mutationFn: ({ link }) => catalogService.suspendProduct(api, link),
     onSuccess: (resp) => {
       invalidateProductQueries(queryClient, resp.productId);
     },

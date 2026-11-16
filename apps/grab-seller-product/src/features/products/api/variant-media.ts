@@ -1,4 +1,5 @@
 import { catalogService } from "./catalog";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 import { isVariantMediaDirty } from "@/features/products/lib/variant-media";
 
@@ -8,6 +9,7 @@ export type VariantMediaSyncResult =
   | { status: "failed"; error: Error };
 
 export type AttachVariantMediaOptions = {
+  api: PlatformApiClient;
   link?: HateoasLink;
   mediaIds: string[];
   thumbnailMediaId?: string | null;
@@ -20,6 +22,7 @@ function toError(error: unknown): Error {
 }
 
 export async function attachVariantMedia({
+  api,
   link,
   mediaIds,
   thumbnailMediaId,
@@ -38,7 +41,7 @@ export async function attachVariantMedia({
   }
 
   try {
-    await catalogService.setVariantMedia(link, {
+    await catalogService.setVariantMedia(api, link, {
       mediaIds,
       thumbnailMediaId: thumbnailMediaId ?? mediaIds[0] ?? null,
     });

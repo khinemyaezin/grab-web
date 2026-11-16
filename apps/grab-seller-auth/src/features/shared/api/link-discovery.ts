@@ -1,5 +1,6 @@
 import { IdentityLinks } from "@/features/shared/types/identity-model";
-import { api, HalLinks, HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
+import { HalLinks, HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 
 const convertToModel = (resp: { _links: HalLinks }): IdentityLinks => {
     return {
@@ -14,7 +15,7 @@ const convertToModel = (resp: { _links: HalLinks }): IdentityLinks => {
 };
 
 const linkDiscoveryService = {
-    root: async (link: HateoasLink): Promise<IdentityLinks> => {
+    root: async (api: PlatformApiClient, link: HateoasLink): Promise<IdentityLinks> => {
         return api.followLink<{ _links: HalLinks }>(link, "GET", undefined, undefined, undefined, { retryOnUnauthorized: false })
             .then(convertToModel)
     }

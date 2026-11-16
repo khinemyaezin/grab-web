@@ -81,6 +81,13 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {},
     },
+    optimizeDeps: {
+      exclude: [
+        "@khinemyaezin/seller-contracts",
+        "@khinemyaezin/seller-api",
+        "@khinemyaezin/seller-ui",
+      ],
+    },
     server: {
       port: 3000,
       origin: env.VITE_ORIGIN,

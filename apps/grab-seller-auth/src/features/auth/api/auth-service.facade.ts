@@ -1,4 +1,5 @@
 import type { HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import { authService } from "./auth";
 import type { IdentityLinks } from "../../shared/types/identity-model";
 import { linkDiscoveryService } from "@/features/shared/api/link-discovery";
@@ -10,12 +11,12 @@ export interface AuthServiceFacade {
   refreshToken(): Promise<void>;
 }
 
-export function createAuthService(entryLink: HateoasLink): AuthServiceFacade {
+export function createAuthService(api: PlatformApiClient, entryLink: HateoasLink): AuthServiceFacade {
   let discoveryPromise: Promise<IdentityLinks> | null = null;
 
   function ensureDiscovery(): Promise<IdentityLinks> {
     if (!discoveryPromise) {
-      discoveryPromise = linkDiscoveryService.root(entryLink).catch((error) => {
+      discoveryPromise = linkDiscoveryService.root(api, entryLink).catch((error) => {
         discoveryPromise = null;
         throw error;
       });
@@ -29,7 +30,7 @@ export function createAuthService(entryLink: HateoasLink): AuthServiceFacade {
       if (!root.getProfile) {
         throw new Error("Identity root does not expose a 'get-profile' link");
       }
-      return authService.readProfile(root.getProfile).then(res => {
+      return authService.readProfile(api, root.getProfile).then(res => {
         const user: UserProfile = {
           id: res.id,
           email: res.email,
@@ -48,7 +49,7 @@ export function createAuthService(entryLink: HateoasLink): AuthServiceFacade {
       if (!root.logout) {
         throw new Error("Identity root does not expose a 'logout' link");
       }
-      return authService.logout(root.logout);
+      return authService.logout(api, root.logout);
     },
 
     async refreshToken(): Promise<void> {
@@ -56,7 +57,7 @@ export function createAuthService(entryLink: HateoasLink): AuthServiceFacade {
       if (!root.refreshToken) {
         throw new Error("Identity root does not expose a 'refresh' link");
       }
-      return authService.refreshToken(root.refreshToken);
+      return authService.refreshToken(api, root.refreshToken);
     },
   };
 }

@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
-import { configureApi } from "@khinemyaezin/seller-api";
+import { createApiClient } from "@khinemyaezin/seller-api";
 import { server } from "@/test/server";
 import { fetchCatalogRoot } from "./discovery";
 
 describe("catalog discovery", () => {
   it("maps all catalog HAL relations into the CatalogRoot contract", async () => {
-    configureApi({ baseUrl: "http://api.test" });
+    const api = createApiClient({ baseUrl: "http://api.test" });
     server.use(http.get("http://api.test/catalog", () => HttpResponse.json({
       _links: {
         self: { href: "/catalog" },
@@ -29,7 +29,7 @@ describe("catalog discovery", () => {
       },
     }, { headers: { "content-type": "application/hal+json" } })));
 
-    const root = await fetchCatalogRoot({ href: "/catalog" });
+    const root = await fetchCatalogRoot(api, { href: "/catalog" });
     
     expect(root.self?.href).toBe("/catalog");
     expect(root.searchProducts?.href).toBe("/catalog/products/search");

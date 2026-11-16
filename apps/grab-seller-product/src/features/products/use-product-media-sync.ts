@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
+import { useApi } from "@khinemyaezin/seller-ui";
 import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import {
   attachProductMedia,
@@ -34,6 +35,7 @@ export function useProductMediaSync({
   seed = EMPTY_SEED,
   actions,
 }: UseProductMediaSyncOptions = {}): UseProductMediaSyncResult {
+  const api = useApi();
   const { getValues, setValue } = useFormContext<ProductFormValue>();
   const rootUploadLink = useCatalogLink("createStagedMediaUpload");
   const rootReplaceLink = useCatalogLink("replaceProductMedia");
@@ -63,6 +65,7 @@ export function useProductMediaSync({
 
       try {
         await stageProductMedia({
+          api,
           items,
           createUploadLink: rootUploadLink,
           onItemStatus: (id, status, error) => {
@@ -76,7 +79,7 @@ export function useProductMediaSync({
       } catch (error) {
         return { status: "failed", error: toError(error) };
       }
-    }, [getValues, patchItem, rootUploadLink]
+    }, [api, getValues, patchItem, rootUploadLink]
   );
 
   const attach = useCallback(
@@ -95,6 +98,7 @@ export function useProductMediaSync({
 
       try {
         await attachProductMedia({
+          api,
           productId,
           items,
           seed,
@@ -105,7 +109,7 @@ export function useProductMediaSync({
         return { status: "failed", error: toError(error) };
       }
     },
-    [actions, getValues, rootReplaceLink, seed],
+    [actions, api, getValues, rootReplaceLink, seed],
   );
 
   return { stage, attach };

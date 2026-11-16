@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createAuthService } from "./auth-service.facade";
 import { authService } from "./auth";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { IdentityLinks } from "../../shared/types/identity-model";
 import { linkDiscoveryService } from "@/features/shared/api/link-discovery";
 
@@ -20,6 +21,7 @@ vi.mock("./auth", () => ({
 }));
 
 describe("AuthServiceFacade", () => {
+  const mockApi = {} as PlatformApiClient;
   const mockEntryLink: HateoasLink = { href: "/api/identity" };
   const mockIdentityRoot: IdentityLinks = {
     getProfile: { href: "/api/profile" },
@@ -45,13 +47,13 @@ describe("AuthServiceFacade", () => {
         _links: {}
       });
 
-      const facade = createAuthService(mockEntryLink);
+      const facade = createAuthService(mockApi, mockEntryLink);
 
       await facade.getProfile();
       await facade.getProfile();
 
       expect(linkDiscoveryService.root).toHaveBeenCalledTimes(1);
-      expect(linkDiscoveryService.root).toHaveBeenCalledWith(mockEntryLink);
+      expect(linkDiscoveryService.root).toHaveBeenCalledWith(mockApi, mockEntryLink);
     });
 
     it("does not cache the discovery result on failure", async () => {
@@ -60,7 +62,7 @@ describe("AuthServiceFacade", () => {
         .mockRejectedValueOnce(error)
         .mockResolvedValueOnce(mockIdentityRoot);
 
-      const facade = createAuthService(mockEntryLink);
+      const facade = createAuthService(mockApi, mockEntryLink);
 
       await expect(facade.getProfile()).rejects.toThrow(error);
 
@@ -95,10 +97,10 @@ describe("AuthServiceFacade", () => {
         _links: {}
       });
 
-      const facade = createAuthService(mockEntryLink);
+      const facade = createAuthService(mockApi, mockEntryLink);
       const user = await facade.getProfile();
 
-      expect(authService.readProfile).toHaveBeenCalledWith(mockIdentityRoot.getProfile);
+      expect(authService.readProfile).toHaveBeenCalledWith(mockApi, mockIdentityRoot.getProfile);
       expect(user).toEqual({
         id: "u-123",
         email: "test@example.com",
@@ -112,7 +114,7 @@ describe("AuthServiceFacade", () => {
 
     it("throws if identity root does not expose get-profile", async () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce({} as IdentityLinks);
-      const facade = createAuthService(mockEntryLink);
+      const facade = createAuthService(mockApi, mockEntryLink);
 
       await expect(facade.getProfile()).rejects.toThrow("Identity root does not expose a 'get-profile' link");
     });
@@ -123,15 +125,15 @@ describe("AuthServiceFacade", () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce(mockIdentityRoot);
       vi.mocked(authService.logout).mockResolvedValueOnce(undefined);
 
-      const facade = createAuthService(mockEntryLink);
+      const facade = createAuthService(mockApi, mockEntryLink);
       await facade.logout();
 
-      expect(authService.logout).toHaveBeenCalledWith(mockIdentityRoot.logout);
+      expect(authService.logout).toHaveBeenCalledWith(mockApi, mockIdentityRoot.logout);
     });
 
     it("throws if identity root does not expose logout", async () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce({} as IdentityLinks);
-      const facade = createAuthService(mockEntryLink);
+      const facade = createAuthService(mockApi, mockEntryLink);
 
       await expect(facade.logout()).rejects.toThrow("Identity root does not expose a 'logout' link");
     });
@@ -142,15 +144,15 @@ describe("AuthServiceFacade", () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce(mockIdentityRoot);
       vi.mocked(authService.refreshToken).mockResolvedValueOnce(undefined);
 
-      const facade = createAuthService(mockEntryLink);
+      const facade = createAuthService(mockApi, mockEntryLink);
       await facade.refreshToken();
 
-      expect(authService.refreshToken).toHaveBeenCalledWith(mockIdentityRoot.refreshToken);
+      expect(authService.refreshToken).toHaveBeenCalledWith(mockApi, mockIdentityRoot.refreshToken);
     });
 
     it("throws if identity root does not expose refresh", async () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce({} as IdentityLinks);
-      const facade = createAuthService(mockEntryLink);
+      const facade = createAuthService(mockApi, mockEntryLink);
 
       await expect(facade.refreshToken()).rejects.toThrow("Identity root does not expose a 'refresh' link");
     });

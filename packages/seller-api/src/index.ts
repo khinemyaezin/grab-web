@@ -6,3 +6,4 @@ export * from "./events/index.js";
 export * from "./module-discovery.js";
 export * from "./storage.js";
 export * from "./media-staging.js";
+export * from "./standalone.js";
