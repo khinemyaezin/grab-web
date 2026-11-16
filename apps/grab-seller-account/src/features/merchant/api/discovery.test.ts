@@ -7,16 +7,23 @@ import { fetchMerchantRoot } from "./discovery";
 describe("merchant discovery", () => {
   it("maps merchant HAL relations including storefronts", async () => {
     const api = createApiClient({ baseUrl: "http://api.test" });
-    server.use(http.get("http://api.test/merchants", () => HttpResponse.json({
-      _links: {
-        self: { href: "/merchants" },
-        "list-merchants": { href: "/merchants/accounts" },
-        "get-merchant": { href: "/api/v1/merchants/{merchantId}", templated: true },
-        "list-storefronts": { href: "/merchants/storefronts" },
-        "create-storefront": { href: "/merchants/storefronts" },
-        "get-storefront": { href: "/merchants/storefronts/{id}", templated: true },
-      },
-    }, { headers: { "content-type": "application/hal+json" } })));
+    server.use(
+      http.get("http://api.test/merchants", () =>
+        HttpResponse.json(
+          {
+            _links: {
+              self: { href: "/merchants" },
+              "list-merchants": { href: "/merchants/accounts" },
+              "get-merchant": { href: "/api/v1/merchants/{merchantId}", templated: true },
+              "list-storefronts": { href: "/merchants/storefronts" },
+              "create-storefront": { href: "/merchants/storefronts" },
+              "get-storefront": { href: "/merchants/storefronts/{id}", templated: true },
+            },
+          },
+          { headers: { "content-type": "application/hal+json" } },
+        ),
+      ),
+    );
 
     const root = await fetchMerchantRoot(api, { href: "/merchants" });
     expect(root.listStorefronts?.href).toBe("/merchants/storefronts");

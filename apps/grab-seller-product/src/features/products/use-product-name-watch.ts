@@ -3,20 +3,18 @@ import { ProductFormValue, ProductLifecycleEvent } from "@/features/products/typ
 import { useEffect } from "react";
 
 type UseProductNameWatchProps = {
-    onLifecycleEvent?: (event: ProductLifecycleEvent) => void;
+  onLifecycleEvent?: (event: ProductLifecycleEvent) => void;
 };
-export default function useProductNameWatch({
-    onLifecycleEvent,
-}: UseProductNameWatchProps) {
-    const { control } = useFormContext<ProductFormValue>();
-    const name = useWatch({
-        control,
-        name: "product.name",
-    });
+export default function useProductNameWatch({ onLifecycleEvent }: UseProductNameWatchProps) {
+  const { control } = useFormContext<ProductFormValue>();
+  const name = useWatch({
+    control,
+    name: "product.name",
+  });
 
-    useEffect(() => {
-        if (name !== undefined) {
-            onLifecycleEvent?.({ type: "titleResolved", title: name });
-        }
-    }, [name, onLifecycleEvent]);
+  useEffect(() => {
+    if (name !== undefined) {
+      onLifecycleEvent?.({ type: "titleResolved", title: name });
+    }
+  }, [name, onLifecycleEvent]);
 }

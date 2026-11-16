@@ -43,9 +43,7 @@ export default function ItemReservationsTable({ link }: ItemReservationsTablePro
               </TableCell>
               <TableCell>{reservation.quantity}</TableCell>
               <TableCell>
-                <Badge >
-                  {reservation.status}
-                </Badge>
+                <Badge>{reservation.status}</Badge>
               </TableCell>
               <TableCell className="text-muted-foreground">
                 {reservation.expiresAt ? formatDate(reservation.expiresAt) : "—"}

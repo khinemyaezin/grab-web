@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { federation } from "@module-federation/vite";
-import tailwindcss from '@tailwindcss/vite'
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -18,19 +18,22 @@ export default defineConfig(({ mode }) => {
         filename: "remoteEntry.js",
         manifest: true,
         bundleAllCSS: true,
-        dts: process.env.MF_DTS === "0" ? false : {
-          generateTypes: {
-            tsConfigPath: "./tsconfig.app.json",
-            abortOnError: true,
-          },
-        },
+        dts:
+          process.env.MF_DTS === "0"
+            ? false
+            : {
+                generateTypes: {
+                  tsConfigPath: "./tsconfig.app.json",
+                  abortOnError: true,
+                },
+              },
         exposes: {
           "./Routes": "./src/app/AuthRoutes.tsx",
           "./AuthService": "./src/features/auth/api/auth-service.facade.ts",
-          "./UserMenuWidget": "./src/features/auth/components/user-menu-widget-exposed.tsx"
+          "./UserMenuWidget": "./src/features/auth/components/user-menu-widget-exposed.tsx",
         },
         shared: {
-          "react": { singleton: true, requiredVersion: "19.2.4" },
+          react: { singleton: true, requiredVersion: "19.2.4" },
           "react-dom": { singleton: true, requiredVersion: "19.2.4" },
           "react-router": { singleton: true, requiredVersion: "7.18.0" },
           "react-hook-form": { singleton: true, requiredVersion: "7.74.0" },
@@ -52,12 +55,11 @@ export default defineConfig(({ mode }) => {
           xfwd: true,
           timeout: 0,
           proxyTimeout: 0,
-          headers: { "X-Platform": "SELLER_PORTAL" }
-        }
+          headers: { "X-Platform": "SELLER_PORTAL" },
+        },
       },
     },
     preview: { port: 3003 },
     build: { target: "chrome111", cssCodeSplit: false },
-  }
+  };
 });
-

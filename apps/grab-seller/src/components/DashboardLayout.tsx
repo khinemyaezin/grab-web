@@ -22,10 +22,15 @@ export function DashboardLayout() {
   return (
     <PlatformProvider platform={platform}>
       <TooltipProvider>
-        <SidebarProvider className="flex flex-col" style={{
-          "--sidebar-width": "calc(var(--spacing) * 64)",
-          "--header-height": "calc(var(--spacing) * 12 + 1px)"
-        } as Record<string, string>}>
+        <SidebarProvider
+          className="flex flex-col"
+          style={
+            {
+              "--sidebar-width": "calc(var(--spacing) * 64)",
+              "--header-height": "calc(var(--spacing) * 12 + 1px)",
+            } as Record<string, string>
+          }
+        >
           <div className="flex flex-1">
             <AdminSidebar />
             <main className="min-h-screen flex-1 bg-background dark:bg-black">
@@ -35,7 +40,6 @@ export function DashboardLayout() {
               <Outlet />
             </main>
           </div>
-
         </SidebarProvider>
       </TooltipProvider>
     </PlatformProvider>

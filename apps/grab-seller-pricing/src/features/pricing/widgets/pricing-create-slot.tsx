@@ -7,9 +7,7 @@ import { InlinePricingFields } from "@/features/pricing/ui/inline-pricing-fields
 import { PricingFields } from "@/features/pricing/ui/pricing-fields";
 import { PricingCreateForm } from "./pricing-create-form";
 
-export function PricingCreateSlot(
-  props: SlotWidgetProps<PricingCreateContext, PricingPayload>,
-) {
+export function PricingCreateSlot(props: SlotWidgetProps<PricingCreateContext, PricingPayload>) {
   const Fields = props.variant === "inline" ? InlinePricingFields : PricingFields;
   return (
     <PricingCreateForm

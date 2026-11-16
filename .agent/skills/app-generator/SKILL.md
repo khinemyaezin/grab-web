@@ -14,6 +14,7 @@ Use this skill when scaffolding a new remote or host Micro-Frontend (MFE) applic
 Initialize a Vite + React + TypeScript application with the following standard dependencies:
 
 ### Core Framework & Tooling:
+
 - React (`v19.2.4`)
 - React DOM (`v19.2.4`)
 - TypeScript (`v5.9.3`)
@@ -22,12 +23,14 @@ Initialize a Vite + React + TypeScript application with the following standard d
 - `@module-federation/vite` (`v1.16.9`)
 
 ### Data Fetching & Form Management:
+
 - `@tanstack/react-query` (`v5.99.2`)
 - `react-hook-form` (`v7.74.0`)
 - `zod` (`v4.3.6`)
 - `@hookform/resolvers` (`v5.2.2`)
 
 ### Styling & UI:
+
 - Tailwind CSS (`v4.1.18`) + `@tailwindcss/vite`
 - `shadcn` (`v4.3.1`)
 - `lucide-react`
@@ -35,12 +38,14 @@ Initialize a Vite + React + TypeScript application with the following standard d
 - `sonner`
 
 ### Testing:
+
 - `vitest`
 - `@testing-library/react`
 - `@testing-library/jest-dom`
 - `msw` (Mock Service Worker)
 
 ### Internal Grab Platform Libraries:
+
 - `@khinemyaezin/seller-api` (v1.0.0)
 - `@khinemyaezin/seller-contracts` (v1.0.0)
 
@@ -49,6 +54,7 @@ Initialize a Vite + React + TypeScript application with the following standard d
 ## 2. Configuration Files
 
 ### `vite.config.ts`
+
 Configure Module Federation, aliases, proxies, and shared singletons:
 
 ```ts
@@ -79,7 +85,7 @@ export default defineConfig(({ mode }) => {
         },
         exposes: { "./Routes": "./src/app/AppRoutes.tsx" },
         shared: {
-          "react": { singleton: true, requiredVersion: "19.2.4" },
+          react: { singleton: true, requiredVersion: "19.2.4" },
           "react-dom": { singleton: true, requiredVersion: "19.2.4" },
           "react-router": { singleton: true, requiredVersion: "7.18.0" },
           "react-hook-form": { singleton: true, requiredVersion: "7.74.0" },
@@ -113,6 +119,7 @@ export default defineConfig(({ mode }) => {
 ```
 
 ### `package.json` Standard Scripts
+
 ```json
 {
   "scripts": {
@@ -128,6 +135,7 @@ export default defineConfig(({ mode }) => {
 ```
 
 ### `src/styles.css`
+
 ```css
 @import "tailwindcss";
 @import "tw-animate-css";

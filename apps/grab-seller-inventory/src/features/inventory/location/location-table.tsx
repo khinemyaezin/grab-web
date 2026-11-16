@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -11,11 +10,23 @@ import {
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { Link } from "react-router";
 import { hasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@khinemyaezin/seller-ui/components/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@khinemyaezin/seller-ui/components/dropdown-menu";
 import { Ellipsis } from "lucide-react";
 import { Button } from "@khinemyaezin/seller-ui/components/index";
 import { Pager } from "@khinemyaezin/seller-ui/components/pager";
-import { useLocations, useActivateLocationMutation, useDeactivateLocationMutation, useDeleteLocationMutation } from "@/features/inventory/api/use-locations";
+import {
+  useLocations,
+  useActivateLocationMutation,
+  useDeactivateLocationMutation,
+  useDeleteLocationMutation,
+} from "@/features/inventory/api/use-locations";
 
 import { useInventoryLink } from "@/features/inventory/api/use-root";
 
@@ -23,19 +34,22 @@ import { LocationLifecycleEvent, LocationResponse, HateoasLink } from "@/types";
 import type { LocationFilterFormValue } from "./use-location-filter";
 
 export type LocationTableProps = {
-  filter: LocationFilterFormValue,
+  filter: LocationFilterFormValue;
   onPageChange?: (page: number) => void;
   onLifecycleEvent?: (event: LocationLifecycleEvent) => void;
 };
 
-export default function LocationTable({ filter, onPageChange, onLifecycleEvent }: LocationTableProps) {
+export default function LocationTable({
+  filter,
+  onPageChange,
+  onLifecycleEvent,
+}: LocationTableProps) {
   const pagedLocationLink = useInventoryLink("searchLocation");
   const { data } = useLocations(pagedLocationLink, filter);
   const locations = data?._embedded?.locationResponseList ?? [];
   const showPagination = (data?.page.totalPages ?? 0) > 1;
 
-  if(locations.length == 0) 
-    return <NoLocations/>
+  if (locations.length == 0) return <NoLocations />;
 
   return (
     <Table className="[&_tr>*:first-child]:pl-(--card-spacing) [&_tr>*:last-child]:pr-(--card-spacing)">
@@ -49,15 +63,20 @@ export default function LocationTable({ filter, onPageChange, onLifecycleEvent }
         </TableRow>
       </TableHeader>
       <TableBody>
-        {locations.length > 0 ? locations.map((location, index) => (
-          <LocationTableRow
-            key={location.id}
-            location={location}
-            onLifecycleEvent={onLifecycleEvent}
-          />
-        )) : (
+        {locations.length > 0 ? (
+          locations.map((location, index) => (
+            <LocationTableRow
+              key={location.id}
+              location={location}
+              onLifecycleEvent={onLifecycleEvent}
+            />
+          ))
+        ) : (
           <TableRow>
-            <TableCell colSpan={6} className="text-muted-foreground pointer-events-none text-center">
+            <TableCell
+              colSpan={6}
+              className="text-muted-foreground pointer-events-none text-center"
+            >
               No record found.
             </TableCell>
           </TableRow>
@@ -69,14 +88,12 @@ export default function LocationTable({ filter, onPageChange, onLifecycleEvent }
             <TableCell colSpan={5}>
               <div className="flex w-full items-center justify-between py-3">
                 <span className="text-muted-foreground grow">
-                  Showing {data?.page ? data.page.number * data.page.size + 1 : 0} - {data?.page ? data.page.number * data.page.size + locations.length : 0} of {data?.page.totalElements} locations
+                  Showing {data?.page ? data.page.number * data.page.size + 1 : 0} -{" "}
+                  {data?.page ? data.page.number * data.page.size + locations.length : 0} of{" "}
+                  {data?.page.totalElements} locations
                 </span>
                 {data?.page && (
-                  <Pager
-                    className="justify-end"
-                    onPageChange={onPageChange}
-                    {...data?.page}
-                  />
+                  <Pager className="justify-end" onPageChange={onPageChange} {...data?.page} />
                 )}
               </div>
             </TableCell>
@@ -132,12 +149,10 @@ function LocationTableRow({ location, onLifecycleEvent }: LocationTableRowProps)
       <TableCell className="grid grid-rows-2 gap-1">
         <span className="font-medium">
           {hasLink(location._links, SellerApiLinks.discovery.self) ? (
-            <Link
-              to={`${location.id}/zones`}
-              className="hover:underline"
-            >
+            <Link to={`${location.id}/zones`} className="hover:underline">
               {location.code}
-            </Link>) : (
+            </Link>
+          ) : (
             <span>{location.code}</span>
           )}
         </span>
@@ -150,9 +165,7 @@ function LocationTableRow({ location, onLifecycleEvent }: LocationTableRowProps)
         {[location.address.city, location.address.country].filter(Boolean).join(", ")}
       </TableCell>
       <TableCell>
-        <Badge>
-          {location.active ? "Active" : "Inactive"}
-        </Badge>
+        <Badge>{location.active ? "Active" : "Inactive"}</Badge>
       </TableCell>
       <TableCell>
         <DropdownMenu>
@@ -163,7 +176,7 @@ function LocationTableRow({ location, onLifecycleEvent }: LocationTableRowProps)
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
-          {hasLink(location._links, SellerApiLinks.pending.editLocation) && (
+              {hasLink(location._links, SellerApiLinks.pending.editLocation) && (
                 <DropdownMenuItem asChild>
                   <Link to={location.id}>Edit</Link>
                 </DropdownMenuItem>
@@ -181,10 +194,15 @@ function LocationTableRow({ location, onLifecycleEvent }: LocationTableRowProps)
               {deleteLink && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleDelete(deleteLink, {
-                    success: "Successfully deleted",
-                    error: `Failed to delete ${location.name}`
-                  })} className="text-destructive">
+                  <DropdownMenuItem
+                    onClick={() =>
+                      handleDelete(deleteLink, {
+                        success: "Successfully deleted",
+                        error: `Failed to delete ${location.name}`,
+                      })
+                    }
+                    className="text-destructive"
+                  >
                     Delete
                   </DropdownMenuItem>
                 </>
@@ -200,9 +218,7 @@ function NoLocations() {
   return (
     <div className="flex flex-col items-center justify-center gap-1 text-center">
       <p className="text-base font-semibold text-foreground">No location found</p>
-      <p className="text-sm text-muted-foreground">
-        Try changing the filters or search term
-      </p>
+      <p className="text-sm text-muted-foreground">Try changing the filters or search term</p>
     </div>
   );
 }

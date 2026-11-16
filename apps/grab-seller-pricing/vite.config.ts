@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { federation } from "@module-federation/vite";
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -18,19 +18,22 @@ export default defineConfig(({ mode }) => {
         filename: "remoteEntry.js",
         manifest: true,
         bundleAllCSS: true,
-        dts: process.env.MF_DTS === "0" ? false : {
-          generateTypes: {
-            tsConfigPath: "./tsconfig.app.json",
-            abortOnError: true,
-          },
-        },
+        dts:
+          process.env.MF_DTS === "0"
+            ? false
+            : {
+                generateTypes: {
+                  tsConfigPath: "./tsconfig.app.json",
+                  abortOnError: true,
+                },
+              },
         exposes: {
           "./Routes": "./src/app/Routes.tsx",
           "./PricingCreateWidget": "./src/features/pricing/widgets/pricing-create-widget.tsx",
           "./PricingEditWidget": "./src/features/pricing/widgets/pricing-edit-widget.tsx",
         },
         shared: {
-          "react": { singleton: true, requiredVersion: "19.2.4" },
+          react: { singleton: true, requiredVersion: "19.2.4" },
           "react-dom": { singleton: true, requiredVersion: "19.2.4" },
           "react-router": { singleton: true, requiredVersion: "7.18.0" },
           "react-hook-form": { singleton: true, requiredVersion: "7.74.0" },
@@ -57,7 +60,7 @@ export default defineConfig(({ mode }) => {
     },
     preview: { port: 3005 },
     build: {
-      target: 'chrome111',
+      target: "chrome111",
       minify: false,
       cssCodeSplit: false,
     },

@@ -75,12 +75,7 @@ async function uploadMediaDraft<T extends MediaStagingItem>(
         contentType: item.contentType,
         sizeBytes: item.sizeBytes ?? file.size,
       });
-      await uploader(
-        upload.url,
-        file,
-        upload.requiredHeaders ?? {},
-        upload.method,
-      );
+      await uploader(upload.url, file, upload.requiredHeaders ?? {}, upload.method);
       onItemStatus?.(item.id, "done");
       return upload.storageKey;
     } catch (error) {
@@ -105,11 +100,16 @@ export async function stageMediaDrafts<T extends MediaStagingItem = MediaStaging
   const drafts = sortedMediaByRank(items).filter((item) => item.file && !item.storageKey);
 
   for (const item of drafts) {
-    const storageKey = await uploadMediaDraft(item, authorizer, uploader, maxAttempts, onItemStatus);
+    const storageKey = await uploadMediaDraft(
+      item,
+      authorizer,
+      uploader,
+      maxAttempts,
+      onItemStatus,
+    );
     uploadedKeys.set(item.id, storageKey);
     onStaged?.(item.id, storageKey);
   }
 
   return uploadedKeys;
 }
-

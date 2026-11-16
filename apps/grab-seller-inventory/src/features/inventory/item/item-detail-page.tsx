@@ -112,9 +112,7 @@ export default function ItemDetailPage() {
           </Button>
         </ButtonGroup>
       </Header>
-      {itemId && (
-        <ItemDetailView itemId={itemId} onLifecycleEvent={handleEvent} />
-      )}
+      {itemId && <ItemDetailView itemId={itemId} onLifecycleEvent={handleEvent} />}
     </div>
   );
 }

@@ -9,11 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@khinemyaezin/seller-ui/components/select";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@khinemyaezin/seller-ui/components/field";
+import { Field, FieldGroup, FieldLabel } from "@khinemyaezin/seller-ui/components/field";
 import { useEffect } from "react";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 import {
@@ -42,7 +38,13 @@ export default function ItemAdjustForm({
     },
     mode: "onSubmit",
   });
-  const { control, register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useAdjustStockMutation();
 
   useEffect(() => {

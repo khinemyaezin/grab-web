@@ -6,8 +6,7 @@ import { createStandalonePlatform } from "@khinemyaezin/seller-api";
 import LocationRoutes from "./LocationRoutes";
 import StockRoutes from "./StockRoutes";
 
-const inventoryUrl =
-  import.meta.env.VITE_INVENTORY_API_URL ?? import.meta.env.VITE_CATALOG_API_URL;
+const inventoryUrl = import.meta.env.VITE_INVENTORY_API_URL ?? import.meta.env.VITE_CATALOG_API_URL;
 const catalogUrl = import.meta.env.VITE_CATALOG_API_URL;
 
 export default function StandaloneApp() {

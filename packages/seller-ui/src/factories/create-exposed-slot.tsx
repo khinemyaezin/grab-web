@@ -1,8 +1,5 @@
 import { useCallback, useRef, type ComponentType } from "react";
-import type {
-  ExtensionMountProps,
-  SlotWidgetProps,
-} from "@khinemyaezin/seller-contracts";
+import type { ExtensionMountProps, SlotWidgetProps } from "@khinemyaezin/seller-contracts";
 import { EntryLinkProvider } from "../context/entry-link-provider.js";
 import { PlatformProvider } from "../context/platform-provider.js";
 

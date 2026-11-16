@@ -1,11 +1,15 @@
-
 import { Button } from "@khinemyaezin/seller-ui/components/button";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { BoxIcon, GaugeIcon, MoreHorizontalIcon, PackageIcon } from "lucide-react";
 import { hasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { Link } from "react-router";
 import type { HateoasLink, BinLifecycleEvent, BinResponse } from "@/types";
-import { useBins, useActivateBinMutation, useDeactivateBinMutation, useDeleteBinMutation } from "@/features/inventory/api/use-bins";
+import {
+  useBins,
+  useActivateBinMutation,
+  useDeactivateBinMutation,
+  useDeleteBinMutation,
+} from "@/features/inventory/api/use-bins";
 
 import {
   DropdownMenuTrigger,
@@ -33,7 +37,10 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
   const activateMutation = useActivateBinMutation();
   const deactivateMutation = useDeactivateBinMutation();
   const deleteMutation = useDeleteBinMutation();
-  const handleActivate = async (link: HateoasLink, messages: { success: string; error: string }) => {
+  const handleActivate = async (
+    link: HateoasLink,
+    messages: { success: string; error: string },
+  ) => {
     try {
       await activateMutation.mutateAsync(link);
       onLifecycleEvent?.({ type: "activated" });
@@ -42,7 +49,10 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
     }
   };
 
-  const handleDeactivate = async (link: HateoasLink, messages: { success: string; error: string }) => {
+  const handleDeactivate = async (
+    link: HateoasLink,
+    messages: { success: string; error: string },
+  ) => {
     try {
       await deactivateMutation.mutateAsync(link);
       onLifecycleEvent?.({ type: "deactivated" });
@@ -64,10 +74,7 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
     return (
       <div className="grid gap-3 sm:grid-cols-2">
         {[0, 1].map((placeholder) => (
-          <div
-            className="min-h-32 rounded-lg border bg-background p-4 shadow-xs"
-            key={placeholder}
-          >
+          <div className="min-h-32 rounded-lg border bg-background p-4 shadow-xs" key={placeholder}>
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-md bg-muted" />
               <div className="space-y-2">
@@ -88,7 +95,9 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
         <div className="space-y-1">
           <BoxIcon className="mx-auto size-5 text-muted-foreground" />
           <p className="text-sm font-medium">No bins yet</p>
-          <p className="text-xs text-muted-foreground">Create bins to track shelf capacity in this zone.</p>
+          <p className="text-xs text-muted-foreground">
+            Create bins to track shelf capacity in this zone.
+          </p>
         </div>
       </div>
     );
@@ -135,19 +144,25 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
                         )}
                         {activateLink && (
                           <DropdownMenuItem
-                            onClick={() => handleActivate(activateLink, {
-                              success: "Successfully activated",
-                              error: `Failed to activate ${bin.name}`
-                            })}>
+                            onClick={() =>
+                              handleActivate(activateLink, {
+                                success: "Successfully activated",
+                                error: `Failed to activate ${bin.name}`,
+                              })
+                            }
+                          >
                             Activate
                           </DropdownMenuItem>
                         )}
                         {deactivateLink && (
                           <DropdownMenuItem
-                            onClick={() => handleDeactivate(deactivateLink, {
-                              success: "Successfully deactivated",
-                              error: `Failed to deactivate ${bin.name}`
-                            })}>
+                            onClick={() =>
+                              handleDeactivate(deactivateLink, {
+                                success: "Successfully deactivated",
+                                error: `Failed to deactivate ${bin.name}`,
+                              })
+                            }
+                          >
                             Deactivate
                           </DropdownMenuItem>
                         )}
@@ -155,10 +170,14 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
                           <>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              onClick={() => handleDelete(deleteLink, {
-                                success: "Successfully deleted",
-                                error: `Failed to delete ${bin.name}`
-                              })} className="text-destructive">
+                              onClick={() =>
+                                handleDelete(deleteLink, {
+                                  success: "Successfully deleted",
+                                  error: `Failed to delete ${bin.name}`,
+                                })
+                              }
+                              className="text-destructive"
+                            >
                               Delete
                             </DropdownMenuItem>
                           </>
@@ -182,11 +201,7 @@ export function BinTable({ zoneId, link, filter, onPageChange, onLifecycleEvent 
         })}
       </div>
       {bins.page.totalPages > 1 && (
-        <Pager
-          className="justify-end"
-          onPageChange={onPageChange}
-          {...bins.page}
-        />
+        <Pager className="justify-end" onPageChange={onPageChange} {...bins.page} />
       )}
     </div>
   );

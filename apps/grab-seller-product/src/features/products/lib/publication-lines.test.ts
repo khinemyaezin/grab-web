@@ -102,11 +102,13 @@ describe("channelPublishedOnAllSkus", () => {
       { sku: "SKU-BLUE", salesChannelId: "mkt-1" },
     ];
     expect(channelPublishedOnAllSkus(lines, ["SKU-RED", "SKU-BLUE"], "web-1")).toBe(false);
-    expect(channelPublishedOnAllSkus(
-      [...lines, { sku: "SKU-BLUE", salesChannelId: "web-1" }],
-      ["SKU-RED", "SKU-BLUE"],
-      "web-1",
-    )).toBe(true);
+    expect(
+      channelPublishedOnAllSkus(
+        [...lines, { sku: "SKU-BLUE", salesChannelId: "web-1" }],
+        ["SKU-RED", "SKU-BLUE"],
+        "web-1",
+      ),
+    ).toBe(true);
   });
 });
 
@@ -118,11 +120,10 @@ describe("syncPublicationLinesForMatrixVariants", () => {
 
   it("copies standalone channels onto new matrix skus and drops the standalone sku", () => {
     expect(
-      syncPublicationLinesForMatrixVariants(
-        [{ sku: "MUG-1", salesChannelId: "web-1" }],
-        "MUG-1",
-        ["SKU-RED", "SKU-BLUE"],
-      ),
+      syncPublicationLinesForMatrixVariants([{ sku: "MUG-1", salesChannelId: "web-1" }], "MUG-1", [
+        "SKU-RED",
+        "SKU-BLUE",
+      ]),
     ).toEqual([
       { sku: "SKU-RED", salesChannelId: "web-1" },
       { sku: "SKU-BLUE", salesChannelId: "web-1" },

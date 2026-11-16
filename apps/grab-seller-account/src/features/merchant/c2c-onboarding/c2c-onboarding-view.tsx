@@ -1,9 +1,15 @@
-import { ApiError, HalLinks, HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
+import {
+  ApiError,
+  HalLinks,
+  HateoasLink,
+  resolveLink,
+  SellerApiLinks,
+} from "@khinemyaezin/seller-api";
 import { useEffect, useState, type ReactNode } from "react";
 import AccountBasicForm from "@/features/merchant/ui/account-basic-form";
 import AccountOnboardingSubmit from "@/features/merchant/ui/account-onboarding-submit";
 import OnboardingWizard, {
-    type OnboardingWizardStep,
+  type OnboardingWizardStep,
 } from "@/features/merchant/ui/onboarding-wizard";
 import { useC2CApplicationGet } from "@/features/merchant/api/use-account";
 import C2cAccountProfileForm from "./c2c-profile-form";
@@ -12,133 +18,140 @@ import { Skeleton } from "@khinemyaezin/seller-ui/components/index";
 import { useRoot } from "@/features/merchant/api/use-root";
 
 export type AccountOnboardingViewProps = {
-    createApplicationLink?: HateoasLink,
-    getApplicationLink?: HateoasLink,
-    onSuccess?: () => void,
-}
+  createApplicationLink?: HateoasLink;
+  getApplicationLink?: HateoasLink;
+  onSuccess?: () => void;
+};
 
 type StepId = "account-registration" | "profile-details" | "review";
 const DELAY_STEP_MS = 1200;
 
 function LockedStep({ children }: { children: ReactNode }) {
-    return (
-        <div className="rounded-lg bg-muted/40 px-4 py-5 text-sm text-muted-foreground">
-            {children}
-        </div>
-    );
+  return (
+    <div className="rounded-lg bg-muted/40 px-4 py-5 text-sm text-muted-foreground">{children}</div>
+  );
 }
 
-export default function C2cAccountOnboardingView({ createApplicationLink, getApplicationLink, onSuccess }: AccountOnboardingViewProps) {
-    const root = useRoot().data;
-    const [completeProfileLink, setCompleteProfileLink] = useState<HateoasLink | undefined>(undefined);
-    const [submitApplicationLink, setSubmitApplicationLink] = useState<HateoasLink | undefined>(undefined);
-    const { data: applicationState, error, refetch } = useC2CApplicationGet(getApplicationLink);
-    const [activeStepId, setActiveStepId] = useState<StepId | undefined>(undefined);
+export default function C2cAccountOnboardingView({
+  createApplicationLink,
+  getApplicationLink,
+  onSuccess,
+}: AccountOnboardingViewProps) {
+  const root = useRoot().data;
+  const [completeProfileLink, setCompleteProfileLink] = useState<HateoasLink | undefined>(
+    undefined,
+  );
+  const [submitApplicationLink, setSubmitApplicationLink] = useState<HateoasLink | undefined>(
+    undefined,
+  );
+  const { data: applicationState, error, refetch } = useC2CApplicationGet(getApplicationLink);
+  const [activeStepId, setActiveStepId] = useState<StepId | undefined>(undefined);
 
-    useEffect(() => {
-        if (error && error.status == 404) {
-            setActiveStepId("account-registration");
-        }
-
-        if (applicationState?.completedContactInfo) {
-            handleOnUpdateAccountSuccess(applicationState._links, 0);
-        } else if (applicationState?.completedBasicInfo) {
-            handleOnAccountRegistrationSuccess(applicationState._links, 0);
-        }
-    },
-        [applicationState, error]);
-
-    function onNextStep(id: StepId, delay: number) {
-        const timeout = window.setTimeout(() => {
-            setActiveStepId(id);
-        }, delay)
-
-        return () => {
-            clearTimeout(timeout);
-        };
+  useEffect(() => {
+    if (error && error.status === 404) {
+      setActiveStepId("account-registration");
     }
 
-    function handleOnAccountRegistrationSuccess(value: HalLinks, delayStep = DELAY_STEP_MS) {
-        const link = resolveLink(value, SellerApiLinks.merchant.updateMerchantProfile);
-        if (link) setCompleteProfileLink(link);
-        onNextStep("profile-details", delayStep)
+    if (applicationState?.completedContactInfo) {
+      handleOnUpdateAccountSuccess(applicationState._links, 0);
+    } else if (applicationState?.completedBasicInfo) {
+      handleOnAccountRegistrationSuccess(applicationState._links, 0);
     }
+  }, [applicationState, error]);
 
-    function handleOnUpdateAccountSuccess(value: HalLinks, delayStep = DELAY_STEP_MS) {
-        const link = resolveLink(value, SellerApiLinks.merchantApplication.submitMerchantApplication);
-        if (link) setSubmitApplicationLink(link);
-        onNextStep("review", delayStep)
-    }
+  function onNextStep(id: StepId, delay: number) {
+    const timeout = window.setTimeout(() => {
+      setActiveStepId(id);
+    }, delay);
 
-    function handleOnSubmitApplicationSuccess() {
-        const timeout = window.setTimeout(() => {
-            refetch();
-        }, DELAY_STEP_MS)
+    return () => {
+      clearTimeout(timeout);
+    };
+  }
 
-        return () => {
-            clearTimeout(timeout);
-        };
-    }
+  function handleOnAccountRegistrationSuccess(value: HalLinks, delayStep = DELAY_STEP_MS) {
+    const link = resolveLink(value, SellerApiLinks.merchant.updateMerchantProfile);
+    if (link) setCompleteProfileLink(link);
+    onNextStep("profile-details", delayStep);
+  }
 
-    const steps: OnboardingWizardStep<StepId>[] = [
-        {
-            id: "account-registration",
-            title: "Account Registration",
-            description: "Enter your business details to create an account",
-            content: createApplicationLink ? (
-                <AccountBasicForm
-                    link={createApplicationLink}
-                    countriesLink={root?.listRegionCountries}
-                    onSuccess={(links) => handleOnAccountRegistrationSuccess(links, DELAY_STEP_MS)}
-                />
-            ) : (
-                <LockedStep>Account setup is not available right now.</LockedStep>
-            ),
-        },
-        {
-            id: "profile-details",
-            title: "Profile details",
-            description: "Add the contact information customers can use to reach you.",
-            content: completeProfileLink ? (
-                <C2cAccountProfileForm
-                    link={completeProfileLink}
-                    onSuccess={(links) => handleOnUpdateAccountSuccess(links, DELAY_STEP_MS)}
-                />
-            ) : (
-                <LockedStep>Account setup is not available right now.</LockedStep>
-            )
-        },
-        {
-            id: "review",
-            title: "Submit for Review",
-            description: "Confirm that your account is ready to be reviewed.",
-            content: submitApplicationLink ? (
-                <AccountOnboardingSubmit
-                    link={submitApplicationLink}
-                    onSuccess={handleOnSubmitApplicationSuccess}
-                />
-            ) : (
-                <LockedStep>Account setup is not available right now.</LockedStep>
-            )
-        }
-    ];
+  function handleOnUpdateAccountSuccess(value: HalLinks, delayStep = DELAY_STEP_MS) {
+    const link = resolveLink(value, SellerApiLinks.merchantApplication.submitMerchantApplication);
+    if (link) setSubmitApplicationLink(link);
+    onNextStep("review", delayStep);
+  }
 
-    if (!activeStepId) {
-        return <div className="flex w-full max-w-xs flex-col gap-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-        </div>;
-    }
+  function handleOnSubmitApplicationSuccess() {
+    const timeout = window.setTimeout(() => {
+      refetch();
+    }, DELAY_STEP_MS);
 
-    if (applicationState?.status && applicationState?.status !== "DRAFT") {
-        return <AccountOnboardingStatus accountStatus={applicationState?.status} merchantType={applicationState?.type} />;
-    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }
 
-    return (
-        <OnboardingWizard
-            steps={steps}
-            activeStepId={activeStepId}
+  const steps: OnboardingWizardStep<StepId>[] = [
+    {
+      id: "account-registration",
+      title: "Account Registration",
+      description: "Enter your business details to create an account",
+      content: createApplicationLink ? (
+        <AccountBasicForm
+          link={createApplicationLink}
+          countriesLink={root?.listRegionCountries}
+          onSuccess={(links) => handleOnAccountRegistrationSuccess(links, DELAY_STEP_MS)}
         />
+      ) : (
+        <LockedStep>Account setup is not available right now.</LockedStep>
+      ),
+    },
+    {
+      id: "profile-details",
+      title: "Profile details",
+      description: "Add the contact information customers can use to reach you.",
+      content: completeProfileLink ? (
+        <C2cAccountProfileForm
+          link={completeProfileLink}
+          onSuccess={(links) => handleOnUpdateAccountSuccess(links, DELAY_STEP_MS)}
+        />
+      ) : (
+        <LockedStep>Account setup is not available right now.</LockedStep>
+      ),
+    },
+    {
+      id: "review",
+      title: "Submit for Review",
+      description: "Confirm that your account is ready to be reviewed.",
+      content: submitApplicationLink ? (
+        <AccountOnboardingSubmit
+          link={submitApplicationLink}
+          onSuccess={handleOnSubmitApplicationSuccess}
+        />
+      ) : (
+        <LockedStep>Account setup is not available right now.</LockedStep>
+      ),
+    },
+  ];
+
+  if (!activeStepId) {
+    return (
+      <div className="flex w-full max-w-xs flex-col gap-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
     );
+  }
+
+  if (applicationState?.status && applicationState?.status !== "DRAFT") {
+    return (
+      <AccountOnboardingStatus
+        accountStatus={applicationState?.status}
+        merchantType={applicationState?.type}
+      />
+    );
+  }
+
+  return <OnboardingWizard steps={steps} activeStepId={activeStepId} />;
 }

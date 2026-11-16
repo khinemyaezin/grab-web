@@ -26,7 +26,12 @@ export default function ItemReceiveInTransitForm({
     defaultValues: { quantity: Math.min(1, Math.max(maxQuantity, 0)), referenceId: "" },
     mode: "onSubmit",
   });
-  const { register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useReceiveInTransitMutation();
 
   const onSubmit = async (values: ReceiveInTransitFormValues) => {
@@ -68,15 +73,13 @@ export default function ItemReceiveInTransitForm({
       </FieldGroup>
       {isDirty && (
         <ButtonGroup className="pt-7 w-full">
-          <Button type="submit" className="w-full" disabled={mutation.isPending || maxQuantity <= 0}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={mutation.isPending || maxQuantity <= 0}
+          >
             <ButtonStatus
-              status={
-                mutation.isPending
-                  ? "pending"
-                  : mutation.isSuccess
-                    ? "success"
-                    : "idle"
-              }
+              status={mutation.isPending ? "pending" : mutation.isSuccess ? "success" : "idle"}
               pendingLabel="Saving…"
               successLabel="Saved"
             >

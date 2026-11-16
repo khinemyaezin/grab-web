@@ -16,6 +16,8 @@ export type StockOperationFormHandle = {
 };
 
 export function formatEnumLabel(value: string) {
-  return value.replace(/_/g, " ").toLowerCase().replace(/^\w/, (char) => char.toUpperCase());
+  return value
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/^\w/, (char) => char.toUpperCase());
 }
-

@@ -1,4 +1,3 @@
-
 import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
 import {
@@ -9,16 +8,26 @@ import {
   SelectValue,
 } from "@khinemyaezin/seller-ui/components/select";
 import type { LocationFormValues, LocationType } from "@/features/inventory/types";
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSeparator, FieldSet } from "@khinemyaezin/seller-ui/components/field";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+} from "@khinemyaezin/seller-ui/components/field";
 
-export type LocationFormProps = {
-}
+export type LocationFormProps = {};
 
 const LOCATION_TYPES: LocationType[] = ["WAREHOUSE", "STORE"];
 
-
-export function LocationBasicFieldSet({ }: LocationFormProps) {
-  const { control, register, formState: { errors } } = useFormContext<LocationFormValues>();
+export function LocationBasicFieldSet({}: LocationFormProps) {
+  const {
+    control,
+    register,
+    formState: { errors },
+  } = useFormContext<LocationFormValues>();
 
   return (
     <>
@@ -35,9 +44,7 @@ export function LocationBasicFieldSet({ }: LocationFormProps) {
               {...register("code", { required: "Code is required" })}
               placeholder="WH-001"
             />
-            {errors.code && (
-              <p className="text-sm text-destructive">{errors.code.message}</p>
-            )}
+            {errors.code && <p className="text-sm text-destructive">{errors.code.message}</p>}
           </Field>
           <Field data-invalid={!!errors.name}>
             <FieldLabel htmlFor="name">Name</FieldLabel>
@@ -47,9 +54,7 @@ export function LocationBasicFieldSet({ }: LocationFormProps) {
               {...register("name", { required: "Name is required" })}
               placeholder="Main Warehouse"
             />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </Field>
           <Field data-invalid={!!errors.type}>
             <FieldLabel htmlFor="type">Type</FieldLabel>
@@ -58,7 +63,11 @@ export function LocationBasicFieldSet({ }: LocationFormProps) {
               name="type"
               rules={{ required: "Type is required" }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value} aria-invalid={!!errors.type}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  aria-invalid={!!errors.type}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select location type" />
                   </SelectTrigger>
@@ -72,9 +81,7 @@ export function LocationBasicFieldSet({ }: LocationFormProps) {
                 </Select>
               )}
             />
-            {errors.type && (
-              <p className="text-sm text-destructive">{errors.type.message}</p>
-            )}
+            {errors.type && <p className="text-sm text-destructive">{errors.type.message}</p>}
           </Field>
         </FieldGroup>
       </FieldSet>

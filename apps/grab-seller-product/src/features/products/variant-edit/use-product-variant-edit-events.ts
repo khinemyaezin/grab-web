@@ -49,7 +49,10 @@ export function useProductVariantEditEvents(messages?: ProductVariantEditEventMe
           toast("error", "Variant saved, but images could not be updated");
           break;
         case "updateTimedOut":
-          toast("error", messages?.updateTimedOut ?? "Variant update is still running. Check back shortly.");
+          toast(
+            "error",
+            messages?.updateTimedOut ?? "Variant update is still running. Check back shortly.",
+          );
           break;
         case "validationFailed": {
           const { message, description } = formatExtensionErrorsForToast(
@@ -89,10 +92,7 @@ export function useProductVariantEditEvents(messages?: ProductVariantEditEventMe
           break;
       }
     },
-    [
-      messages,
-      toast,
-    ],
+    [messages, toast],
   );
 
   return {

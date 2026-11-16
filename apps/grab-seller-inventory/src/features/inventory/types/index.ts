@@ -17,9 +17,7 @@ export type {
   CoverageRow,
 } from "./inventory.model";
 
-export type {
-  SearchProductVariantsRequest as SearchCatalogProductsRequest,
-} from "./catalog.request";
+export type { SearchProductVariantsRequest as SearchCatalogProductsRequest } from "./catalog.request";
 
 export type {
   FullCatalogProductResponse,

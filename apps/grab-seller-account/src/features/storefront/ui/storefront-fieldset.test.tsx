@@ -18,9 +18,7 @@ function Harness({ salesChannelId }: { salesChannelId?: string }) {
 describe("StorefrontFieldset", () => {
   it("describes the storefront as website-channel branding", () => {
     render(<Harness />);
-    expect(
-      screen.getByText(/brands your website channel/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/brands your website channel/i)).toBeInTheDocument();
   });
 
   it("shows a read-only website channel id when present", () => {

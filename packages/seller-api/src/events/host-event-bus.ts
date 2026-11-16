@@ -1,4 +1,11 @@
-import { EventClearScope, EventPayloads, EventSubscribeOptions, PlatformEvents, SignalEventPayloads, StateEventPayloads } from "@khinemyaezin/seller-contracts";
+import {
+  EventClearScope,
+  EventPayloads,
+  EventSubscribeOptions,
+  PlatformEvents,
+  SignalEventPayloads,
+  StateEventPayloads,
+} from "@khinemyaezin/seller-contracts";
 
 type CacheEntry = {
   topic: keyof StateEventPayloads;
@@ -7,8 +14,7 @@ type CacheEntry = {
 };
 
 function correlationKey(payload: unknown): string | undefined {
-  if (!payload || typeof payload !== "object")
-    return undefined;
+  if (!payload || typeof payload !== "object") return undefined;
   const record = payload as Record<string, unknown>;
   if (typeof record.entityKey === "string" && record.entityKey.length > 0) {
     return record.entityKey;
@@ -19,17 +25,11 @@ function correlationKey(payload: unknown): string | undefined {
   return undefined;
 }
 
-function cacheStorageKey(
-  topic: keyof StateEventPayloads,
-  correlation: string,
-): string {
+function cacheStorageKey(topic: keyof StateEventPayloads, correlation: string): string {
   return `${String(topic)}:${correlation}`;
 }
 
-function withSequence<T extends object>(
-  payload: T,
-  sequence: number,
-): T & { sequence: number } {
+function withSequence<T extends object>(payload: T, sequence: number): T & { sequence: number } {
   return { ...payload, sequence };
 }
 
@@ -38,10 +38,7 @@ export function createHostEventBus(): PlatformEvents {
   const cache = new Map<string, CacheEntry>();
   const sequences = new Map<string, number>();
 
-  function nextSequence(
-    topic: keyof StateEventPayloads,
-    correlation: string | undefined,
-  ): number {
+  function nextSequence(topic: keyof StateEventPayloads, correlation: string | undefined): number {
     const seqKey = `${String(topic)}:${correlation ?? ""}`;
     const next = (sequences.get(seqKey) ?? 0) + 1;
     sequences.set(seqKey, next);
@@ -94,10 +91,7 @@ export function createHostEventBus(): PlatformEvents {
       try {
         handler((event as CustomEvent<EventPayloads[K]>).detail);
       } catch (error) {
-        console.error(
-          `[HostEventBus] Error in subscriber for ${String(type)}:`,
-          error,
-        );
+        console.error(`[HostEventBus] Error in subscriber for ${String(type)}:`, error);
       }
     };
 
@@ -110,10 +104,7 @@ export function createHostEventBus(): PlatformEvents {
         try {
           handler(entry.payload as EventPayloads[K]);
         } catch (error) {
-          console.error(
-            `[HostEventBus] Error replaying ${String(type)}:`,
-            error,
-          );
+          console.error(`[HostEventBus] Error replaying ${String(type)}:`, error);
         }
       }
     }

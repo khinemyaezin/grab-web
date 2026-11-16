@@ -7,12 +7,8 @@ const EntryLinkContext: React.Context<HateoasLink | null> =
   (globalThis as any)[ENTRY_LINK_CONTEXT_KEY] ??
   ((globalThis as any)[ENTRY_LINK_CONTEXT_KEY] = createContext<HateoasLink | null>(null));
 
-function EntryLinkProvider({ link, children }: { link: HateoasLink, children: ReactNode }) {
-  return (
-    <EntryLinkContext.Provider value={link}>
-      {children}
-    </EntryLinkContext.Provider>
-  );
+function EntryLinkProvider({ link, children }: { link: HateoasLink; children: ReactNode }) {
+  return <EntryLinkContext.Provider value={link}>{children}</EntryLinkContext.Provider>;
 }
 
 function useEntryLink() {

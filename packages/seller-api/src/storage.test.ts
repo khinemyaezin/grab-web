@@ -50,9 +50,9 @@ describe("putPresignedObject", () => {
 
   it("throws when storage returns an error status", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 403 }));
-    await expect(
-      putPresignedObject("https://s3.test/key", new Blob(["x"])),
-    ).rejects.toThrow("Storage upload failed (403)");
+    await expect(putPresignedObject("https://s3.test/key", new Blob(["x"]))).rejects.toThrow(
+      "Storage upload failed (403)",
+    );
   });
 
   it("throws when the contract method is not PUT", async () => {

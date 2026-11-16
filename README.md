@@ -31,17 +31,22 @@ grab-web/
 ## ⚡ Quick Start (Local Development)
 
 ### 1. Prerequisites
+
 - **Node.js**: `>= 20.19.0`
 - **pnpm**: `>= 9.0.0` (Installed via `brew install pnpm` or `corepack enable`)
 
 ### 2. Install Dependencies
+
 ```bash
 pnpm install
 ```
+
 All shared packages (`seller-contracts`, `seller-api`, `seller-ui`) are automatically linked via `workspace:*`. **No canary publishing or manual install scripts required.**
 
 ### 3. Start Development Servers
+
 Start all applications concurrently:
+
 ```bash
 pnpm dev
 # or
@@ -49,6 +54,7 @@ pnpm dev
 ```
 
 Start specific applications only:
+
 ```bash
 ./start-dev.sh grab-seller grab-seller-account
 # or
@@ -56,6 +62,7 @@ pnpm turbo dev --filter=grab-seller --filter=seller-account
 ```
 
 ### 4. Build, Typecheck, and Test
+
 ```bash
 # Build all apps and packages in parallel
 pnpm build
@@ -75,11 +82,13 @@ pnpm turbo run build --filter=grab-seller-pricing
 ## 🐳 Running with Docker
 
 ### 1. Create Docker Network
+
 ```bash
 docker network create grab-dev-network
 ```
 
 ### 2. Start Services
+
 ```bash
 # Build and start all containers
 docker compose up --build
@@ -95,11 +104,11 @@ docker compose up --build grab-seller-inventory
 
 ## 🌐 Port Allocations
 
-| Application | Port | Type | Description |
-| :--- | :--- | :--- | :--- |
-| **`grab-seller`** | `3000` | Host Shell | Gateway shell, navigation & context providers |
-| **`grab-seller-product`** | `3001` | Remote MFE | Catalog, product variants, and listings |
-| **`grab-seller-inventory`**| `3002` | Remote MFE | Locations, stock balances, item management |
-| **`grab-seller-auth`** | `3003` | Remote MFE | Authentication & User menu widget |
-| **`grab-seller-account`** | `3004` | Remote MFE | Merchant onboarding & account settings |
-| **`grab-seller-pricing`** | `3005` | Remote MFE | Price lists, tier rules, and pricing widgets |
+| Application                 | Port   | Type       | Description                                   |
+| :-------------------------- | :----- | :--------- | :-------------------------------------------- |
+| **`grab-seller`**           | `3000` | Host Shell | Gateway shell, navigation & context providers |
+| **`grab-seller-product`**   | `3001` | Remote MFE | Catalog, product variants, and listings       |
+| **`grab-seller-inventory`** | `3002` | Remote MFE | Locations, stock balances, item management    |
+| **`grab-seller-auth`**      | `3003` | Remote MFE | Authentication & User menu widget             |
+| **`grab-seller-account`**   | `3004` | Remote MFE | Merchant onboarding & account settings        |
+| **`grab-seller-pricing`**   | `3005` | Remote MFE | Price lists, tier rules, and pricing widgets  |

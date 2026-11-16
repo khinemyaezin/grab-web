@@ -16,7 +16,7 @@ flowchart TD
     Product["grab-seller-product (Remote)"]
     Inventory["grab-seller-inventory (Remote)"]
     Pricing["grab-seller-pricing (Remote)"]
-    
+
     SharedContracts["@khinemyaezin/seller-contracts"]
     SharedAPI["@khinemyaezin/seller-api"]
     SharedUI["@khinemyaezin/seller-ui"]
@@ -49,14 +49,14 @@ flowchart TD
 
 ### Applications
 
-| Application | Role | Port | Description & Responsibilities |
-|:---|:---|:---|:---|
-| **`grab-seller`** | Host / Shell | `3000` | Owns global route mounting, layouts, session, `SellerPlatform`, remote boundaries, backend event stream, and extension widget registration. |
-| **`grab-seller-auth`** | Remote | `3003` | Authentication and access-context remote. Exposes `./Routes`, `./AuthService`, and `./UserMenuWidget`. |
-| **`grab-seller-account`** | Remote | `3004` | Merchant selection, seller onboarding, and storefront admin. Exposes `./Routes`, `./StorefrontRoutes`, and `./Service`. |
-| **`grab-seller-product`** | Remote | `3001` | Catalog and products domain; parent of product extension slots. Exposes `./Routes`. |
-| **`grab-seller-inventory`** | Remote | `3002` | Stock, bins, zones, and locations. Exposes `./DashboardRoutes`, `./LocationRoutes`, `./StockRoutes`, `./ProductInventoryWidget`, and `./InventoryItemEditWidget`. |
-| **`grab-seller-pricing`** | Remote | `3005` | Price sets and currency rules. Exposes `./Routes`, `./PricingCreateWidget`, and `./PricingEditWidget`. |
+| Application                 | Role         | Port   | Description & Responsibilities                                                                                                                                    |
+| :-------------------------- | :----------- | :----- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`grab-seller`**           | Host / Shell | `3000` | Owns global route mounting, layouts, session, `SellerPlatform`, remote boundaries, backend event stream, and extension widget registration.                       |
+| **`grab-seller-auth`**      | Remote       | `3003` | Authentication and access-context remote. Exposes `./Routes`, `./AuthService`, and `./UserMenuWidget`.                                                            |
+| **`grab-seller-account`**   | Remote       | `3004` | Merchant selection, seller onboarding, and storefront admin. Exposes `./Routes`, `./StorefrontRoutes`, and `./Service`.                                           |
+| **`grab-seller-product`**   | Remote       | `3001` | Catalog and products domain; parent of product extension slots. Exposes `./Routes`.                                                                               |
+| **`grab-seller-inventory`** | Remote       | `3002` | Stock, bins, zones, and locations. Exposes `./DashboardRoutes`, `./LocationRoutes`, `./StockRoutes`, `./ProductInventoryWidget`, and `./InventoryItemEditWidget`. |
+| **`grab-seller-pricing`**   | Remote       | `3005` | Price sets and currency rules. Exposes `./Routes`, `./PricingCreateWidget`, and `./PricingEditWidget`.                                                            |
 
 ---
 
@@ -117,7 +117,7 @@ federation({
     // and widgets if supplying
   },
   shared: {
-    "react": { singleton: true, requiredVersion: "19.2.4" },
+    react: { singleton: true, requiredVersion: "19.2.4" },
     "react-dom": { singleton: true, requiredVersion: "19.2.4" },
     "react-router": { singleton: true, requiredVersion: "7.18.0" },
     "react-hook-form": { singleton: true, requiredVersion: "7.74.0" },
@@ -126,7 +126,7 @@ federation({
     "@khinemyaezin/seller-ui": { singleton: true },
     "@khinemyaezin/seller-contracts": { singleton: true },
   },
-})
+});
 ```
 
 - `@mf-types` is generated output. It MUST NOT be treated as the source of truth when it disagrees with a remote's current `vite.config.ts`.

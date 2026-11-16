@@ -8,7 +8,7 @@ export type EventBusMeta = {
 
 export type EventEnvelope<TPayload> = EventBusMeta & {
   payload: TPayload;
-}
+};
 
 export type ExtensionFieldErrors = Record<string, string>;
 

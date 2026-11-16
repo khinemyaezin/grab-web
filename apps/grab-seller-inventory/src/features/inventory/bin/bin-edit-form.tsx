@@ -1,5 +1,9 @@
-
-import { useUpdateBinMutation, useActivateBinMutation, useDeactivateBinMutation, useBin } from "@/features/inventory/api/use-bins";
+import {
+  useUpdateBinMutation,
+  useActivateBinMutation,
+  useDeactivateBinMutation,
+  useBin,
+} from "@/features/inventory/api/use-bins";
 import type { HateoasLink, BinLifecycleEvent } from "@/types";
 import type { BinFormValues } from "@/features/inventory/types";
 import { useEffect } from "react";
@@ -28,7 +32,11 @@ export default function BinEditForm({ link, id, onLifecycleEvent }: BinEditFormP
     mode: "onSubmit",
   });
 
-  const { handleSubmit, formState: { isDirty }, reset } = form;
+  const {
+    handleSubmit,
+    formState: { isDirty },
+    reset,
+  } = form;
   const { data: bin, isLoading } = useBin(link, id);
   const editBinLink = resolveLink(bin?._links, SellerApiLinks.pending.editBin);
   const activateBinLink = resolveLink(bin?._links, SellerApiLinks.facility.activateBin);
@@ -98,7 +106,6 @@ export default function BinEditForm({ link, id, onLifecycleEvent }: BinEditFormP
     );
   }
 
-
   return (
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(handleOnSubmit)}>
@@ -110,15 +117,32 @@ export default function BinEditForm({ link, id, onLifecycleEvent }: BinEditFormP
             <ButtonGroup>
               <ButtonGroup>
                 {activateBinLink && (
-                  <Button type="button" variant="outline" disabled={activateBinMutation.isPending} onClick={handleOnActivate}>Activate</Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={activateBinMutation.isPending}
+                    onClick={handleOnActivate}
+                  >
+                    Activate
+                  </Button>
                 )}
                 {deactivateBinLink && (
-                  <Button type="button" variant="destructive" disabled={deactivateBinMutation.isPending} onClick={handleOnDeactivate}>Deactivate</Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={deactivateBinMutation.isPending}
+                    onClick={handleOnDeactivate}
+                  >
+                    Deactivate
+                  </Button>
                 )}
               </ButtonGroup>
               <ButtonGroup>
                 {isDirty && editBinLink && (
-                  <Button type="submit" disabled={updateBinMutation.isPending || updateBinMutation.isSuccess}>
+                  <Button
+                    type="submit"
+                    disabled={updateBinMutation.isPending || updateBinMutation.isSuccess}
+                  >
                     <ButtonStatus
                       status={
                         updateBinMutation.isPending
@@ -128,7 +152,8 @@ export default function BinEditForm({ link, id, onLifecycleEvent }: BinEditFormP
                             : "idle"
                       }
                       pendingLabel="Saving…"
-                      successLabel="Saved">
+                      successLabel="Saved"
+                    >
                       Update
                     </ButtonStatus>
                   </Button>

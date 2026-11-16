@@ -5,9 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@khinemyaezin/seller-ui";
 import { resolveUrlTemplate } from "@khinemyaezin/seller-api";
 
-export function useVariationOptionSearch(variantOptionsLink: HateoasLink | undefined, name: string, type: string) {
+export function useVariationOptionSearch(
+  variantOptionsLink: HateoasLink | undefined,
+  name: string,
+  type: string,
+) {
   const api = useApi();
-  const expendLink = variantOptionsLink && resolveUrlTemplate({ "name": name, "typeId": type }, variantOptionsLink);
+  const expendLink =
+    variantOptionsLink && resolveUrlTemplate({ name: name, typeId: type }, variantOptionsLink);
 
   return useQuery<GetVariationOptionResult>({
     queryKey: ["option", variantOptionsLink?.href, `${name}-${type}`],

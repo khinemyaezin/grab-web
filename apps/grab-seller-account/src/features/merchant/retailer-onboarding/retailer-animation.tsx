@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function RetailerAnimation() {
   return (
@@ -33,13 +33,21 @@ export default function RetailerAnimation() {
           </style>
 
           <filter id="retail-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="10" stdDeviation="15" floodColor="#4338CA" floodOpacity="0.15" />
+            <feDropShadow
+              dx="0"
+              dy="10"
+              stdDeviation="15"
+              floodColor="#4338CA"
+              floodOpacity="0.15"
+            />
           </filter>
 
           <g id="coin-purple">
             <circle cx="15" cy="15" r="15" fill="#FBBF24" />
             <circle cx="15" cy="15" r="11" fill="#F59E0B" />
-            <text x="15" y="20" fontSize="14" fill="#FEF3C7" textAnchor="middle" fontWeight="bold">$</text>
+            <text x="15" y="20" fontSize="14" fill="#FEF3C7" textAnchor="middle" fontWeight="bold">
+              $
+            </text>
           </g>
         </defs>
 
@@ -50,10 +58,21 @@ export default function RetailerAnimation() {
 
         {/* Shop Awning */}
         <path d="M 150 100 L 650 100 L 680 180 L 120 180 Z" fill="#4F46E5" />
-        <path d="M 120 180 Q 155 210 190 180 Q 225 210 260 180 Q 295 210 330 180 Q 365 210 400 180 Q 435 210 470 180 Q 505 210 540 180 Q 575 210 610 180 Q 645 210 680 180 Z" fill="#4338CA" />
+        <path
+          d="M 120 180 Q 155 210 190 180 Q 225 210 260 180 Q 295 210 330 180 Q 365 210 400 180 Q 435 210 470 180 Q 505 210 540 180 Q 575 210 610 180 Q 645 210 680 180 Z"
+          fill="#4338CA"
+        />
 
         {/* Shop Counter */}
-        <rect x="180" y="380" width="440" height="150" rx="8" fill="#8B5CF6" filter="url(#retail-shadow)" />
+        <rect
+          x="180"
+          y="380"
+          width="440"
+          height="150"
+          rx="8"
+          fill="#8B5CF6"
+          filter="url(#retail-shadow)"
+        />
         <rect x="160" y="360" width="480" height="30" rx="5" fill="#A78BFA" />
 
         {/* Point of Sale / Cash Register */}
@@ -65,8 +84,24 @@ export default function RetailerAnimation() {
         {/* Profit Chart on Wall */}
         <rect x="520" y="200" width="100" height="120" rx="8" fill="#FFFFFF" opacity="0.9" />
         <rect className="chart-bar" x="535" y="280" width="15" height="30" fill="#34D399" />
-        <rect className="chart-bar" style={{ animationDelay: "0.2s" }} x="560" y="260" width="15" height="50" fill="#10B981" />
-        <rect className="chart-bar" style={{ animationDelay: "0.4s" }} x="585" y="220" width="15" height="90" fill="#059669" />
+        <rect
+          className="chart-bar"
+          style={{ animationDelay: "0.2s" }}
+          x="560"
+          y="260"
+          width="15"
+          height="50"
+          fill="#10B981"
+        />
+        <rect
+          className="chart-bar"
+          style={{ animationDelay: "0.4s" }}
+          x="585"
+          y="220"
+          width="15"
+          height="90"
+          fill="#059669"
+        />
 
         {/* Character (Professional Retailer) */}
         <g className="char-anim" transform="translate(350, 160)" filter="url(#retail-shadow)">
@@ -78,7 +113,10 @@ export default function RetailerAnimation() {
           {/* Head */}
           <circle cx="50" cy="40" r="32" fill="#FDBA74" />
           {/* Hair */}
-          <path d="M 15 40 Q 15 5 50 5 Q 85 5 85 40 L 80 40 Q 80 15 50 15 Q 20 15 20 40 Z" fill="#1E293B" />
+          <path
+            d="M 15 40 Q 15 5 50 5 Q 85 5 85 40 L 80 40 Q 80 15 50 15 Q 20 15 20 40 Z"
+            fill="#1E293B"
+          />
           <path d="M 15 40 L 25 20 L 35 30 Z" fill="#1E293B" />
           {/* Face */}
           <circle cx="38" cy="42" r="4" fill="#1E293B" />
@@ -87,8 +125,20 @@ export default function RetailerAnimation() {
           <path d="M 40 55 Q 50 65 60 55 Z" fill="#FFFFFF" stroke="#1E293B" strokeWidth="1" />
 
           {/* Arms holding a product */}
-          <path d="M 25 90 Q -10 130 30 160" stroke="#4F46E5" strokeWidth="16" strokeLinecap="round" fill="none" />
-          <path d="M 75 90 Q 110 130 70 160" stroke="#4F46E5" strokeWidth="16" strokeLinecap="round" fill="none" />
+          <path
+            d="M 25 90 Q -10 130 30 160"
+            stroke="#4F46E5"
+            strokeWidth="16"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M 75 90 Q 110 130 70 160"
+            stroke="#4F46E5"
+            strokeWidth="16"
+            strokeLinecap="round"
+            fill="none"
+          />
           {/* Hands */}
           <circle cx="30" cy="160" r="10" fill="#FDBA74" />
           <circle cx="70" cy="160" r="10" fill="#FDBA74" />
@@ -100,10 +150,27 @@ export default function RetailerAnimation() {
         </g>
 
         {/* Floating coins indicating sales */}
-        <use href="#coin-purple" x="250" y="200" className="coin" style={{ animationDelay: "0s" }} />
-        <use href="#coin-purple" x="480" y="160" className="coin2" style={{ animationDelay: "0.5s" }} />
-        <use href="#coin-purple" x="650" y="250" className="coin3" style={{ animationDelay: "1s" }} />
-
+        <use
+          href="#coin-purple"
+          x="250"
+          y="200"
+          className="coin"
+          style={{ animationDelay: "0s" }}
+        />
+        <use
+          href="#coin-purple"
+          x="480"
+          y="160"
+          className="coin2"
+          style={{ animationDelay: "0.5s" }}
+        />
+        <use
+          href="#coin-purple"
+          x="650"
+          y="250"
+          className="coin3"
+          style={{ animationDelay: "1s" }}
+        />
       </svg>
     </div>
   );

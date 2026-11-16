@@ -17,7 +17,10 @@ import { useInventoryItemsForVariantId } from "@/features/inventory/api/use-inve
 import { useInventoryLink } from "@/features/inventory/api/use-root";
 import { useLocations } from "@/features/inventory/api/use-locations";
 import type { StockOperationSubmit } from "@/features/inventory/stock-operations";
-import type { InventoryItemEditForm, InventoryItemEditRow } from "@/features/inventory/types/inventory.form";
+import type {
+  InventoryItemEditForm,
+  InventoryItemEditRow,
+} from "@/features/inventory/types/inventory.form";
 import {
   EMPTY_INVENTORY_ITEMS,
   EMPTY_LOCATIONS,
@@ -40,7 +43,10 @@ export type UseInventoryEditControllerOptions = {
   context?: InventoryEditContext;
   value?: InventoryEditPayload;
   onChange?: (value: InventoryEditPayload) => void;
-  onConfirm?: (item: InventoryItemResponse | undefined, payload: StockOperationSubmit) => Promise<void>;
+  onConfirm?: (
+    item: InventoryItemResponse | undefined,
+    payload: StockOperationSubmit,
+  ) => Promise<void>;
   registerHandle?: (handle: SlotHandle<InventoryEditPayload>) => void | (() => void);
 };
 
@@ -167,10 +173,7 @@ export function useInventoryEdit({
               safetyStock: payload.value.safetyStock,
               reorderPoint: payload.value.reorderPoint,
               reorderQuantity: payload.value.reorderQuantity,
-              maxStock:
-                payload.value.maxStock === ""
-                  ? undefined
-                  : Number(payload.value.maxStock),
+              maxStock: payload.value.maxStock === "" ? undefined : Number(payload.value.maxStock),
             };
             const op: InventoryEditOp = {
               op: "CREATE",

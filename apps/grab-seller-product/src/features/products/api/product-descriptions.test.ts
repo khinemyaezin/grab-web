@@ -53,12 +53,20 @@ describe("overview description helpers", () => {
   });
 
   it("drops the editable section when the textarea is cleared", () => {
-    expect(withOverviewDescription([overview(), {
-      id: "desc-2",
-      name: "specifications",
-      title: "Specifications",
-      description: "Cotton",
-    }], "   ")).toEqual([
+    expect(
+      withOverviewDescription(
+        [
+          overview(),
+          {
+            id: "desc-2",
+            name: "specifications",
+            title: "Specifications",
+            description: "Cotton",
+          },
+        ],
+        "   ",
+      ),
+    ).toEqual([
       {
         id: "desc-2",
         name: "specifications",
@@ -84,12 +92,12 @@ describe("overview description helpers", () => {
 
 describe("toReplaceDescriptionsPayload", () => {
   it("omits blank rows and ids that are not yet assigned", () => {
-    expect(toReplaceDescriptionsPayload([
-      { name: "overview", title: "Overview", description: "  " },
-      { name: "overview", description: "Body" },
-    ])).toEqual([
-      { name: "overview", description: "Body" },
-    ]);
+    expect(
+      toReplaceDescriptionsPayload([
+        { name: "overview", title: "Overview", description: "  " },
+        { name: "overview", description: "Body" },
+      ]),
+    ).toEqual([{ name: "overview", description: "Body" }]);
   });
 });
 

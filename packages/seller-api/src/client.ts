@@ -1,6 +1,6 @@
 import type { HateoasLink } from "./hateoas.js";
 import { removeTemplateFromUrl } from "./hateoas/link-resolver.js";
-import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
+import type { PlatformApiClient, SessionExpiredReason } from "@khinemyaezin/seller-contracts";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -18,7 +18,12 @@ type RequestOptions = {
 
 export type ApiClientConfig = {
   baseUrl?: string;
-  platform?: { session: { refresh(): Promise<void> } };
+  platform?: {
+    session: {
+      refresh(): Promise<void>;
+      expire(reason?: SessionExpiredReason): void;
+    };
+  };
   getToken?: () => string | undefined | Promise<string | undefined>;
 };
 
@@ -118,9 +123,25 @@ async function buildFullUrl(
   return `${base}/${normalizedUrl}`;
 }
 
+class RefreshCoordinator {
+  private inFlight: Promise<void> | null = null;
+
+  run(task: () => Promise<void>): Promise<void> {
+    if (!this.inFlight) {
+      this.inFlight = task().finally(() => {
+        this.inFlight = null;
+      });
+    }
+    return this.inFlight;
+  }
+}
+
 async function readResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const data = await response.json().catch(() => null);
+    const contentType = response.headers.get("content-type") || "";
+    const data: unknown = contentType.includes("json")
+      ? await response.json().catch(() => null)
+      : await response.text().catch(() => null);
     throw new ApiError(response.status, response.statusText, data);
   }
 
@@ -128,45 +149,74 @@ async function readResponse<T>(response: Response): Promise<T> {
     return undefined as T;
   }
 
-  const contentType = response.headers.get("content-type");
   const contentLength = response.headers.get("content-length");
-
   if (contentLength === "0") {
     return undefined as T;
   }
 
-  if (!contentType?.includes("application/hal+json")) {
-    return undefined as T;
-  }
-
+  const contentType = response.headers.get("content-type") || "";
   const text = await response.text();
 
   if (!text.trim()) {
     return undefined as T;
   }
 
-  return JSON.parse(text) as T;
+  if (
+    contentType.includes("application/json") ||
+    contentType.includes("application/hal+json") ||
+    contentType.includes("application/problem+json")
+  ) {
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      return text as unknown as T;
+    }
+  }
+
+  return text as unknown as T;
 }
 
 export function createApiClient(initialConfig: ApiClientConfig = {}): ApiClient {
-  let clientConfig: Required<Pick<ApiClientConfig, "baseUrl">> & ApiClientConfig = {
+  const clientConfig: Required<Pick<ApiClientConfig, "baseUrl">> & ApiClientConfig = {
     baseUrl: "/api",
     ...initialConfig,
   };
+  const refreshCoordinator = new RefreshCoordinator();
+  let lastRefreshedAt = 0;
 
   async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+    const requestInitiatedAt = Date.now();
     const fullUrl = await buildFullUrl(clientConfig, endpoint, options.params);
     const config = await buildRequestInit(clientConfig, options);
     const response = await fetch(fullUrl, config);
 
-    if (
-      response.status === 401 &&
-      options.retryOnUnauthorized !== false &&
-      clientConfig.platform
-    ) {
-      await clientConfig.platform.session.refresh();
+    if (response.status === 401 && options.retryOnUnauthorized !== false && clientConfig.platform) {
+      const platformSession = clientConfig.platform.session;
+      if (requestInitiatedAt >= lastRefreshedAt) {
+        try {
+          await refreshCoordinator.run(async () => {
+            await platformSession.refresh();
+            lastRefreshedAt = Date.now();
+          });
+        } catch (refreshError: unknown) {
+          const status =
+            refreshError instanceof ApiError
+              ? refreshError.status
+              : ((refreshError as { status?: number; statusCode?: number })?.status ??
+                (refreshError as { status?: number; statusCode?: number })?.statusCode);
+          if (status === 401 || status === 403) {
+            platformSession.expire("refresh-failed");
+          }
+          throw refreshError;
+        }
+      }
+
       const freshConfig = await buildRequestInit(clientConfig, options);
-      return readResponse<T>(await fetch(fullUrl, freshConfig));
+      const retryResponse = await fetch(fullUrl, freshConfig);
+      if (retryResponse.status === 401) {
+        platformSession.expire("unauthorized");
+      }
+      return readResponse<T>(retryResponse);
     }
 
     return readResponse<T>(response);
@@ -201,11 +251,8 @@ export function createApiClient(initialConfig: ApiClientConfig = {}): ApiClient 
       behavior?: RequestBehavior,
     ) => request<T>(endpoint, { method: "PATCH", body, headers, ...behavior }),
 
-    delete: <T>(
-      endpoint: string,
-      headers?: Record<string, string>,
-      behavior?: RequestBehavior,
-    ) => request<T>(endpoint, { method: "DELETE", headers, ...behavior }),
+    delete: <T>(endpoint: string, headers?: Record<string, string>, behavior?: RequestBehavior) =>
+      request<T>(endpoint, { method: "DELETE", headers, ...behavior }),
 
     followLink: <T>(
       link: HateoasLink,

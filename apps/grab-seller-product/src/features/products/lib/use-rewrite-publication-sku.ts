@@ -13,10 +13,8 @@ export function useRewritePublicationSku() {
     if (!current.some((line) => line.sku === fromSku)) {
       return;
     }
-    setValue(
-      "product.publicationLines",
-      rewritePublicationLineSku(current, fromSku, toSku),
-      { shouldDirty: true },
-    );
+    setValue("product.publicationLines", rewritePublicationLineSku(current, fromSku, toSku), {
+      shouldDirty: true,
+    });
   };
 }

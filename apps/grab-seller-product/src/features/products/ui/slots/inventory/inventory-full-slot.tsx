@@ -3,10 +3,7 @@ import {
   type InventoryCreateContext,
   type InventoryPayload,
 } from "@khinemyaezin/seller-contracts";
-import {
-  INVENTORY_DOMAIN,
-  ProductExtensionSlot,
-} from "../product-extension-slot";
+import { INVENTORY_DOMAIN, ProductExtensionSlot } from "../product-extension-slot";
 
 export type InventoryLineSlotProps = {
   groupId: string;

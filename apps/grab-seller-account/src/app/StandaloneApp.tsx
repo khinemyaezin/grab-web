@@ -24,10 +24,7 @@ export default function StandaloneApp() {
       <QueryClientProvider client={client}>
         <BrowserRouter>
           <Toaster />
-          <AppRoutes
-            link={{ href: import.meta.env.VITE_API_MERCHANT_URL }}
-            platform={platform}
-          />
+          <AppRoutes link={{ href: import.meta.env.VITE_API_MERCHANT_URL }} platform={platform} />
         </BrowserRouter>
       </QueryClientProvider>
     </ThemeProvider>

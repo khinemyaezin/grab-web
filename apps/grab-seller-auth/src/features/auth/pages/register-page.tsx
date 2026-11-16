@@ -7,7 +7,7 @@ import { usePlatform } from "@khinemyaezin/seller-ui";
 export default function RegisterPage() {
   const { data } = useIdentityGet();
   const platform = usePlatform();
-  const [error, setError] = useState<{ title: string, description: string } | undefined>(undefined)
+  const [error, setError] = useState<{ title: string; description: string } | undefined>(undefined);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
@@ -18,11 +18,12 @@ export default function RegisterPage() {
           <RegisterForm
             link={data.register}
             onRegisterSuccess={() => {
-              (platform?.events)?.emit("auth:registration-success:v1", {});
+              platform?.events?.emit("auth:registration-success:v1", {});
             }}
-            onRegisterError={({ title, description }: { title: string; description: string; }) => {
-              setError({ title, description })
-            }} />
+            onRegisterError={({ title, description }: { title: string; description: string }) => {
+              setError({ title, description });
+            }}
+          />
         )}
       </div>
     </div>

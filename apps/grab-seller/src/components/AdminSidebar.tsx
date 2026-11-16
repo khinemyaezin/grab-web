@@ -29,8 +29,8 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         {
           title: "Product",
           url: `/${routes.products}`,
-        }
-      ]
+        },
+      ],
     },
     {
       title: "Inventory",
@@ -44,20 +44,19 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         {
           title: "Stock",
           url: `/${routes.stock}`,
-        }
-      ]
+        },
+      ],
     },
     {
       title: "Storefronts",
       url: `/${routes.storefronts}`,
       icon: ShoppingBag as any,
-      items: []
+      items: [],
     },
   ];
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar"
-      {...props}>
+    <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader className="border-b">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -74,7 +73,11 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         {user && identityLink && (
           <SidebarMenu>
             <SidebarMenuItem>
-              <Suspense fallback={<div className="h-12 w-full animate-pulse bg-sidebar-accent rounded-lg" />}>
+              <Suspense
+                fallback={
+                  <div className="h-12 w-full animate-pulse bg-sidebar-accent rounded-lg" />
+                }
+              >
                 <RemoteUserMenuWidget
                   onLogout={logout}
                   platform={platform}
@@ -97,4 +100,3 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
     </Sidebar>
   );
 }
-

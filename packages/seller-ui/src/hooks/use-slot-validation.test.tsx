@@ -10,9 +10,7 @@ import {
 } from "@khinemyaezin/seller-contracts";
 import { SlotProvider, useSlotProvider } from "@/context/slot-provider";
 import { useResetAllSlots } from "@/hooks/use-slot-reset";
-import {
-  useValidateAllSlots,
-} from "@/hooks/use-slot-validation";
+import { useValidateAllSlots } from "@/hooks/use-slot-validation";
 
 const INVENTORY_SLOT = "test.inventory";
 const PRICING_SLOT = "test.pricing";

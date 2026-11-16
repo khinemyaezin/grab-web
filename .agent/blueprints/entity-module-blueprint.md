@@ -39,6 +39,7 @@ grab-seller-inventory/src/
 ```
 
 ### Module Rules:
+
 - Each entity module (`location/`, `zone/`, `bin/`) owns its own pages, forms, and table components.
 - Shared root discovery stays in `api/`.
 - Federated widgets live directly under `features/inventory/widgets/` (NEVER in an external `features/widget/` directory).
@@ -67,6 +68,7 @@ grab-seller-pricing/src/
 ```
 
 ### Module Rules:
+
 - Widgets (`pricing-create-widget.tsx`, etc.) are wrapped with `createExposedSlot`.
 - Slices projected adhere to canonical contracts (`PRODUCT_CONTRIBUTION_SLICES.PRICING_LINES`).
 - Vite exposure keys (e.g. `./PricingCreateWidget`) are strictly maintained.

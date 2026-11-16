@@ -17,7 +17,7 @@ export default function App({ runtimeConfig }: { runtimeConfig: Readonly<SellerR
         <BrowserRouter>
           <ShellPlatformProvider runtimeConfig={runtimeConfig}>
             <EntryLinkProvider runtimeConfig={runtimeConfig}>
-              <AuthProvider runtimeConfig={runtimeConfig} onSessionCleared={() => queryClient.clear()}>
+              <AuthProvider onSessionCleared={() => queryClient.clear()}>
                 <ShellRoutes />
               </AuthProvider>
             </EntryLinkProvider>

@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { SearchIcon, X } from "lucide-react"
+import * as React from "react";
+import { SearchIcon, X } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { useDebounce } from "@/hooks/use-debounce"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Field, FieldLabel } from "@/components/ui/field"
+import { cn } from "@/lib/utils";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Field, FieldLabel } from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-} from "@/components/ui/input-group"
+} from "@/components/ui/input-group";
 import {
   Select,
   SelectContent,
@@ -21,72 +21,66 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-const DEFAULT_DEBOUNCE_MS = 300
+const DEFAULT_DEBOUNCE_MS = 300;
 
-export type FilterValue = string | boolean
+export type FilterValue = string | boolean;
 
-export type FilterValues = Record<string, FilterValue>
+export type FilterValues = Record<string, FilterValue>;
 
 export type FilterOption = {
-  label: string
-  value: string
-}
+  label: string;
+  value: string;
+};
 
 type FilterFieldBase = {
-  name: string
-  label?: string
-  className?: string
-  controlClassName?: string
-}
+  name: string;
+  label?: string;
+  className?: string;
+  controlClassName?: string;
+};
 
 export type FilterInputField = FilterFieldBase & {
-  type: "input"
-  placeholder?: string
-  debounceMs?: number
-  clearable?: boolean
-  icon?: React.ReactNode
-}
+  type: "input";
+  placeholder?: string;
+  debounceMs?: number;
+  clearable?: boolean;
+  icon?: React.ReactNode;
+};
 
 export type FilterSelectField = FilterFieldBase & {
-  type: "select"
-  placeholder?: string
-  options: FilterOption[]
-  groupLabel?: string
-}
+  type: "select";
+  placeholder?: string;
+  options: FilterOption[];
+  groupLabel?: string;
+};
 
 export type FilterCheckboxField = FilterFieldBase & {
-  type: "checkbox"
-  checkboxLabel?: string
-}
+  type: "checkbox";
+  checkboxLabel?: string;
+};
 
-export type FilterField =
-  | FilterInputField
-  | FilterSelectField
-  | FilterCheckboxField
+export type FilterField = FilterInputField | FilterSelectField | FilterCheckboxField;
 
 export type FilterProps = {
-  fields: FilterField[]
-  values?: FilterValues
-  defaultValues?: FilterValues
-  onChange?: (values: FilterValues) => void
-  className?: string
-}
+  fields: FilterField[];
+  values?: FilterValues;
+  defaultValues?: FilterValues;
+  onChange?: (values: FilterValues) => void;
+  className?: string;
+};
 
 function emptyValueFor(field: FilterField): FilterValue {
-  return field.type === "checkbox" ? false : ""
+  return field.type === "checkbox" ? false : "";
 }
 
-function buildInitialValues(
-  fields: FilterField[],
-  seed?: FilterValues
-): FilterValues {
-  const values: FilterValues = {}
+function buildInitialValues(fields: FilterField[], seed?: FilterValues): FilterValues {
+  const values: FilterValues = {};
   for (const field of fields) {
-    values[field.name] = seed?.[field.name] ?? emptyValueFor(field)
+    values[field.name] = seed?.[field.name] ?? emptyValueFor(field);
   }
-  return values
+  return values;
 }
 
 function Filter({
@@ -96,34 +90,30 @@ function Filter({
   onChange,
   className,
 }: FilterProps) {
-  const isControlled = controlledValues !== undefined
+  const isControlled = controlledValues !== undefined;
   const [internalValues, setInternalValues] = React.useState<FilterValues>(() =>
-    buildInitialValues(fields, defaultValues)
-  )
+    buildInitialValues(fields, defaultValues),
+  );
 
-  const values = isControlled
-    ? buildInitialValues(fields, controlledValues)
-    : internalValues
+  const values = isControlled ? buildInitialValues(fields, controlledValues) : internalValues;
 
-  const valuesRef = React.useRef(values)
-  valuesRef.current = values
+  const valuesRef = React.useRef(values);
+  valuesRef.current = values;
 
   const handleFieldChange = React.useCallback(
     (name: string, value: FilterValue) => {
-      const next = { ...valuesRef.current, [name]: value }
-      valuesRef.current = next
+      const next = { ...valuesRef.current, [name]: value };
+      valuesRef.current = next;
       if (!isControlled) {
-        setInternalValues(next)
+        setInternalValues(next);
       }
-      onChange?.(next)
+      onChange?.(next);
     },
-    [isControlled, onChange]
-  )
+    [isControlled, onChange],
+  );
 
   return (
-    <div
-      className={cn(className)}
-    >
+    <div className={cn(className)}>
       {fields.map((field) => (
         <FilterFieldControl
           key={field.name}
@@ -133,35 +123,26 @@ function Filter({
         />
       ))}
     </div>
-  )
+  );
 }
 
 type FilterControlProps<TField extends FilterField> = {
-  field: TField
-  value: FilterValue
-  onChange: (name: string, value: FilterValue) => void
-}
+  field: TField;
+  value: FilterValue;
+  onChange: (name: string, value: FilterValue) => void;
+};
 
-function FilterFieldControl({
-  field,
-  value,
-  onChange,
-}: FilterControlProps<FilterField>) {
-  const controlId = `filter-${field.name}`
+function FilterFieldControl({ field, value, onChange }: FilterControlProps<FilterField>) {
+  const controlId = `filter-${field.name}`;
 
   if (field.type === "checkbox") {
     return (
-      <Field
-        orientation="horizontal"
-        className={cn("sm:items-center w-auto", field.className)}
-      >
+      <Field orientation="horizontal" className={cn("sm:items-center w-auto", field.className)}>
         <Checkbox
           id={controlId}
           className={field.controlClassName}
           checked={Boolean(value)}
-          onCheckedChange={(checked) =>
-            onChange(field.name, checked === true)
-          }
+          onCheckedChange={(checked) => onChange(field.name, checked === true)}
         />
         {(field.checkboxLabel ?? field.label) && (
           <FieldLabel htmlFor={controlId} className="text-sm font-normal">
@@ -169,16 +150,13 @@ function FilterFieldControl({
           </FieldLabel>
         )}
       </Field>
-    )
+    );
   }
 
   return (
     <Field className={cn("gap-1.5 w-auto", field.className)}>
       {field.label && (
-        <FieldLabel
-          htmlFor={controlId}
-          className="text-xs font-medium text-muted-foreground"
-        >
+        <FieldLabel htmlFor={controlId} className="text-xs font-medium text-muted-foreground">
           {field.label}
         </FieldLabel>
       )}
@@ -198,7 +176,7 @@ function FilterFieldControl({
         />
       )}
     </Field>
-  )
+  );
 }
 
 function FilterInput({
@@ -207,28 +185,28 @@ function FilterInput({
   value,
   onChange,
 }: {
-  field: FilterInputField
-  controlId: string
-  value: string
-  onChange: (name: string, value: FilterValue) => void
+  field: FilterInputField;
+  controlId: string;
+  value: string;
+  onChange: (name: string, value: FilterValue) => void;
 }) {
-  const [text, setText] = React.useState(value)
+  const [text, setText] = React.useState(value);
   const { debounceFn } = useDebounce(
     (next: string) => onChange(field.name, next),
-    field.debounceMs ?? DEFAULT_DEBOUNCE_MS
-  )
+    field.debounceMs ?? DEFAULT_DEBOUNCE_MS,
+  );
 
   React.useEffect(() => {
-    setText(value)
-  }, [value])
+    setText(value);
+  }, [value]);
 
   const commit = (next: string) => {
-    setText(next)
-    debounceFn(next)
-  }
+    setText(next);
+    debounceFn(next);
+  };
 
-  const showClear = (field.clearable ?? true) && text.length > 0
-  const icon = field.icon === undefined ? <SearchIcon /> : field.icon
+  const showClear = (field.clearable ?? true) && text.length > 0;
+  const icon = field.icon === undefined ? <SearchIcon /> : field.icon;
 
   return (
     <InputGroup className={cn("overflow-hidden", field.controlClassName)}>
@@ -256,7 +234,7 @@ function FilterInput({
         </InputGroupAddon>
       )}
     </InputGroup>
-  )
+  );
 }
 
 function FilterSelect({
@@ -265,16 +243,13 @@ function FilterSelect({
   value,
   onChange,
 }: {
-  field: FilterSelectField
-  controlId: string
-  value: string
-  onChange: (name: string, value: FilterValue) => void
+  field: FilterSelectField;
+  controlId: string;
+  value: string;
+  onChange: (name: string, value: FilterValue) => void;
 }) {
   return (
-    <Select
-      value={value}
-      onValueChange={(next) => onChange(field.name, next)}
-    >
+    <Select value={value} onValueChange={(next) => onChange(field.name, next)}>
       <SelectTrigger id={controlId} className={cn("w-full", field.controlClassName)}>
         <SelectValue placeholder={field.placeholder} />
       </SelectTrigger>
@@ -289,7 +264,7 @@ function FilterSelect({
         </SelectGroup>
       </SelectContent>
     </Select>
-  )
+  );
 }
 
-export { Filter }
+export { Filter };

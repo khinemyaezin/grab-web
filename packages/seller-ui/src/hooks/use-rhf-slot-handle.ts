@@ -26,9 +26,7 @@ export type RhfSlotForm<T extends FieldValues> = {
   watch: (...args: any[]) => { unsubscribe: () => void };
 };
 
-export function useRhfValueSource<T extends FieldValues>(
-  form: RhfSlotForm<T>,
-): SlotValueSource<T> {
+export function useRhfValueSource<T extends FieldValues>(form: RhfSlotForm<T>): SlotValueSource<T> {
   const formRef = useRef(form);
   formRef.current = form;
   return useMemo(

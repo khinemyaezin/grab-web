@@ -46,9 +46,7 @@ export function unionChannelIds(
 ): string[] {
   const skuSet = new Set(skus);
   return unique(
-    (lines ?? [])
-      .filter((line) => skuSet.has(line.sku))
-      .map((line) => line.salesChannelId),
+    (lines ?? []).filter((line) => skuSet.has(line.sku)).map((line) => line.salesChannelId),
   );
 }
 
@@ -81,9 +79,7 @@ export function togglePublicationChannelForSkus(
   const skuSet = new Set(targets);
 
   if (currentlyPublished) {
-    return current.filter(
-      (line) => !(skuSet.has(line.sku) && line.salesChannelId === channelId),
-    );
+    return current.filter((line) => !(skuSet.has(line.sku) && line.salesChannelId === channelId));
   }
 
   const next = [...current];
@@ -113,13 +109,10 @@ export function syncPublicationLinesForMatrixVariants(
       .map((line) => line.salesChannelId),
   );
   const existingTargetChannels = unique(
-    current
-      .filter((line) => targets.includes(line.sku))
-      .map((line) => line.salesChannelId),
+    current.filter((line) => targets.includes(line.sku)).map((line) => line.salesChannelId),
   );
-  const sourceChannels = standaloneChannels.length > 0
-    ? standaloneChannels
-    : existingTargetChannels;
+  const sourceChannels =
+    standaloneChannels.length > 0 ? standaloneChannels : existingTargetChannels;
 
   const next = current.filter((line) => targets.includes(line.sku));
 

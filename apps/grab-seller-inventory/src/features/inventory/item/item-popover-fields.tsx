@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import type {
-  InventoryLocationStock,
-  InventoryPayload,
-} from "@khinemyaezin/seller-contracts";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-} from "@khinemyaezin/seller-ui/components/field";
+import type { InventoryLocationStock, InventoryPayload } from "@khinemyaezin/seller-contracts";
+import { Field, FieldError, FieldGroup } from "@khinemyaezin/seller-ui/components/field";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
 import {
   Table,
@@ -66,7 +59,12 @@ export function ItemPopoverFields() {
             <TableHeader>
               <TableRow className="bg-muted">
                 <TableHead>
-                  <Button type="button" variant="secondary" size="icon-sm" onClick={() => setPickerOpen(true)}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon-sm"
+                    onClick={() => setPickerOpen(true)}
+                  >
                     <Pencil data-icon="inline-end" />
                   </Button>
                 </TableHead>
@@ -81,13 +79,8 @@ export function ItemPopoverFields() {
                   <TableRow key={field.id}>
                     <TableCell className="align-top">
                       <div className="flex min-h-9 items-center">
-                        <input
-                          type="hidden"
-                          {...register(`locations.${index}.locationId`)}
-                        />
-                        <span className="text-sm">
-                          {location?.name ?? field.locationId}
-                        </span>
+                        <input type="hidden" {...register(`locations.${index}.locationId`)} />
+                        <span className="text-sm">{location?.name ?? field.locationId}</span>
                       </div>
                     </TableCell>
                     <TableCell className="align-top">
@@ -103,7 +96,9 @@ export function ItemPopoverFields() {
                             valueAsNumber: true,
                           })}
                         />
-                        {errors.locations?.[index]?.initialQuantity && <FieldError errors={[errors.locations?.[index]?.initialQuantity]} />}
+                        {errors.locations?.[index]?.initialQuantity && (
+                          <FieldError errors={[errors.locations?.[index]?.initialQuantity]} />
+                        )}
                       </Field>
                     </TableCell>
                     <TableCell className="align-top">
@@ -119,7 +114,9 @@ export function ItemPopoverFields() {
                             valueAsNumber: true,
                           })}
                         />
-                        {errors.locations?.[index]?.safetyStock && <FieldError errors={[errors.locations?.[index]?.safetyStock]} />}
+                        {errors.locations?.[index]?.safetyStock && (
+                          <FieldError errors={[errors.locations?.[index]?.safetyStock]} />
+                        )}
                       </Field>
                     </TableCell>
                   </TableRow>

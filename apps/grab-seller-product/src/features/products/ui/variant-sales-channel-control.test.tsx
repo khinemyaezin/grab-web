@@ -19,13 +19,7 @@ vi.mock("@/features/products/api/use-sales-channels", () => ({
   }),
 }));
 
-function Harness({
-  seed,
-  children,
-}: {
-  seed: ProductFormValue;
-  children: ReactNode;
-}) {
+function Harness({ seed, children }: { seed: ProductFormValue; children: ReactNode }) {
   const form = useForm<ProductFormValue>({ defaultValues: seed });
   const dirty = form.formState.isDirty;
   return (

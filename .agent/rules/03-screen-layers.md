@@ -26,7 +26,9 @@ flowchart TD
 ```
 
 ### Page (`*-page.tsx`)
+
 A `*-page.tsx` is the route boundary. It owns:
+
 - Route parameter parsing and validation guards (`useParams`).
 - Page container layout and page-scoped providers (`SlotProvider`, `PlatformProvider`).
 - Shell breadcrumbs (`useShellBreadcrumb`).
@@ -37,7 +39,9 @@ A `*-page.tsx` is the route boundary. It owns:
 > A page MUST NOT contain field-level form state, request DTO mapping, domain tables, resource summaries, or fieldsets.
 
 ### View (`*-view.tsx`)
+
 Introduce a `*-view.tsx` only when it coordinates a meaningful screen region:
+
 - List filter + create action + table.
 - Detail summary + action forms/tables.
 - Parent summary + child list.
@@ -48,12 +52,14 @@ A view MAY own list/filter hooks, the screen's resource query, and loading/error
 **Do not add a view that only forwards props to a single form.** Create screens stay `page → form`.
 
 ### Form (`*-form.tsx`)
+
 - Owns one form lifecycle and its React Hook Form instance (`useForm`).
 - Provides `FormProvider` to child fieldsets.
 - Coordinates submit handling, dirty state, and extension slot resets.
 - Emits typed lifecycle events to its parent.
 
 ### Leaf Components (`*-table.tsx`, `*-filter.tsx`, `*-fieldset.tsx`)
+
 - **`*-table.tsx`**: Owns tabular rendering, row actions, loading/empty states, and pagination callbacks.
 - **`*-filter.tsx`**: Owns filter input controls; does NOT perform data fetching.
 - **`*-fieldset.tsx`**: Owns related input controls and reads typed form context via `useFormContext`.
@@ -85,7 +91,7 @@ flowchart LR
    - Standard for list screens, create screens, and edit screens where the header does not read resource `_links`.
 2. **View-Owned Header**:
    - Resource-gated actions (e.g. `Archive`, `Restore`, `Publish`) when those actions originate from the loaded resource's `_links`.
-   - *Reference implementation*: `product-edit-view.tsx` loads the product and composes `Header` with `ProductActionsMenu` and `ProductEditForm`.
+   - _Reference implementation_: `product-edit-view.tsx` loads the product and composes `Header` with `ProductActionsMenu` and `ProductEditForm`.
 
 > [!WARNING]
 > Do NOT portal header controls. Do NOT copy resource `_links` onto the page just to satisfy a header.
@@ -95,6 +101,7 @@ flowchart LR
 ## 3. Standard Screen Blueprints
 
 ### A. List Screen Blueprint
+
 ```text
 <entity>-list-page
   ├── Header (static chrome, back button, title)
@@ -106,6 +113,7 @@ flowchart LR
 ```
 
 ### B. Create Screen Blueprint (Page → Form)
+
 ```text
 <entity>-new-page
   ├── resolve create capability link (root or nested parent GET)
@@ -120,6 +128,7 @@ flowchart LR
 ```
 
 ### C. Edit Screen Blueprint (Resource-Gated Header)
+
 ```text
 <entity>-edit-page
   ├── validate route ID

@@ -12,10 +12,19 @@ import { useSalesChannelLink } from "@/features/products/api/sales-channel-link"
 import { useSalesChannels } from "@/features/products/api/use-sales-channels";
 import { isStandaloneProductForm } from "@/features/products/lib/is-standalone-product-form";
 import { publicationTargetSkus, unionChannelIds } from "@/features/products/lib/publication-lines";
-import { isSellerFacingChannel, salesChannelLabel } from "@/features/products/lib/sales-channel-label";
+import {
+  isSellerFacingChannel,
+  salesChannelLabel,
+} from "@/features/products/lib/sales-channel-label";
 import { VariantSalesChannelControl } from "@/features/products/ui/variant-sales-channel-control";
 import type { ProductFormValue } from "@/features/products/types";
-import { Item, ItemMedia, ItemContent, ItemTitle, ItemDescription } from "@khinemyaezin/seller-ui/components/item";
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+} from "@khinemyaezin/seller-ui/components/item";
 import { InboxIcon, Settings2 } from "lucide-react";
 
 export function SalesChannel() {
@@ -75,9 +84,7 @@ export function SalesChannel() {
       </CardHeader>
       <CardContent>
         {selected.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Not published to any sales channels.
-          </p>
+          <p className="text-sm text-muted-foreground">Not published to any sales channels.</p>
         ) : (
           <div className="grid gap-2">
             {selected.map((channel) => {

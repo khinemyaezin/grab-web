@@ -25,10 +25,7 @@ export default function StandaloneApp() {
         <BrowserRouter>
           <main className="min-h-screen bg-background p-8">
             <Toaster />
-            <AppRoutes
-              link={{ href: import.meta.env.VITE_CATALOG_API_URL }}
-              platform={platform}
-            />
+            <AppRoutes link={{ href: import.meta.env.VITE_CATALOG_API_URL }} platform={platform} />
           </main>
         </BrowserRouter>
       </QueryClientProvider>

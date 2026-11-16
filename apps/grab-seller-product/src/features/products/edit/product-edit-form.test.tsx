@@ -65,15 +65,11 @@ describe("ProductEditForm", () => {
   });
 
   it("renders the status select with the seeded product status", () => {
-    render(
-      <ProductEditForm
-        productId="prod-1"
-        seed={activeSeed}
-      />,
-    );
+    render(<ProductEditForm productId="prod-1" seed={activeSeed} />);
 
     const status = screen.getByLabelText("Status");
     expect(status.closest("aside")).not.toBeNull();
-    expect(status).toHaveTextContent("Active"); expect(screen.getByText("sales-channel-rail")).toBeInTheDocument();
+    expect(status).toHaveTextContent("Active");
+    expect(screen.getByText("sales-channel-rail")).toBeInTheDocument();
   });
 });

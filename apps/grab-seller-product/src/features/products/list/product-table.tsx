@@ -1,9 +1,16 @@
-
 import { Link } from "react-router";
 import { useCallback, useMemo } from "react";
-import { useProductSearch, useProductDeleteMutation, useProductRestoreMutation } from "@/features/products/api/use-products";
+import {
+  useProductSearch,
+  useProductDeleteMutation,
+  useProductRestoreMutation,
+} from "@/features/products/api/use-products";
 import { HateoasLink, hasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
-import { ProductFilterFormValue, ProductLifecycleEvent, ProductSearchResponse } from "@/features/products/types";
+import {
+  ProductFilterFormValue,
+  ProductLifecycleEvent,
+  ProductSearchResponse,
+} from "@/features/products/types";
 import { Pager } from "@khinemyaezin/seller-ui/components/pager";
 import {
   Table,
@@ -15,12 +22,21 @@ import {
   TableRow,
 } from "@khinemyaezin/seller-ui/components/table";
 import { Badge, Button } from "@khinemyaezin/seller-ui/components/index";
-import { DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenu } from "@khinemyaezin/seller-ui/components/dropdown-menu";
+import {
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenu,
+} from "@khinemyaezin/seller-ui/components/dropdown-menu";
 import { Ellipsis, ImageIcon } from "lucide-react";
 import { formatProductStatus } from "@/features/products/ui/product-status";
 import { useSalesChannelLink } from "@/features/products/api/sales-channel-link";
 import { useSalesChannels } from "@/features/products/api/use-sales-channels";
-import { isSellerFacingChannel, salesChannelLabel } from "@/features/products/lib/sales-channel-label";
+import {
+  isSellerFacingChannel,
+  salesChannelLabel,
+} from "@/features/products/lib/sales-channel-label";
 import type { ProductPublication } from "@/features/products/types";
 
 type FeatureProduct = {
@@ -42,19 +58,26 @@ export type ProductTableProps = {
 };
 
 function transformToProducts(data?: ProductSearchResponse): FeatureProduct[] {
-  return data?._embedded?.productSearchResponseList?.map((product) => ({
-    productId: product.productId,
-    name: product.productName,
-    status: product.status,
-    slug: product.slug,
-    categoryName: product.categoryName,
-    thumbnailUrl: product.thumbnail?.url,
-    publications: product.publications,
-    _links: product._links
-  })) ?? [];
+  return (
+    data?._embedded?.productSearchResponseList?.map((product) => ({
+      productId: product.productId,
+      name: product.productName,
+      status: product.status,
+      slug: product.slug,
+      categoryName: product.categoryName,
+      thumbnailUrl: product.thumbnail?.url,
+      publications: product.publications,
+      _links: product._links,
+    })) ?? []
+  );
 }
 
-export default function ProductTable({ link, filter, onPageChange, onLifecycleEvent }: ProductTableProps) {
+export default function ProductTable({
+  link,
+  filter,
+  onPageChange,
+  onLifecycleEvent,
+}: ProductTableProps) {
   const { data } = useProductSearch(link, filter);
   const deleteProductMutation = useProductDeleteMutation();
   const restoreProductMutation = useProductRestoreMutation();
@@ -91,7 +114,7 @@ export default function ProductTable({ link, filter, onPageChange, onLifecycleEv
   const showPagination = (data?.page.totalPages ?? 0) > 1;
 
   if (products.length == 0) {
-    return <NoProduct />
+    return <NoProduct />;
   }
 
   return (
@@ -105,75 +128,76 @@ export default function ProductTable({ link, filter, onPageChange, onLifecycleEv
           <TableHead></TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody >
-        {
-          products.map((product) => (
-            <TableRow key={product.productId}>
-              <TableCell>
-                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-secondary">
-                  {product.thumbnailUrl ? (
-                    <img
-                      src={product.thumbnailUrl}
-                      alt={product.name}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                  )}
-                </div>
-              </TableCell>
-              <TableCell className="grid grid-rows-2 gap-1">
-                <Link
-                  to={product.productId}
-                  className="font-medium hover:underline"
-                >
-                  {product.name}
-                </Link>
-                <span className="font-normal text-muted-foreground">{product.categoryName}</span>
-              </TableCell>
-              <TableCell>
-                <Badge variant="default">
-                  {formatProductStatus(product.status)}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <PublishedChannelBadges
-                  publications={product.publications}
-                  channels={channels}
-                />
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost">
-                      <Ellipsis />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuGroup>
-                      {resolveLink(product._links, SellerApiLinks.product.deleteProduct) && (
-                        <DropdownMenuItem variant="destructive"
-                          disabled={deleteProductMutation.isPending}
-                          onClick={() => handleArchive(resolveLink(product._links, SellerApiLinks.product.deleteProduct)!, product.name)}>
-                          Archive
-                        </DropdownMenuItem>
-                      )}
+      <TableBody>
+        {products.map((product) => (
+          <TableRow key={product.productId}>
+            <TableCell>
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-secondary">
+                {product.thumbnailUrl ? (
+                  <img
+                    src={product.thumbnailUrl}
+                    alt={product.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                )}
+              </div>
+            </TableCell>
+            <TableCell className="grid grid-rows-2 gap-1">
+              <Link to={product.productId} className="font-medium hover:underline">
+                {product.name}
+              </Link>
+              <span className="font-normal text-muted-foreground">{product.categoryName}</span>
+            </TableCell>
+            <TableCell>
+              <Badge variant="default">{formatProductStatus(product.status)}</Badge>
+            </TableCell>
+            <TableCell>
+              <PublishedChannelBadges publications={product.publications} channels={channels} />
+            </TableCell>
+            <TableCell className="text-right">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost">
+                    <Ellipsis />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuGroup>
+                    {resolveLink(product._links, SellerApiLinks.product.deleteProduct) && (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        disabled={deleteProductMutation.isPending}
+                        onClick={() =>
+                          handleArchive(
+                            resolveLink(product._links, SellerApiLinks.product.deleteProduct)!,
+                            product.name,
+                          )
+                        }
+                      >
+                        Archive
+                      </DropdownMenuItem>
+                    )}
 
-                      {hasLink(product._links, SellerApiLinks.pending.restoreProduct) && (
-                        <DropdownMenuItem
-                          disabled={restoreProductMutation.isPending}
-                          onClick={() => handleOnRestore(resolveLink(product._links, SellerApiLinks.pending.restoreProduct)!)}>
-                          Restore
-                        </DropdownMenuItem>
-                      )}
-
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))
-        }
+                    {hasLink(product._links, SellerApiLinks.pending.restoreProduct) && (
+                      <DropdownMenuItem
+                        disabled={restoreProductMutation.isPending}
+                        onClick={() =>
+                          handleOnRestore(
+                            resolveLink(product._links, SellerApiLinks.pending.restoreProduct)!,
+                          )
+                        }
+                      >
+                        Restore
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
       {showPagination && (
         <TableFooter className="bg-transparent">
@@ -181,17 +205,14 @@ export default function ProductTable({ link, filter, onPageChange, onLifecycleEv
             <TableCell colSpan={5} className="px-(--card-spacing)">
               <div className="flex w-full items-center justify-between py-3">
                 <span className="text-muted-foreground grow">
-                  Showing {data?.page ? data.page.number * data.page.size + 1 : 0} - {data?.page ? data.page.number * data.page.size + products.length : 0} of {data?.page?.totalElements} products
+                  Showing {data?.page ? data.page.number * data.page.size + 1 : 0} -{" "}
+                  {data?.page ? data.page.number * data.page.size + products.length : 0} of{" "}
+                  {data?.page?.totalElements} products
                 </span>
                 {data?.page && (
-                  <Pager
-                    className="justify-end"
-                    onPageChange={onPageChange}
-                    {...data?.page}
-                  />
+                  <Pager className="justify-end" onPageChange={onPageChange} {...data?.page} />
                 )}
               </div>
-
             </TableCell>
           </TableRow>
         </TableFooter>
@@ -208,8 +229,13 @@ function PublishedChannelBadges({
   channels: { salesChannelId: string; type: string }[];
 }) {
   const labels = (publications ?? [])
-    .map((publication) => channels.find((channel) => channel.salesChannelId === publication.salesChannelId))
-    .filter((channel): channel is { salesChannelId: string; type: string } => !!channel && isSellerFacingChannel(channel.type))
+    .map((publication) =>
+      channels.find((channel) => channel.salesChannelId === publication.salesChannelId),
+    )
+    .filter(
+      (channel): channel is { salesChannelId: string; type: string } =>
+        !!channel && isSellerFacingChannel(channel.type),
+    )
     .map((channel) => salesChannelLabel(channel.type));
 
   if (labels.length === 0) {
@@ -219,7 +245,9 @@ function PublishedChannelBadges({
   return (
     <div className="flex flex-wrap gap-1">
       {labels.map((label) => (
-        <Badge key={label} variant="secondary">{label}</Badge>
+        <Badge key={label} variant="secondary">
+          {label}
+        </Badge>
       ))}
     </div>
   );
@@ -229,10 +257,7 @@ function NoProduct() {
   return (
     <div className="flex flex-col items-center justify-center gap-1 text-center">
       <p className="text-base font-semibold text-foreground">No products found</p>
-      <p className="text-sm text-muted-foreground">
-        Try changing the filters or search term
-      </p>
+      <p className="text-sm text-muted-foreground">Try changing the filters or search term</p>
     </div>
   );
 }
-

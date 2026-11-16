@@ -105,9 +105,7 @@ describe("buildUpdateSellableProductRequest", () => {
       },
     );
 
-    expect(request.publicationLines).toEqual([
-      { sku: "SKU-MUG", salesChannelId: "web-1" },
-    ]);
+    expect(request.publicationLines).toEqual([{ sku: "SKU-MUG", salesChannelId: "web-1" }]);
   });
 
   it("copies unpublish lines onto the workflow request", () => {
@@ -120,9 +118,7 @@ describe("buildUpdateSellableProductRequest", () => {
       },
     );
 
-    expect(request.unpublishLines).toEqual([
-      { sku: "SKU-MUG", salesChannelId: "web-1" },
-    ]);
+    expect(request.unpublishLines).toEqual([{ sku: "SKU-MUG", salesChannelId: "web-1" }]);
   });
 
   it("copies product status onto the workflow request", () => {

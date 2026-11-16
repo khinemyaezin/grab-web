@@ -20,7 +20,9 @@ const InventoryLocationsContext = createContext<InventoryLocationsContextValue |
 export function useInventoryCreateLocations(): InventoryLocationsContextValue {
   const ctx = useContext(InventoryLocationsContext);
   if (!ctx) {
-    throw new Error("useInventoryCreateLocations must be used within an InventoryCreateFormContext");
+    throw new Error(
+      "useInventoryCreateLocations must be used within an InventoryCreateFormContext",
+    );
   }
   return ctx;
 }
@@ -81,11 +83,7 @@ export function InventoryCreateFormContext({
   );
 
   if (isLoading && !initialValue && Boolean(searchLocationLink)) {
-    return (
-      loadingFallback ?? (
-        <Skeleton className="h-24 w-full" />
-      )
-    );
+    return loadingFallback ?? <Skeleton className="h-24 w-full" />;
   }
 
   return (

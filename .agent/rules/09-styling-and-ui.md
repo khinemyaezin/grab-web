@@ -35,6 +35,7 @@ import { Header } from "@khinemyaezin/seller-ui/layout/header";
 ```
 
 ### Core Rules:
+
 1. **No Raw Form Controls**: Never use unstyled `<input>`, `<select>`, `<textarea>`, or `<button>` tags. Always use `@khinemyaezin/seller-ui` equivalents.
 2. **Semantic Containers Allowed**: Standard semantic HTML wrappers (`form`, `section`, `article`, `header`, `div`, `p`, `span`) are permitted for structural layout.
 3. **Domain Isolation**:

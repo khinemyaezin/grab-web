@@ -1,6 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "MF_DTS",
+    "MF_AUTH_TYPES_URL",
+    "MF_ACCOUNT_TYPES_URL",
+    "MF_PRODUCT_TYPES_URL",
+    "MF_INVENTORY_TYPES_URL",
+    "MF_PRICING_TYPES_URL"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -10,7 +18,8 @@
       "dependsOn": ["^build"]
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "outputs": []
     },
     "test": {
       "dependsOn": ["^build"]

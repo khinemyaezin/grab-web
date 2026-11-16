@@ -1,5 +1,9 @@
 import { useCallback } from "react";
-import { Filter, type FilterField, type FilterValues } from "@khinemyaezin/seller-ui/components/filter";
+import {
+  Filter,
+  type FilterField,
+  type FilterValues,
+} from "@khinemyaezin/seller-ui/components/filter";
 import type { ZoneSearchCriteria } from "./use-zone-filter";
 import type { ZoneType } from "@/features/inventory/types";
 
@@ -42,7 +46,7 @@ export default function ZoneFilter({ onChange }: ZoneFilterProps) {
         size: Number(values.size ?? DEFAULT_SIZE),
       });
     },
-    [onChange]
+    [onChange],
   );
 
   return (

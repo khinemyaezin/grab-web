@@ -71,9 +71,7 @@ const formValues = {
       rank: 0,
     },
   ],
-  descriptions: [
-    { name: "overview", title: "Overview", description: "A handmade mug." },
-  ],
+  descriptions: [{ name: "overview", title: "Overview", description: "A handmade mug." }],
 };
 
 const payload = {
@@ -118,10 +116,10 @@ describe("useProductCreateSubmit", () => {
     await result.current.submit();
 
     expect(order).toEqual(["stage", "create"]);
-    expect(mockBuildCreateSellableProductRequest).toHaveBeenCalledWith(
-      formValues,
-      { pricingLines: [], inventoryLines: [] },
-    );
+    expect(mockBuildCreateSellableProductRequest).toHaveBeenCalledWith(formValues, {
+      pricingLines: [],
+      inventoryLines: [],
+    });
     expect(mockExecute).toHaveBeenCalledWith(payload);
     expect(payload).toHaveProperty("medias");
     expect(payload).toHaveProperty("descriptions");
@@ -150,7 +148,10 @@ describe("useProductCreateSubmit", () => {
   });
 
   it("throws on stage failure and does not create a product", async () => {
-    mockStage.mockResolvedValue({ status: "failed", error: new Error("Storage upload failed (403)") });
+    mockStage.mockResolvedValue({
+      status: "failed",
+      error: new Error("Storage upload failed (403)"),
+    });
     const onLifecycleEvent = vi.fn();
     const { result } = renderHook(() =>
       useProductCreateSubmit({
@@ -201,10 +202,10 @@ describe("useProductCreateSubmit", () => {
 
     await result.current.submit();
 
-    expect(mockBuildCreateSellableProductRequest).toHaveBeenCalledWith(
-      activeValues,
-      { pricingLines: [], inventoryLines: [] },
-    );
+    expect(mockBuildCreateSellableProductRequest).toHaveBeenCalledWith(activeValues, {
+      pricingLines: [],
+      inventoryLines: [],
+    });
     expect(mockExecute).toHaveBeenCalledTimes(1);
     expect(mockExecute).toHaveBeenCalledWith(payload);
     expect(onLifecycleEvent).toHaveBeenCalledWith({ type: "created", productId: "prod-1" });

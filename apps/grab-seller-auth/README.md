@@ -54,6 +54,7 @@ This will generate the federated `remoteEntry.js` and compiled assets in the `di
 ## Architecture Details
 
 This module adheres to the Domain Boundary Rules defined in the central [Current System Architecture](../../docs/Current_System_Architecture.md) documentation:
+
 - Uses shared UI primitives from `@khinemyaezin/seller-ui`.
 - Uses the shared API client infrastructure from `@khinemyaezin/seller-api`.
 - Adheres to standard typescript interfaces defined in `@khinemyaezin/seller-contracts`.

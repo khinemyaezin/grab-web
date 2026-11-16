@@ -1,13 +1,8 @@
 import { describe, expect, it } from "vitest";
-import {
-  toProductMediaFormItems,
-  transformProductToFormValue,
-} from "./to-product-form-value";
+import { toProductMediaFormItems, transformProductToFormValue } from "./to-product-form-value";
 import type { GetFullProductResponse } from "@/features/products/types";
 
-function makeProduct(
-  overrides: Partial<GetFullProductResponse> = {},
-): GetFullProductResponse {
+function makeProduct(overrides: Partial<GetFullProductResponse> = {}): GetFullProductResponse {
   return {
     id: "prod-1",
     name: "T-Shirt",
@@ -39,9 +34,7 @@ describe("transformProductToFormValue", () => {
             status: "ACTIVE",
             matrixKey: "red",
             publications: [{ salesChannelId: "web-1" }],
-            variations: [
-              { typeId: "t1", typeName: "Color", optionId: "o1", optionName: "Red" },
-            ],
+            variations: [{ typeId: "t1", typeName: "Color", optionId: "o1", optionName: "Red" }],
           },
         ],
         variantTypes: [
@@ -204,7 +197,9 @@ describe("transformProductToFormValue", () => {
   });
 
   it("maps descriptions onto the form and treats missing descriptions as empty", () => {
-    expect(transformProductToFormValue(makeProduct({ descriptions: null })).descriptions).toEqual([]);
+    expect(transformProductToFormValue(makeProduct({ descriptions: null })).descriptions).toEqual(
+      [],
+    );
     expect(
       transformProductToFormValue(
         makeProduct({

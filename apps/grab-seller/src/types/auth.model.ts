@@ -1,3 +1,1 @@
-export type AuthLinks = {
-    
-}
+export type AuthLinks = {};

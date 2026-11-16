@@ -25,6 +25,6 @@ export default function StorefrontRoutes({
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AccountProviders>
-    </div >
+    </div>
   );
 }

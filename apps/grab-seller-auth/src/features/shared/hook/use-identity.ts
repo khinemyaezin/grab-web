@@ -4,12 +4,12 @@ import { useApi, useEntryLink } from "@khinemyaezin/seller-ui";
 import { linkDiscoveryService } from "../api/link-discovery";
 
 export function useIdentityGet(): UseQueryResult<IdentityLinks, Error> {
-    const api = useApi();
-    const entryLink = useEntryLink();
+  const api = useApi();
+  const entryLink = useEntryLink();
 
-    return useQuery({
-        queryKey: ["identity-root", entryLink.href],
-        queryFn: async () => linkDiscoveryService.root(api, entryLink),
-        enabled: !!entryLink,
-    });
+  return useQuery({
+    queryKey: ["identity-root", entryLink.href],
+    queryFn: async () => linkDiscoveryService.root(api, entryLink),
+    enabled: !!entryLink,
+  });
 }

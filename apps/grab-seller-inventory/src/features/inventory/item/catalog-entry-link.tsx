@@ -1,9 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 
-const CatalogEntryLinkContext = createContext<HateoasLink | undefined>(
-  undefined,
-);
+const CatalogEntryLinkContext = createContext<HateoasLink | undefined>(undefined);
 
 export function CatalogEntryLinkProvider({
   link,
@@ -13,9 +11,7 @@ export function CatalogEntryLinkProvider({
   children: ReactNode;
 }) {
   return (
-    <CatalogEntryLinkContext.Provider value={link}>
-      {children}
-    </CatalogEntryLinkContext.Provider>
+    <CatalogEntryLinkContext.Provider value={link}>{children}</CatalogEntryLinkContext.Provider>
   );
 }
 

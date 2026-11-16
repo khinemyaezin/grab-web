@@ -1,13 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { createBackendEventStream, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
-import type {
-  SellerPlatform,
-  SessionSnapshot,
-} from "@khinemyaezin/seller-contracts";
+import type { SellerPlatform, SessionSnapshot } from "@khinemyaezin/seller-contracts";
 import { useEntryGet } from "./use-entry";
-import {
-  WorkflowEventStreamHandler,
-} from "../services/workflow-sse-handler";
+import { WorkflowEventStreamHandler } from "../services/workflow-sse-handler";
 import { SseHandler } from "src/types/sse";
 
 function fallbackEventStreamUrl(apiBaseUrl: string): string {
@@ -21,6 +16,7 @@ function parseReadyProducerId(data: string): "backend" | "host" {
       return parsed.producerId;
     }
   } catch {
+    // Fall back to default producer on malformed JSON
   }
   return "backend";
 }
@@ -34,14 +30,9 @@ export function useSseStream(
   const events = platform.events;
   const refresh = platform.session.refresh;
   const scopeId =
-    snapshot.status === "authenticated"
-      ? snapshot.user.currentAccessContext?.scopeId
-      : undefined;
+    snapshot.status === "authenticated" ? snapshot.user.currentAccessContext?.scopeId : undefined;
 
-  const moduleHandlers = useMemo(
-    () => handlers ?? [new WorkflowEventStreamHandler()],
-    [handlers],
-  );
+  const moduleHandlers = useMemo(() => handlers ?? [new WorkflowEventStreamHandler()], [handlers]);
 
   const streamUrl = useMemo(() => {
     const discovered = resolveLink(data?._links, SellerApiLinks.pending.eventStream)?.href;

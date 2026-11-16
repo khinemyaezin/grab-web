@@ -32,7 +32,12 @@ export function StorefrontNewForm(props: StorefrontNewFormProps) {
 }
 
 function StorefrontNewFormContent({ link, onLifecycleEvent }: StorefrontNewFormProps) {
-  const { handleSubmit, reset, setValue, formState: { isDirty } } = useFormContext<StorefrontFormValues>();
+  const {
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { isDirty },
+  } = useFormContext<StorefrontFormValues>();
   const slugManualRef = useRef(false);
 
   const { submit } = useStorefrontCreateSubmit({
@@ -80,7 +85,9 @@ function StorefrontNewFormContent({ link, onLifecycleEvent }: StorefrontNewFormP
         <CardContent>
           <StorefrontFieldset
             onNameChange={handleNameChange}
-            onSlugEdit={() => { slugManualRef.current = true; }}
+            onSlugEdit={() => {
+              slugManualRef.current = true;
+            }}
           />
         </CardContent>
       </Card>

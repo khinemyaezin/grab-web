@@ -27,8 +27,7 @@ export function matchShellBreadcrumbs(
   for (const segment of segments) {
     currentPath += `/${segment}`;
     const match =
-      children.find((n) => n.path === segment) ??
-      children.find((n) => n.path.startsWith(":"));
+      children.find((n) => n.path === segment) ?? children.find((n) => n.path.startsWith(":"));
 
     let label = match?.label;
     if (match && replacements && replacements[match.path]) {

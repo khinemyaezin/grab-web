@@ -38,19 +38,23 @@ src/features/[feature-name]/
 When creating a new React component within a feature (e.g., inside `src/features/[feature-name]/components/`), adhere to the following rules:
 
 ### A. File Naming and Export
+
 - **File Name:** Use `kebab-case` for file names (e.g., `login-form.tsx`, `user-profile.tsx`).
 - **Export:** Use **default exports** for components (e.g., `export default function ComponentName(...)`).
 
 ### B. Props Definition
+
 - Define component props using a `type` alias.
 - Name the type `[ComponentName]Props` (e.g., `export type LoginFormProps = { ... }`).
 - Export the props type so it can be reused or extended if necessary.
 
 ### C. UI Library and Styling
+
 - **Do not reinvent UI components.** Utilize the shared UI library: `@khinemyaezin/seller-ui/components/*`.
 - For layout and minor styling, use Tailwind CSS utility classes via the `className` prop.
 
 ### D. Separation of Concerns
+
 - **Logic:** Keep complex business logic and API calls out of the component. Use custom hooks (located in the `hooks/` directory) to fetch data (e.g., `useLocations`) and handle mutations (e.g., `useEntityActions`), then pass down the necessary state.
 - **Data & Links:** Pass `HateoasLink` references as props from the parent to fetch data or resolve links for actions. Use `@khinemyaezin/seller-api` utilities like `resolveLink` and `hasLink` to manage permissions and HATEOAS actions.
 - **Forms:** For form handling and validation, use `react-hook-form`. Integrate with shared form UI components like `FieldGroup`, `Field`, `FieldLabel`, `FieldError`, and `Input`.
@@ -60,7 +64,9 @@ When creating a new React component within a feature (e.g., inside `src/features
 Pages act as the structural containers that compose various UI components, forms, and contexts. When building a new page (e.g., inside `src/features/[feature-name]/pages/`), follow this composition pattern:
 
 ### A. Composition Flow (`page -> view -> specific components`)
+
 A fully-fledged feature typically consists of the following necessary structural components:
+
 - **Page (`[feature-name]-page.tsx`):** The page component is responsible for high-level layout, fetching root data/links (e.g., using `getIdentityRoot()`), and passing down necessary props or `HateoasLink` references to the `View` component.
 - **View (`[feature-name]-view.tsx`):** Acts as the orchestrator for the page's UI elements. It manages the layout of the `Table`, `Filter`, and interactions like opening modals for forms.
 - **Table (`[feature-name]-table.tsx`):** Renders the list of entities and utilizes the shared `<Pager>` for pagination.
@@ -70,9 +76,11 @@ A fully-fledged feature typically consists of the following necessary structural
 - **Example Flow:** The `LocationPage` fetches data and renders `LocationView`. The `LocationView` renders `LocationFilter` and `LocationTable`. Actions in the view might open a `NewLocationForm` or `EditLocationForm`.
 
 ### B. Default Export for Pages
+
 - **Export:** Use **default exports** for top-level page components to simplify lazy loading and routing (e.g., `export default function LoginPage()`).
 
 ## Summary Checklist for Agents
+
 - [ ] Is the component placed in the correct `features/[feature-name]/components/` directory?
 - [ ] Is the file named in `kebab-case.tsx`?
 - [ ] Are props defined explicitly with an exported `type`?

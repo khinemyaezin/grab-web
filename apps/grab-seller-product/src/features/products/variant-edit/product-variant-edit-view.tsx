@@ -1,5 +1,11 @@
 import { ReactNode, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@khinemyaezin/seller-ui/components/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@khinemyaezin/seller-ui/components/card";
 import { QueryState } from "@khinemyaezin/seller-ui/components/query-state";
 import { useCatalogLink } from "@/features/products/api/use-root";
 import { useProductGet } from "@/features/products/api/use-products";
@@ -26,7 +32,11 @@ export default function ProductVariantEditView({
   onLifecycleEvent,
 }: ProductVariantEditViewProps) {
   const getProductLink = useCatalogLink("getProduct");
-  const { data: product, isLoading: isProductLoading, isError: isProductError } = useProductGet(getProductLink, productId);
+  const {
+    data: product,
+    isLoading: isProductLoading,
+    isError: isProductError,
+  } = useProductGet(getProductLink, productId);
 
   const variants = product?.variants ?? [];
   const currentVariantId = variantId || variants[0]?.id || "";
@@ -68,49 +78,52 @@ export default function ProductVariantEditView({
             </Button>
           </ButtonGroup>
           <ButtonGroup>
-            <ProductVariantActionsMenu productId={productId} links={actions} onLifecycleEvent={onLifecycleEvent} />
+            <ProductVariantActionsMenu
+              productId={productId}
+              links={actions}
+              onLifecycleEvent={onLifecycleEvent}
+            />
           </ButtonGroup>
         </ButtonGroup>
       </Header>
       <QueryState isLoading={isProductLoading || !product} isError={isProductError && !product}>
-        {<div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-          <div className="md:col-span-5 lg:col-span-4">
-            <ProductInfoView product={product!}>
-              <ProductVariantNav
-                variants={variants}
-                variantTypes={product?.variantTypes}
-                currentVariantId={currentVariantId}
-              />
-            </ProductInfoView>
-          </div>
+        {
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+            <div className="md:col-span-5 lg:col-span-4">
+              <ProductInfoView product={product!}>
+                <ProductVariantNav
+                  variants={variants}
+                  variantTypes={product?.variantTypes}
+                  currentVariantId={currentVariantId}
+                />
+              </ProductInfoView>
+            </div>
 
-          <div className="md:col-span-7 lg:col-span-8">
-            {currentVariantId ? (
-              <QueryState
-                isLoading={isVariantLoading || !seed}
-                isError={isVariantError && !seed}
-              >
-                {seed ? (
-                  <ProductVariantEditForm
-                    key={currentVariantId}
-                    productId={productId}
-                    variantId={currentVariantId}
-                    seed={seed}
-                    productMedias={product?.medias ?? []}
-                    actions={actions}
-                    onLifecycleEvent={onLifecycleEvent}
-                  />
-                ) : null}
-              </QueryState>
-            ) : (
-              <Card>
-                <CardContent className="p-6 text-center text-muted-foreground">
-                  Select a variant to edit
-                </CardContent>
-              </Card>
-            )}
+            <div className="md:col-span-7 lg:col-span-8">
+              {currentVariantId ? (
+                <QueryState isLoading={isVariantLoading || !seed} isError={isVariantError && !seed}>
+                  {seed ? (
+                    <ProductVariantEditForm
+                      key={currentVariantId}
+                      productId={productId}
+                      variantId={currentVariantId}
+                      seed={seed}
+                      productMedias={product?.medias ?? []}
+                      actions={actions}
+                      onLifecycleEvent={onLifecycleEvent}
+                    />
+                  ) : null}
+                </QueryState>
+              ) : (
+                <Card>
+                  <CardContent className="p-6 text-center text-muted-foreground">
+                    Select a variant to edit
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
-        </div>}
+        }
       </QueryState>
     </>
   );

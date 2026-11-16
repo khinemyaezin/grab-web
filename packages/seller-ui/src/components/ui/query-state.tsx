@@ -1,18 +1,18 @@
-import type { ReactNode } from "react"
+import type { ReactNode } from "react";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { PageLoadingSkeleton } from "@/components/ui/page-loading-skeleton"
+import { Card, CardContent } from "@/components/ui/card";
+import { PageLoadingSkeleton } from "@/components/ui/page-loading-skeleton";
 
-const DEFAULT_ERROR_MESSAGE = "Failed to load."
+const DEFAULT_ERROR_MESSAGE = "Failed to load.";
 
 type QueryStateProps = {
-  isLoading: boolean
-  isError: boolean
-  loading?: ReactNode
-  error?: ReactNode
-  errorMessage?: string
-  children: ReactNode
-}
+  isLoading: boolean;
+  isError: boolean;
+  loading?: ReactNode;
+  error?: ReactNode;
+  errorMessage?: string;
+  children: ReactNode;
+};
 
 function QueryStateError({ message }: { message: string }) {
   return (
@@ -21,7 +21,7 @@ function QueryStateError({ message }: { message: string }) {
         <p className="text-sm text-muted-foreground">{message}</p>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function QueryState({
@@ -33,14 +33,14 @@ function QueryState({
   children,
 }: QueryStateProps) {
   if (isError) {
-    return error ?? <QueryStateError message={errorMessage} />
+    return error ?? <QueryStateError message={errorMessage} />;
   }
 
   if (isLoading) {
-    return loading ?? <PageLoadingSkeleton />
+    return loading ?? <PageLoadingSkeleton />;
   }
 
-  return children
+  return children;
 }
 
-export { QueryState, type QueryStateProps }
+export { QueryState, type QueryStateProps };

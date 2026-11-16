@@ -55,10 +55,10 @@ export function StorefrontLifecycleActions({
   const [reasonError, setReasonError] = useState<string | undefined>();
 
   const pending =
-    activateMutation.isPending
-    || reactivateMutation.isPending
-    || suspendMutation.isPending
-    || closeMutation.isPending;
+    activateMutation.isPending ||
+    reactivateMutation.isPending ||
+    suspendMutation.isPending ||
+    closeMutation.isPending;
 
   const run = async (
     action: () => Promise<unknown>,
@@ -130,12 +130,7 @@ export function StorefrontLifecycleActions({
     }
   };
 
-  const hasActions = Boolean(
-    activateLink
-    || suspendLink
-    || reactivateLink
-    || closeLink,
-  );
+  const hasActions = Boolean(activateLink || suspendLink || reactivateLink || closeLink);
 
   if (!hasActions) {
     return null;
@@ -152,19 +147,13 @@ export function StorefrontLifecycleActions({
         <DropdownMenuContent>
           <DropdownMenuGroup>
             {activateLink && (
-              <DropdownMenuItem
-                disabled={pending}
-                onClick={() => setConfirmKind("activate")}
-              >
+              <DropdownMenuItem disabled={pending} onClick={() => setConfirmKind("activate")}>
                 <CheckCircle />
                 Activate
               </DropdownMenuItem>
             )}
             {reactivateLink && (
-              <DropdownMenuItem
-                disabled={pending}
-                onClick={() => setConfirmKind("reactivate")}
-              >
+              <DropdownMenuItem disabled={pending} onClick={() => setConfirmKind("reactivate")}>
                 <RotateCcw />
                 Reactivate
               </DropdownMenuItem>

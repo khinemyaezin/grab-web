@@ -59,6 +59,7 @@ flowchart TD
 ## 2. Skip Rules
 
 Do not create unnecessary files for trivial operations:
+
 - **Simple POST** (no extension slots, no workflow await, no secondary attachments): The form or a small submit hook MAY call the TanStack `useMutation` directly. Do not introduce a command file.
 - **Complex Write** (extension slots, workflow await, and/or secondary attachments): Use the full submit saga + command + adapter architecture.
 
@@ -79,7 +80,11 @@ Do not create unnecessary files for trivial operations:
 Long or composite forms integrate with `useContextBar`:
 
 ```tsx
-const { handleSubmit, reset, formState: { isDirty } } = useFormContext<ProductFormValue>();
+const {
+  handleSubmit,
+  reset,
+  formState: { isDirty },
+} = useFormContext<ProductFormValue>();
 const [isExtensionDirty, resetExtensionDirty] = useIsExtensionDirty();
 const resetAllSlots = useResetAllSlots();
 
@@ -109,6 +114,7 @@ useContextBar({
 ```
 
 ### Critical Rules:
+
 - **Composite Dirty State**: Always combine host form dirty state (`isDirty`) with extension slot dirty state (`isExtensionDirty`).
 - **Throw on Validation Failure**: `onSave` MUST reject if validation fails to prevent the shell from rendering a false success state.
 - **Complete Discard**: `onDiscard` MUST reset the host form, reset all slot handles (`useResetAllSlots`), and clear extension dirty state.

@@ -29,7 +29,7 @@ function safeApiBaseUrl(value: unknown): string {
 function createRuntimeConfig(input: SellerRuntimeConfig): Readonly<SellerRuntimeConfig> {
   return Object.freeze({
     appName: input.appName,
-    apiBaseUrl: safeApiBaseUrl(input.apiBaseUrl)
+    apiBaseUrl: safeApiBaseUrl(input.apiBaseUrl),
   });
 }
 

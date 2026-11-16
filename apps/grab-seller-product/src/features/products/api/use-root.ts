@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { fetchCatalogRoot } from "./discovery";
 import type { CatalogRoot } from "@/features/products/types";

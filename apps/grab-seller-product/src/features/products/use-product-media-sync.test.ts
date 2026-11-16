@@ -57,7 +57,9 @@ describe("useProductMediaSync", () => {
 
   it("skips stage when there is no local file without a storageKey", async () => {
     mockGetValues.mockImplementation((name?: string) =>
-      name === "medias" ? [ { ...items[0], file: undefined, storageKey: "merchants/m/products/p/a.jpg" } ] : undefined,
+      name === "medias"
+        ? [{ ...items[0], file: undefined, storageKey: "merchants/m/products/p/a.jpg" }]
+        : undefined,
     );
     const { result } = renderHook(() => useProductMediaSync());
 

@@ -1,43 +1,86 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { federation } from "@module-federation/vite";
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from "@tailwindcss/vite";
+
+/**
+ * Development defaults. Keep these in sync with `scripts/mf-types.mjs`.
+ * Set the corresponding `MF_*_TYPES_URL` variable to override them. The value
+ * may point at either the `@mf-types.d.ts` file or the `@mf-types.zip` archive;
+ * the other URL is derived from it.
+ */
+const REMOTE_TYPE_DEFAULTS = {
+  grab_seller_auth: {
+    envKey: "MF_AUTH_TYPES_URL",
+    url: "http://localhost:3003/@mf-types.d.ts",
+  },
+  grab_seller_account: {
+    envKey: "MF_ACCOUNT_TYPES_URL",
+    url: "http://localhost:3004/@mf-types.d.ts",
+  },
+  grab_seller_product: {
+    envKey: "MF_PRODUCT_TYPES_URL",
+    url: "http://localhost:3001/@mf-types.d.ts",
+  },
+  grab_seller_inventory: {
+    envKey: "MF_INVENTORY_TYPES_URL",
+    url: "http://localhost:3002/@mf-types.d.ts",
+  },
+  grab_seller_pricing: {
+    envKey: "MF_PRICING_TYPES_URL",
+    url: "http://localhost:3005/@mf-types.d.ts",
+  },
+} as const;
+
+const toTypeUrls = (value: string, envKey: string) => {
+  if (value.endsWith(".zip")) {
+    return { api: value.replace(/\.zip$/, ".d.ts"), zip: value };
+  }
+  if (value.endsWith(".d.ts")) {
+    return { api: value, zip: value.replace(/\.d\.ts$/, ".zip") };
+  }
+  throw new Error(
+    `${envKey} must point to an @mf-types.d.ts or @mf-types.zip artifact (received "${value}")`,
+  );
+};
+
+const resolveRemoteTypeUrls = (env: Record<string, string>, isDevelopment: boolean) =>
+  Object.fromEntries(
+    Object.entries(REMOTE_TYPE_DEFAULTS).map(([name, definition]) => {
+      const value = env[definition.envKey];
+      const urls = value
+        ? toTypeUrls(value, definition.envKey)
+        : isDevelopment
+          ? toTypeUrls(definition.url, definition.envKey)
+          : undefined;
+      if (!urls) {
+        throw new Error(
+          `${definition.envKey} is required when MF_DTS is enabled outside development. ` +
+            "Run `pnpm mf:types` and set the MF_*_TYPES_URL variables.",
+        );
+      }
+      return [name, { ...urls, alias: name }];
+    }),
+  );
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "")
+  const env = loadEnv(mode, process.cwd(), "");
+  const dtsEnabled = process.env.MF_DTS !== "0";
   return {
     plugins: [
       react(),
       tailwindcss(),
       federation({
         name: "seller_shell",
-        dts: process.env.MF_DTS === "0" ? false : {
-          consumeTypes: {
-            remoteTypeUrls: {
-              grab_seller_auth: {
-                api: "http://localhost:3003/@mf-types.d.ts",
-                zip: "http://localhost:3003/@mf-types.zip",
+        dts: dtsEnabled
+          ? {
+              consumeTypes: {
+                remoteTypeUrls: resolveRemoteTypeUrls(env, mode === "development"),
+                abortOnError: true,
+                typesOnBuild: true,
               },
-              grab_seller_account: {
-                api: "http://localhost:3004/@mf-types.d.ts",
-                zip: "http://localhost:3004/@mf-types.zip",
-              },
-              grab_seller_product: {
-                api: "http://localhost:3001/@mf-types.d.ts",
-                zip: "http://localhost:3001/@mf-types.zip",
-              },
-              grab_seller_inventory: {
-                api: "http://localhost:3002/@mf-types.d.ts",
-                zip: "http://localhost:3002/@mf-types.zip",
-              },
-              grab_seller_pricing: {
-                api: "http://localhost:3005/@mf-types.d.ts",
-                zip: "http://localhost:3005/@mf-types.zip",
-              },
-            },
-            abortOnError: false,
-          },
-        },
+            }
+          : false,
         remotes: {
           grab_seller_auth: {
             type: "module",
@@ -66,11 +109,11 @@ export default defineConfig(({ mode }) => {
           },
         },
         shared: {
-          "react": { singleton: true, requiredVersion: "19.2.4" },
+          react: { singleton: true, requiredVersion: "19.2.4" },
           "react-dom": { singleton: true, requiredVersion: "19.2.4" },
           "react-router": { singleton: true, requiredVersion: "7.18.0" },
           "react-hook-form": { singleton: true, requiredVersion: "7.74.0" },
-          "recharts": { singleton: true },
+          recharts: { singleton: true },
           "@tanstack/react-query": { singleton: true, requiredVersion: "5.99.2" },
           "@khinemyaezin/seller-api": { singleton: true },
           "@khinemyaezin/seller-ui": { singleton: true },
@@ -99,8 +142,8 @@ export default defineConfig(({ mode }) => {
           timeout: 0,
           proxyTimeout: 0,
           headers: {
-            "X-Platform": "SELLER_PORTAL"
-          }
+            "X-Platform": "SELLER_PORTAL",
+          },
         },
         "/mfe/seller-auth/": {
           target: "http://localhost:3003",

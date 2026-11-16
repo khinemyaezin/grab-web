@@ -9,11 +9,7 @@ export function useProductCreateEvents() {
   const navigate = useNavigate();
 
   const toast = useCallback(
-    (
-      type: "success" | "error" | "info" | "warning",
-      message: string,
-      description?: string,
-    ) => {
+    (type: "success" | "error" | "info" | "warning", message: string, description?: string) => {
       platform?.events.emit("shell:toast:v1", {
         type,
         message,

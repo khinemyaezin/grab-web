@@ -34,14 +34,22 @@ export default function ProductNewForm(props: ProductNewFormProps) {
 }
 
 function ProductNewFormContent({ link, onLifecycleEvent }: ProductNewFormProps) {
-  const { handleSubmit, reset, formState: { isDirty } } = useFormContext<ProductFormValue>();
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useFormContext<ProductFormValue>();
   const [isExtensionDirty, resetExtensionDirty] = useIsExtensionDirty();
   const resetAllSlots = useResetAllSlots();
 
   const { submit } = useProductCreateSubmit({
     link,
     onLifecycleEvent: (event) => {
-      if (event.type === "created" || event.type === "createMediaFailed" || event.type === "createDescriptionFailed") {
+      if (
+        event.type === "created" ||
+        event.type === "createMediaFailed" ||
+        event.type === "createDescriptionFailed"
+      ) {
         resetExtensionDirty();
         resetAllSlots();
       }
@@ -78,7 +86,10 @@ function ProductNewFormContent({ link, onLifecycleEvent }: ProductNewFormProps) 
   });
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="w-full flex flex-wrap gap-6 items-start justify-center">
+    <form
+      onSubmit={handleSubmit(submit)}
+      className="w-full flex flex-wrap gap-6 items-start justify-center"
+    >
       <div className="w-full max-w-2xl grid gap-6">
         <Card>
           <CardContent className="flex flex-col gap-6">

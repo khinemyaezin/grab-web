@@ -6,13 +6,17 @@ import type {
 } from "@/features/inventory/types";
 
 export const catalogService = {
-  searchProducts: (api: PlatformApiClient, link: HateoasLink, request: SearchCatalogProductsRequest) => {
+  searchProducts: (
+    api: PlatformApiClient,
+    link: HateoasLink,
+    request: SearchCatalogProductsRequest,
+  ) => {
     const { page, size, ...body } = request;
     return api.followLink<ProductVariantSearchResponse>(
       link,
       "POST",
       body,
-      toPageParams({page,size}),
+      toPageParams({ page, size }),
     );
-  }
+  },
 };

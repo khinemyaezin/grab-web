@@ -61,9 +61,6 @@ export interface UpdateBinRequest {
   active?: boolean;
 }
 
-
-
-
 export interface CreateInventoryRequest {
   sku: string;
   productVariantId?: string;

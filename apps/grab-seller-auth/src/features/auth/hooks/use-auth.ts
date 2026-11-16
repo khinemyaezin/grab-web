@@ -7,24 +7,27 @@ import { authService } from "../api/auth";
 
 export const useLoginMutation = () => {
   const api = useApi();
-  return useMutation<LoginResponse, Error, { link: HateoasLink, request: LoginRequest }>({
-    mutationFn: ({ link, request }) =>
-      authService.login(api, link, request)
+  return useMutation<LoginResponse, Error, { link: HateoasLink; request: LoginRequest }>({
+    mutationFn: ({ link, request }) => authService.login(api, link, request),
   });
 };
 
 export const useRegisterMutation = () => {
   const api = useApi();
-  return useMutation<RegisterUserReponse, Error, { link: HateoasLink, request: RegisterUserRequest }>({
-    mutationFn: ({ link, request }) => authService.registerUser(api, link, request)
+  return useMutation<
+    RegisterUserReponse,
+    Error,
+    { link: HateoasLink; request: RegisterUserRequest }
+  >({
+    mutationFn: ({ link, request }) => authService.registerUser(api, link, request),
   });
-}
+};
 
 export const useProfileGet = (link?: HateoasLink) => {
   const api = useApi();
   return useQuery({
     queryKey: ["profile", link?.href],
     queryFn: () => authService.readProfile(api, link!),
-    enabled: !!link
-  })
-}
+    enabled: !!link,
+  });
+};

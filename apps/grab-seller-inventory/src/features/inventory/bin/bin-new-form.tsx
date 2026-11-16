@@ -1,4 +1,3 @@
-
 import { Button, ButtonStatus } from "@khinemyaezin/seller-ui/components/index";
 import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
 import { Card, CardContent, CardFooter } from "@khinemyaezin/seller-ui/components/card";
@@ -28,20 +27,26 @@ export default function BinNewForm({ link, zoneId, onLifecycleEvent }: BinNewFor
     mode: "onSubmit",
   });
 
-  const { handleSubmit, reset, formState: { isDirty } } = form;
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = form;
   const createBinMutation = useCreateBinMutation();
 
   const handleOnSubmit = async (value: BinFormValues) => {
     if (!link) return;
 
-    createBinMutation.mutateAsync({ link, request: { ...value, zoneId } })
+    createBinMutation
+      .mutateAsync({ link, request: { ...value, zoneId } })
       .then(() => {
         reset(DEFAULT_FORM_VALUES);
         createBinMutation.reset();
         onLifecycleEvent?.({ type: "created" });
-      }).catch(() => {
-        onLifecycleEvent?.({ type: "createFailed" });
       })
+      .catch(() => {
+        onLifecycleEvent?.({ type: "createFailed" });
+      });
   };
 
   return (
@@ -54,7 +59,10 @@ export default function BinNewForm({ link, zoneId, onLifecycleEvent }: BinNewFor
           <CardFooter className="flex justify-end">
             <ButtonGroup>
               {isDirty && (
-                <Button type="submit" disabled={createBinMutation.isPending || createBinMutation.isSuccess}>
+                <Button
+                  type="submit"
+                  disabled={createBinMutation.isPending || createBinMutation.isSuccess}
+                >
                   <ButtonStatus
                     status={
                       createBinMutation.isPending
@@ -64,7 +72,8 @@ export default function BinNewForm({ link, zoneId, onLifecycleEvent }: BinNewFor
                           : "idle"
                     }
                     pendingLabel="Saving…"
-                    successLabel="Saved">
+                    successLabel="Saved"
+                  >
                     Save
                   </ButtonStatus>
                 </Button>

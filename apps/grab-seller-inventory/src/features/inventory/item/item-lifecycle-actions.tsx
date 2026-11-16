@@ -115,7 +115,7 @@ export default function ItemLifecycleActions({
             </ButtonStatus>
           </Button>
         )}
-        {discontinueLink  && (
+        {discontinueLink && (
           <Button
             type="button"
             variant="destructive"

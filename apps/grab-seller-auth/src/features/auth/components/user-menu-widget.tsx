@@ -1,6 +1,6 @@
 import AccessContextMenu from "../../access/components/access-context-menu";
 import { LogOutIcon } from "lucide-react";
-import { usePlatform, UserAvatarDetails } from "@khinemyaezin/seller-ui";
+import { useSessionSnapshot, UserAvatarDetails } from "@khinemyaezin/seller-ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,22 +13,16 @@ import {
 export type UserMenuWidgetProps = {
   onLogout: () => void;
   trigger: React.ReactNode;
-}
+};
 
-export default function UserMenuWidget({
-  onLogout,
-  trigger
-}: UserMenuWidgetProps) {
-  const platform = usePlatform();
-  const currentSession = platform?.session.getSnapshot();
-  const user = currentSession?.status === 'authenticated' ? currentSession.user : null;
+export default function UserMenuWidget({ onLogout, trigger }: UserMenuWidgetProps) {
+  const currentSession = useSessionSnapshot();
+  const user = currentSession.status === "authenticated" ? currentSession.user : null;
 
   if (!user) return null;
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        {trigger}
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
         align="end"

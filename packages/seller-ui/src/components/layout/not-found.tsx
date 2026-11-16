@@ -13,21 +13,15 @@ const funnyMessages = [
 ];
 
 export function NotFoundPage() {
-  const [msgIndex, setMsgIndex] = useState(
-    () => Math.floor(Math.random() * funnyMessages.length),
-  );
+  const [msgIndex, setMsgIndex] = useState(() => Math.floor(Math.random() * funnyMessages.length));
 
   useEffect(() => {
-    const id = setInterval(
-      () => setMsgIndex((i) => (i + 1) % funnyMessages.length),
-      4000,
-    );
+    const id = setInterval(() => setMsgIndex((i) => (i + 1) % funnyMessages.length), 4000);
     return () => clearInterval(id);
   }, []);
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-2 bg-background p-6 md:p-10 select-none">
-
       <h1 className="animate-pulse text-8xl font-extrabold tracking-tighter text-primary drop-shadow-sm">
         404
       </h1>

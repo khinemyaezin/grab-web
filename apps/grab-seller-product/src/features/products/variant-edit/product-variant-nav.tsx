@@ -6,12 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@khinemyaezin/seller-ui/components/card";
-import {
-  Item,
-  ItemContent,
-  ItemGroup,
-  ItemTitle,
-} from "@khinemyaezin/seller-ui/components/item";
+import { Item, ItemContent, ItemGroup, ItemTitle } from "@khinemyaezin/seller-ui/components/item";
 import { RadioGroup, RadioGroupItem } from "@khinemyaezin/seller-ui/components/radio-group";
 import type { GetFullProductResponse } from "@/features/products/types";
 
@@ -32,9 +27,7 @@ export function ProductVariantNav({
 
   const nameMap = useMemo(() => {
     return Object.fromEntries(
-      variantTypes?.flatMap((t) =>
-        t.options.map((o) => [o.optionId, o.optionName])
-      ) ?? []
+      variantTypes?.flatMap((t) => t.options.map((o) => [o.optionId, o.optionName])) ?? [],
     );
   }, [variantTypes]);
 
@@ -47,14 +40,11 @@ export function ProductVariantNav({
   };
 
   if (variants.length === 0) {
-    return <p className="px-6 py-4 text-sm text-muted-foreground">No variants found</p>
+    return <p className="px-6 py-4 text-sm text-muted-foreground">No variants found</p>;
   }
 
   return (
-    <RadioGroup
-      value={currentVariantId}
-      onValueChange={handleValueChange}
-    >
+    <RadioGroup value={currentVariantId} onValueChange={handleValueChange}>
       <ItemGroup className="gap-0 divide-y divide-border">
         {variants.map((v) => {
           const isSelected = v.id === currentVariantId;
@@ -62,24 +52,25 @@ export function ProductVariantNav({
             v.variations
               ?.map((item) => item.optionName || nameMap[item.optionId] || "")
               .filter(Boolean)
-              .join(" / ") || v.sku || "Variant";
+              .join(" / ") ||
+            v.sku ||
+            "Variant";
 
           return (
             <Item
               key={v.id || v.matrixKey}
               asChild
               variant={isSelected ? "muted" : "default"}
-              className={`cursor-pointer rounded-none border-0 transition-colors ${isSelected
-                ? "bg-muted text-foreground font-medium"
-                : "bg-card text-foreground hover:bg-muted/50"
-                }`}
+              className={`cursor-pointer rounded-none border-0 transition-colors ${
+                isSelected
+                  ? "bg-muted text-foreground font-medium"
+                  : "bg-card text-foreground hover:bg-muted/50"
+              }`}
             >
               <label htmlFor={`variant-${v.id}`}>
                 <RadioGroupItem value={v.id} id={`variant-${v.id}`} hidden />
                 <ItemContent>
-                  <ItemTitle className="select-none">
-                    {variantName}
-                  </ItemTitle>
+                  <ItemTitle className="select-none">{variantName}</ItemTitle>
                 </ItemContent>
               </label>
             </Item>
@@ -87,7 +78,6 @@ export function ProductVariantNav({
         })}
       </ItemGroup>
     </RadioGroup>
-
   );
 }
 

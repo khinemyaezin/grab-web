@@ -65,9 +65,7 @@ describe("useSlotChangeEmitter", () => {
     const source = createFakeSource({ amount: 1 });
     const onChange = vi.fn();
 
-    const { unmount } = renderHook(() =>
-      useSlotChangeEmitter(source, onChange, 300),
-    );
+    const { unmount } = renderHook(() => useSlotChangeEmitter(source, onChange, 300));
 
     unmount();
 

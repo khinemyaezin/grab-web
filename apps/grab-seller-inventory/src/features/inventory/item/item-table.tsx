@@ -27,8 +27,7 @@ export default function ItemTable({ filter, onPageChange }: ItemTableProps) {
   const items = data?._embedded?.inventoryResponseList ?? [];
   const showPagination = (data?.page.totalPages ?? 0) > 1;
 
-  if(items.length == 0) 
-    return <NoItems/>
+  if (items.length == 0) return <NoItems />;
 
   return (
     <Table className="[&_tr>*:first-child]:pl-(--card-spacing) [&_tr>*:last-child]:pr-(--card-spacing)">
@@ -47,7 +46,10 @@ export default function ItemTable({ filter, onPageChange }: ItemTableProps) {
           items.map((item) => <ItemTableRow key={item.id} item={item} />)
         ) : (
           <TableRow>
-            <TableCell colSpan={6} className="text-muted-foreground pointer-events-none text-center">
+            <TableCell
+              colSpan={6}
+              className="text-muted-foreground pointer-events-none text-center"
+            >
               No record found.
             </TableCell>
           </TableRow>
@@ -76,7 +78,6 @@ export default function ItemTable({ filter, onPageChange }: ItemTableProps) {
 }
 
 function ItemTableRow({ item }: { item: InventoryItemResponse }) {
-
   return (
     <TableRow>
       <TableCell>
@@ -111,20 +112,14 @@ function ItemTableRow({ item }: { item: InventoryItemResponse }) {
 }
 
 function UnitsCell({ value, className }: { value: number; className?: string }) {
-  return (
-    <TableCell>
-      {value}
-    </TableCell>
-  );
+  return <TableCell>{value}</TableCell>;
 }
 
 function NoItems() {
   return (
     <div className="flex flex-col items-center justify-center gap-1 text-center">
       <p className="text-base font-semibold text-foreground">No inventory found</p>
-      <p className="text-sm text-muted-foreground">
-        Try changing the filters or search term
-      </p>
+      <p className="text-sm text-muted-foreground">Try changing the filters or search term</p>
     </div>
   );
 }

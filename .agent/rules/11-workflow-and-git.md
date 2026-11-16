@@ -13,6 +13,7 @@ type: description
 ```
 
 ### Allowed Types:
+
 - `feat`: New feature or capability
 - `fix`: Bug fix
 - `refactor`: Code restructuring with no behavior change
@@ -21,6 +22,7 @@ type: description
 - `chore`: Tooling, dependency, or config updates
 
 ### Formatting Rules:
+
 - Lowercase, imperative mood ("add", "fix", "refactor", not "added" or "adds").
 - No trailing period.
 - Focused and atomic.
@@ -36,21 +38,22 @@ docs: document slot contribution slice merge rules
 
 ## 2. Architectural Decision Records (ADRs)
 
-| ADR | Title | Key Decisions |
-|:---|:---|:---|
-| **ADR-001** | MFE State Sharing & Communication | Framework-agnostic custom `EventBus` singleton. Rejected global Redux/Zustand and native browser CustomEvents. |
-| **ADR-002** | Auth State Sharing for MFEs | `SellerPlatform` as single integration contract. `SessionSnapshot` discriminated union, `SessionApi`, HttpOnly cookies. |
-| **ADR-003** | Host-Mediated Session-Durable Event Bus | Event bus lifecycle managed by the shell; replay buffers for early mount listeners. |
-| **ADR-004** | Host-Owned Backend Event Stream | Shell alone owns the authenticated backend SSE stream; maps messages to versioned platform event topics. |
-| **ADR-005** | Workflow Terminal Signals | Asynchronous sagas correlate via idempotency keys; typed `COMPLETED`, `FAILED`, and timeout handling. |
-| **ADR-006** | SlotBridge Capability Registry | Extension slots use a declaration-driven, props-down/handles-up architecture. |
-| **ADR-007** | Declaration-Driven Slot Contributions | Slots project typed slices (`SlotContribution[]`); parents merge via explicit slice allowlists. |
+| ADR         | Title                                   | Key Decisions                                                                                                           |
+| :---------- | :-------------------------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| **ADR-001** | MFE State Sharing & Communication       | Framework-agnostic custom `EventBus` singleton. Rejected global Redux/Zustand and native browser CustomEvents.          |
+| **ADR-002** | Auth State Sharing for MFEs             | `SellerPlatform` as single integration contract. `SessionSnapshot` discriminated union, `SessionApi`, HttpOnly cookies. |
+| **ADR-003** | Host-Mediated Session-Durable Event Bus | Event bus lifecycle managed by the shell; replay buffers for early mount listeners.                                     |
+| **ADR-004** | Host-Owned Backend Event Stream         | Shell alone owns the authenticated backend SSE stream; maps messages to versioned platform event topics.                |
+| **ADR-005** | Workflow Terminal Signals               | Asynchronous sagas correlate via idempotency keys; typed `COMPLETED`, `FAILED`, and timeout handling.                   |
+| **ADR-006** | SlotBridge Capability Registry          | Extension slots use a declaration-driven, props-down/handles-up architecture.                                           |
+| **ADR-007** | Declaration-Driven Slot Contributions   | Slots project typed slices (`SlotContribution[]`); parents merge via explicit slice allowlists.                         |
 
 ---
 
 ## 3. Feature Implementation Checklists
 
 ### A. New List Screen Checklist
+
 - [ ] Add nested route in owning remote's `AppRoutes.tsx`.
 - [ ] Create thin `*-page.tsx` with static `Header`, route params, breadcrumbs, and lifecycle toast handling.
 - [ ] Create `*-view.tsx` to coordinate filter state and table.
@@ -61,6 +64,7 @@ docs: document slot contribution slice merge rules
 - [ ] Add co-located unit tests (`*.test.tsx`).
 
 ### B. New Create Form Checklist
+
 - [ ] Resolve create capability link from root or parent query on the page.
 - [ ] Keep static `Header` and back navigation on `*-page.tsx`. Do not wrap with a view.
 - [ ] Render `QueryState` with fallback card if create link is unavailable.
@@ -74,6 +78,7 @@ docs: document slot contribution slice merge rules
 - [ ] Test command, saga, adapter, and form independently.
 
 ### C. New Edit Form Checklist
+
 - [ ] Validate route ID from `useParams`.
 - [ ] If `Header` requires actions from resource `_links`, load resource in `*-view.tsx` and pass `seed` + `actions` to form.
 - [ ] Transform backend response into form seed via pure adapter in `lib/`.
@@ -85,6 +90,7 @@ docs: document slot contribution slice merge rules
 - [ ] Test hydration, capability actions, update saga, and discard reset.
 
 ### D. New Cross-MFE Slot Checklist
+
 - [ ] Define canonical slot name, context, payload schema, and slice names in `@khinemyaezin/seller-contracts`.
 - [ ] Implement domain slot component, presentation variants (`full` vs `inline`), and handle (`validate`, `reset`, `project`).
 - [ ] Wrap widget with `createExposedSlot`.

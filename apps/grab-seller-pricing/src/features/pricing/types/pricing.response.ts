@@ -41,7 +41,7 @@ export type VariantPriceSetLinkResponse = {
 
 export type VariantPriceSetLinksResponse = {
   _embedded?: {
-    variantPriceSetLinkResponseList?: VariantPriceSetLinkResponse[]
-  },
+    variantPriceSetLinkResponseList?: VariantPriceSetLinkResponse[];
+  };
   _links?: HalLinks;
 };

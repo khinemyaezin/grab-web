@@ -7,7 +7,10 @@ import "../styles.css";
 import { EntryLinkProvider, PlatformProvider, NotFoundPage } from "@khinemyaezin/seller-ui";
 import AccessContextSelectionPage from "@/features/access/pages/access-context-selection-page";
 
-export default function AuthRoutes({ link, platform }: {
+export default function AuthRoutes({
+  link,
+  platform,
+}: {
   link: HateoasLink;
   platform?: SellerPlatform;
 }) {

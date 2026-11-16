@@ -37,9 +37,10 @@ export default function StockHealthPieChart({ health }: StockHealthPieChartProps
     { bucket: "critical", count: health.critical.count, fill: "var(--color-critical)" },
   ].filter((row) => row.count > 0);
 
-  const inStockPct = health.eligibleItems > 0
-    ? ((health.inStock.count / health.eligibleItems) * 100).toFixed(1)
-    : "0";
+  const inStockPct =
+    health.eligibleItems > 0
+      ? ((health.inStock.count / health.eligibleItems) * 100).toFixed(1)
+      : "0";
 
   return (
     <Card className="flex flex-col">
@@ -55,10 +56,7 @@ export default function StockHealthPieChart({ health }: StockHealthPieChartProps
             No sellable inventory items in this scope.
           </p>
         ) : (
-          <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square max-h-[250px] px-0"
-          >
+          <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px] px-0">
             <PieChart>
               <ChartTooltip content={<ChartTooltipContent nameKey="count" hideLabel />} />
               <Pie
@@ -86,9 +84,7 @@ export default function StockHealthPieChart({ health }: StockHealthPieChartProps
         )}
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="text-muted-foreground">
-          {inStockPct}% of eligible items are in stock
-        </div>
+        <div className="text-muted-foreground">{inStockPct}% of eligible items are in stock</div>
       </CardFooter>
     </Card>
   );

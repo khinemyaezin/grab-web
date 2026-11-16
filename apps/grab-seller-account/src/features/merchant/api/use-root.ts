@@ -4,17 +4,17 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchMerchantRoot } from "./discovery";
 
 export function useRoot() {
-    const api = useApi();
-    const entryLink = useEntryLink();
+  const api = useApi();
+  const entryLink = useEntryLink();
 
-    return useQuery<MerchantRoot>({
-        queryKey: ["merchant-root", entryLink?.href],
-        queryFn: () => fetchMerchantRoot(api, entryLink!),
-        enabled: !!entryLink,
-        staleTime: Infinity,
-    });
+  return useQuery<MerchantRoot>({
+    queryKey: ["merchant-root", entryLink?.href],
+    queryFn: () => fetchMerchantRoot(api, entryLink!),
+    enabled: !!entryLink,
+    staleTime: Infinity,
+  });
 }
 
 export function useMerchantLink(rel: keyof MerchantRoot) {
-    return useRoot().data?.[rel];
+  return useRoot().data?.[rel];
 }

@@ -22,24 +22,28 @@ export default function NewBinPage() {
 
   const handleEvent = (event: BinLifecycleEvent) => {
     switch (event.type) {
-      case "created": toast("success", "Bin created successfully"); break;
-      case "createFailed": toast("error", "Failed to create bin"); break;
+      case "created":
+        toast("success", "Bin created successfully");
+        break;
+      case "createFailed":
+        toast("error", "Failed to create bin");
+        break;
     }
   };
 
   return (
     <div className="container mx-auto max-w-3xl p-6">
-      <Header
-        title="New Bin"
-        description="Create a new bin in this zone."
-      >
+      <Header title="New Bin" description="Create a new bin in this zone.">
         <ButtonGroup>
           <Button variant="secondary" size="icon" type="button" asChild>
-            <Link to={{
-              pathname: "../../..",
-              search: `?active=${zoneId}`,
-            }}
-              relative="path" className="flex gap-2 items-center">
+            <Link
+              to={{
+                pathname: "../../..",
+                search: `?active=${zoneId}`,
+              }}
+              relative="path"
+              className="flex gap-2 items-center"
+            >
               <ArrowLeftIcon />
             </Link>
           </Button>

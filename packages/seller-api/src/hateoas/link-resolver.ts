@@ -4,7 +4,7 @@ import type { SellerRelation } from "./api-links.js";
 
 export function resolveLink(
   links: HalLinks | undefined,
-  rel: SellerRelation
+  rel: SellerRelation,
 ): HateoasLink | undefined {
   return links?.[rel];
 }
@@ -28,13 +28,13 @@ export function resolvePaginationLinks(links: HalLinks | undefined): PaginationL
 export function resolveUrlTemplate(params: Record<string, string>, link: HateoasLink): HateoasLink {
   if (link?.templated) {
     const url = parseTemplate(link.href);
-    return { ...link, href: url.expand(params) }
+    return { ...link, href: url.expand(params) };
   } else return link;
 }
 
-export function removeTemplateFromUrl(link: HateoasLink):string {
+export function removeTemplateFromUrl(link: HateoasLink): string {
   if (link.templated) {
     const url = parseTemplate(link.href);
-    return url.expand({})
+    return url.expand({});
   } else return link.href;
 }

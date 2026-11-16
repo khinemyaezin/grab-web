@@ -47,20 +47,14 @@ export type UseProductVariantEditProps = {
   variantId: string;
 };
 
-export function useProductVariantEdit({
-  productId,
-  variantId,
-}: UseProductVariantEditProps) {
+export function useProductVariantEdit({ productId, variantId }: UseProductVariantEditProps) {
   const getVariantLink = useCatalogLink("getVariant");
   const { data, isLoading, isError } = useProductVariantGet(getVariantLink, {
     productId,
     variantId,
   });
 
-  const seed = useMemo(
-    () => (data ? transformVariantToFormValue(data) : null),
-    [data],
-  );
+  const seed = useMemo(() => (data ? transformVariantToFormValue(data) : null), [data]);
 
   return {
     isLoading,

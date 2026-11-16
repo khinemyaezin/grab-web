@@ -3,40 +3,55 @@ import { useRegisterMutation } from "../hooks/use-auth";
 import { RegisterFormValues } from "../types/auth.form";
 import { HateoasLink } from "@khinemyaezin/seller-api";
 import { RegisterUserRequest } from "../types/auth.request";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@khinemyaezin/seller-ui/components/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@khinemyaezin/seller-ui/components/field";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
 import { Button } from "@khinemyaezin/seller-ui/components/button";
 import { ButtonStatus } from "@khinemyaezin/seller-ui/components/index";
 import { Link } from "react-router";
 import { routes } from "@khinemyaezin/seller-contracts";
 
-
 export type RegisterFormProps = {
   link: HateoasLink;
   onRegisterSuccess: () => void;
-  onRegisterError: ({ title, description }: { title: string, description: string }) => void;
-}
+  onRegisterError: ({ title, description }: { title: string; description: string }) => void;
+};
 
 export function RegisterForm({ link, onRegisterSuccess, onRegisterError }: RegisterFormProps) {
   const form = useForm<RegisterFormValues>();
   const registerMutation = useRegisterMutation();
-  const { register, handleSubmit, getValues, formState: { errors } } = form;
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = form;
 
   const onSubmit = (formValues: RegisterFormValues) => {
-
     const payload: RegisterUserRequest = {
       email: formValues.email,
       password: formValues.password,
-    }
+    };
 
-    registerMutation.mutate({ link: link, request: payload }, {
-      onSuccess: () => {
-        window.setTimeout(onRegisterSuccess, 700);
+    registerMutation.mutate(
+      { link: link, request: payload },
+      {
+        onSuccess: () => {
+          onRegisterSuccess();
+        },
+        onError: (_err) => {
+          onRegisterError({
+            title: "There was a problem",
+            description: "Unable to create your account.",
+          });
+        },
       },
-      onError: (err) => {
-        onRegisterError({ title: "There was a problem" , description: "Unable to create your account."})
-      }
-    });
+    );
   };
 
   return (
@@ -46,7 +61,8 @@ export function RegisterForm({ link, onRegisterSuccess, onRegisterError }: Regis
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-xl font-bold">Create your Seller Central account.</h1>
             <FieldDescription>
-              Already have an account? <Link to={`/${routes.login}`} className="mx-3">
+              Already have an account?{" "}
+              <Link to={`/${routes.login}`} className="mx-3">
                 Sign in
               </Link>
             </FieldDescription>
@@ -96,7 +112,6 @@ export function RegisterForm({ link, onRegisterSuccess, onRegisterError }: Regis
             />
             {errors.confirmPassword && <FieldError errors={[errors.confirmPassword]} />}
           </Field>
-
         </FieldGroup>
         <div className="flex items-center justify-center">
           <Button
@@ -119,7 +134,6 @@ export function RegisterForm({ link, onRegisterSuccess, onRegisterError }: Regis
               Save & Continue
             </ButtonStatus>
           </Button>
-
         </div>
       </form>
     </FormProvider>

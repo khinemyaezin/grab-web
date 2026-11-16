@@ -1,13 +1,14 @@
-import {
-  createContext,
-  useContext,
-} from "react";
+import { createContext, useContext } from "react";
 import {
   type SellerPlatform,
   type SessionSnapshot,
   type SessionUser,
 } from "@khinemyaezin/seller-contracts";
 
+/**
+ * AuthContext is a derived convenience view for shell components.
+ * Note: `platform.session` via `useSessionSnapshot()` is the authoritative source of truth.
+ */
 export type AuthContextValue = {
   snapshot: SessionSnapshot;
   user: SessionUser | null;

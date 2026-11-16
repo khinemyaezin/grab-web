@@ -54,9 +54,7 @@ export default function StorefrontNewPage() {
         ) : (
           <Card>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Storefront creation is not available.
-              </p>
+              <p className="text-sm text-muted-foreground">Storefront creation is not available.</p>
             </CardContent>
           </Card>
         )}

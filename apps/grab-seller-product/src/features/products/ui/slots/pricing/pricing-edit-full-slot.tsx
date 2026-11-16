@@ -3,15 +3,8 @@ import {
   type PricingEditContext,
   type PricingEditPayload,
 } from "@khinemyaezin/seller-contracts";
-import {
-  FieldDescription,
-  FieldLegend,
-  FieldSet,
-} from "@khinemyaezin/seller-ui/components/field";
-import {
-  PRICING_EDIT_DOMAIN,
-  ProductExtensionSlot,
-} from "../product-extension-slot";
+import { FieldDescription, FieldLegend, FieldSet } from "@khinemyaezin/seller-ui/components/field";
+import { PRICING_EDIT_DOMAIN, ProductExtensionSlot } from "../product-extension-slot";
 
 export type PricingLineSlotProps = {
   groupId: string;
@@ -22,9 +15,7 @@ export function PricingLineEditFullSlot({ groupId, context }: PricingLineSlotPro
   return (
     <FieldSet>
       <FieldLegend>Pricing</FieldLegend>
-      <FieldDescription>
-        Set the price buyers will pay for this product.
-      </FieldDescription>
+      <FieldDescription>Set the price buyers will pay for this product.</FieldDescription>
       <div className="max-w-sm">
         <ProductExtensionSlot<PricingEditContext, PricingEditPayload>
           name={PRODUCT_EXTENSION_SLOTS.EDIT_PRICING}

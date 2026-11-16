@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@khinemyaezin/seller-ui/components/card";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { MapPinIcon, BuildingIcon } from "lucide-react";
@@ -42,12 +41,8 @@ export function LocationSummary({ location }: LocationSummaryProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary">
-            {location.type.replace(/_/g, " ")}
-          </Badge>
-          <Badge>
-            {location.active ? "Active" : "Inactive"}
-          </Badge>
+          <Badge variant="secondary">{location.type.replace(/_/g, " ")}</Badge>
+          <Badge>{location.active ? "Active" : "Inactive"}</Badge>
         </div>
       </CardContent>
     </Card>

@@ -52,12 +52,12 @@ The **host owns the socket**. One `fetch` + `ReadableStream` connection (credent
 
 ### Boundary
 
-| Owns | Does not own |
-|------|----------------|
-| One authenticated long-lived connection from the shell | Domain event mapping (workflow status, inventory, merchant) |
-| Frame parse, abort, reconnect, `Last-Event-ID` header plumbing | Server-side replay / inbox |
-| Host-to-bus mapping for **stream lifecycle** signals | Per-MFE EventSource / fetch-stream |
-| Proxy settings so the stream is not idle-cut | In-page extension-slot sync (ADR_003) |
+| Owns                                                           | Does not own                                                |
+| -------------------------------------------------------------- | ----------------------------------------------------------- |
+| One authenticated long-lived connection from the shell         | Domain event mapping (workflow status, inventory, merchant) |
+| Frame parse, abort, reconnect, `Last-Event-ID` header plumbing | Server-side replay / inbox                                  |
+| Host-to-bus mapping for **stream lifecycle** signals           | Per-MFE EventSource / fetch-stream                          |
+| Proxy settings so the stream is not idle-cut                   | In-page extension-slot sync (ADR_003)                       |
 
 ---
 
@@ -127,10 +127,10 @@ type StreamDisconnectedV1 = {
 };
 ```
 
-| Topic | API | Who emits | Who consumes |
-|-------|-----|-----------|----------------|
-| `stream:ready:v1` | `emit` | Host, after SSE `ready` | Optional; MFEs that need “backend push is up” |
-| `stream:disconnected:v1` | `emit` | Host, on abort / error / logout | Optional; do not treat as domain failure |
+| Topic                    | API    | Who emits                       | Who consumes                                  |
+| ------------------------ | ------ | ------------------------------- | --------------------------------------------- |
+| `stream:ready:v1`        | `emit` | Host, after SSE `ready`         | Optional; MFEs that need “backend push is up” |
+| `stream:disconnected:v1` | `emit` | Host, on abort / error / logout | Optional; do not treat as domain failure      |
 
 Heartbeat comments are dropped in the parser. Domain envelopes (workflow completed, inventory changed, …) are **not** in this ADR; a later adapter will add versioned signal or state topics and the host will map named SSE events onto them.
 
@@ -151,14 +151,14 @@ Heartbeat comments are dropped in the parser. Domain envelopes (workflow complet
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|------|------|
-| One connection shared by all remotes | Host must stay mounted; standalone remotes without the shell have no stream |
-| `fetch` + refresh mutex matches HAL client | Custom SSE parser instead of `EventSource` |
-| Lifecycle topics are signals — no accidental last-value cache | MFEs that miss `stream:ready:v1` must not require it for correctness |
-| `Last-Event-ID` plumbing is ready for later replay | No replay yet; gaps require REST refetch |
-| Dedicated nginx location is explicit | Every `/api/` proxy (host + standalone remotes) must copy the location |
-| Heartbeats stay off the bus | Parser must ignore comments so `: ping` never becomes a fake domain event |
+| Pros                                                          | Cons                                                                        |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| One connection shared by all remotes                          | Host must stay mounted; standalone remotes without the shell have no stream |
+| `fetch` + refresh mutex matches HAL client                    | Custom SSE parser instead of `EventSource`                                  |
+| Lifecycle topics are signals — no accidental last-value cache | MFEs that miss `stream:ready:v1` must not require it for correctness        |
+| `Last-Event-ID` plumbing is ready for later replay            | No replay yet; gaps require REST refetch                                    |
+| Dedicated nginx location is explicit                          | Every `/api/` proxy (host + standalone remotes) must copy the location      |
+| Heartbeats stay off the bus                                   | Parser must ignore comments so `: ping` never becomes a fake domain event   |
 
 ---
 

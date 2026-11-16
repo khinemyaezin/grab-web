@@ -72,13 +72,7 @@ export type InventoryEditContext = {
 };
 
 export type InventoryAdjustmentReason =
-  | "CYCLE_COUNT"
-  | "DAMAGED"
-  | "EXPIRED"
-  | "LOST"
-  | "FOUND"
-  | "THEFT"
-  | "CORRECTION";
+  "CYCLE_COUNT" | "DAMAGED" | "EXPIRED" | "LOST" | "FOUND" | "THEFT" | "CORRECTION";
 
 export type InventorySyncOp = "CREATE" | "ADJUST" | "DAMAGE" | "WRITE_OFF" | "REORDER";
 
@@ -115,7 +109,12 @@ export type InventoryEditReorder = {
 
 export type InventoryEditOp =
   | { op: "CREATE"; locationId: string; create: InventoryEditCreateStock }
-  | { op: "ADJUST"; inventoryItemId: string; adjust: InventoryEditAdjustStock; reorder?: InventoryEditReorder }
+  | {
+      op: "ADJUST";
+      inventoryItemId: string;
+      adjust: InventoryEditAdjustStock;
+      reorder?: InventoryEditReorder;
+    };
 
 export type InventoryEditPayload = {
   sku: string;
@@ -184,15 +183,7 @@ export const InventoryEditAdjustStockSchema = {
     },
     reason: {
       type: "string" as const,
-      enum: [
-        "CYCLE_COUNT",
-        "DAMAGED",
-        "EXPIRED",
-        "LOST",
-        "FOUND",
-        "THEFT",
-        "CORRECTION",
-      ],
+      enum: ["CYCLE_COUNT", "DAMAGED", "EXPIRED", "LOST", "FOUND", "THEFT", "CORRECTION"],
       errorMessage: {
         enum: "Invalid adjustment reason",
       },
@@ -223,7 +214,7 @@ export const InventoryEditPayloadSchema = {
           locationId: { type: "string" as const },
           inventoryItemId: { type: "string" as const },
           create: InventoryEditCreateStockSchema,
-          adjust: InventoryEditAdjustStockSchema
+          adjust: InventoryEditAdjustStockSchema,
         },
         required: ["op"],
         additionalProperties: false,
@@ -233,4 +224,3 @@ export const InventoryEditPayloadSchema = {
   required: ["sku", "ops"],
   additionalProperties: false,
 };
-

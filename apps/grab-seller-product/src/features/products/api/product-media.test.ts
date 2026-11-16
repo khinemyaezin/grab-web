@@ -81,7 +81,15 @@ describe("stageProductMedia", () => {
     const keys = await stageProductMedia({
       api: mockApi,
       items: [
-        { id: "new", url: "blob:1", contentType: "image/jpeg", name: "first.jpg", file, rank: 0, sizeBytes: 2 },
+        {
+          id: "new",
+          url: "blob:1",
+          contentType: "image/jpeg",
+          name: "first.jpg",
+          file,
+          rank: 0,
+          sizeBytes: 2,
+        },
       ],
       createUploadLink: uploadLink,
     });
@@ -144,7 +152,15 @@ describe("stageProductMedia", () => {
     const keys = await stageProductMedia({
       api: mockApi,
       items: [
-        { id: "1", url: "blob:1", contentType: "image/jpeg", name: "hero.jpg", file, rank: 0, sizeBytes: 1 },
+        {
+          id: "1",
+          url: "blob:1",
+          contentType: "image/jpeg",
+          name: "hero.jpg",
+          file,
+          rank: 0,
+          sizeBytes: 1,
+        },
       ],
       createUploadLink: uploadLink,
     });
@@ -210,8 +226,16 @@ describe("attachProductMedia", () => {
   });
 
   it("replaces kept and staged items using storageKeys", async () => {
-    const kept = remoteItem({ id: "keep", rank: 1, storageKey: "merchants/m/products/prod-1/keep.jpg" });
-    const dropped = remoteItem({ id: "drop", rank: 0, storageKey: "merchants/m/products/prod-1/drop.jpg" });
+    const kept = remoteItem({
+      id: "keep",
+      rank: 1,
+      storageKey: "merchants/m/products/prod-1/keep.jpg",
+    });
+    const dropped = remoteItem({
+      id: "drop",
+      rank: 0,
+      storageKey: "merchants/m/products/prod-1/drop.jpg",
+    });
     const file = new File(["2"], "first.jpg", { type: "image/jpeg" });
     mockReplaceProductMedia.mockResolvedValue({ productId: "prod-1", medias: [] });
 

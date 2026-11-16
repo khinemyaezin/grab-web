@@ -6,20 +6,25 @@ import type {
   PlatformEvents,
   SellerRuntimeConfig,
   SessionApi,
+  SessionSnapshot,
   SellerPlatform,
 } from "@khinemyaezin/seller-contracts";
 
+export type ShellSessionBridge = React.MutableRefObject<SessionApi | null>;
+
 export interface ShellPlatformContextValue {
-  platform: SellerPlatform;
-  sessionRef: React.RefObject<SessionApi>;
+  sessionBridge: ShellSessionBridge;
   events: PlatformEvents;
 }
 
 const SHELL_PLATFORM_CONTEXT_KEY = Symbol.for("@khinemyaezin/grab-seller/ShellPlatformContext");
 
+const INITIAL_SESSION_SNAPSHOT: SessionSnapshot = { status: "loading" };
+
 export const ShellPlatformContext: React.Context<ShellPlatformContextValue | null> =
   (globalThis as any)[SHELL_PLATFORM_CONTEXT_KEY] ??
-  ((globalThis as any)[SHELL_PLATFORM_CONTEXT_KEY] = createContext<ShellPlatformContextValue | null>(null));
+  ((globalThis as any)[SHELL_PLATFORM_CONTEXT_KEY] =
+    createContext<ShellPlatformContextValue | null>(null));
 
 export function useShellPlatform(): ShellPlatformContextValue {
   const ctx = useContext(ShellPlatformContext);
@@ -38,51 +43,63 @@ export function ShellPlatformProvider({
 }) {
   const navigate = useNavigate();
 
-  const sessionRef = useRef<SessionApi>({
-    getSnapshot: () => ({ status: "anonymous" }),
-    subscribe: () => () => {},
-    refresh: async () => {},
-    logout: async () => {},
-  });
+  const sessionBridge = useRef<SessionApi | null>(null);
 
-  const api = useMemo(() => createApiClient({
-    baseUrl: runtimeConfig.apiBaseUrl,
-    platform: { session: { refresh: () => sessionRef.current.refresh() } },
-  }), [runtimeConfig.apiBaseUrl]);
+  const session = useMemo<SessionApi>(
+    () => ({
+      getSnapshot: () => sessionBridge.current?.getSnapshot() ?? INITIAL_SESSION_SNAPSHOT,
+      subscribe: (listener) => sessionBridge.current?.subscribe(listener) ?? (() => {}),
+      refresh: () => (sessionBridge.current ? sessionBridge.current.refresh() : Promise.resolve()),
+      expire: (reason) => sessionBridge.current?.expire(reason),
+      logout: () => (sessionBridge.current ? sessionBridge.current.logout() : Promise.resolve()),
+    }),
+    [],
+  );
+
+  const api = useMemo(
+    () =>
+      createApiClient({
+        baseUrl: runtimeConfig.apiBaseUrl,
+        platform: {
+          session: {
+            refresh: () => session.refresh(),
+            expire: (reason) => session.expire(reason),
+          },
+        },
+      }),
+    [runtimeConfig.apiBaseUrl, session],
+  );
 
   const events = useMemo<PlatformEvents>(() => createHostEventBus(), []);
 
-  const session = useMemo<SessionApi>(() => ({
-    getSnapshot: () => sessionRef.current.getSnapshot(),
-    subscribe: (listener) => sessionRef.current.subscribe(listener),
-    refresh: () => sessionRef.current.refresh(),
-    logout: () => sessionRef.current.logout(),
-  }), []);
+  const platform = useMemo<SellerPlatform>(
+    () =>
+      Object.freeze({
+        version: "1.0.0",
+        session,
+        events,
+        navigation: {
+          navigate(path: string, options?: { replace?: boolean }) {
+            navigate(path, { replace: options?.replace });
+          },
+        },
+        config: runtimeConfig,
+        api,
+      }),
+    [api, events, navigate, runtimeConfig, session],
+  );
 
-  const platform = useMemo<SellerPlatform>(() => Object.freeze({
-    version: "1.0.0",
-    session,
-    events,
-    navigation: {
-      navigate(path: string, options?: { replace?: boolean }) {
-        navigate(path, { replace: options?.replace });
-      },
-    },
-    config: runtimeConfig,
-    api,
-  }), [api, events, navigate, runtimeConfig, session]);
-
-  const value = useMemo<ShellPlatformContextValue>(() => ({
-    platform,
-    sessionRef,
-    events,
-  }), [events, platform]);
+  const value = useMemo<ShellPlatformContextValue>(
+    () => ({
+      sessionBridge,
+      events,
+    }),
+    [events],
+  );
 
   return (
     <PlatformProvider platform={platform}>
-      <ShellPlatformContext.Provider value={value}>
-        {children}
-      </ShellPlatformContext.Provider>
+      <ShellPlatformContext.Provider value={value}>{children}</ShellPlatformContext.Provider>
     </PlatformProvider>
   );
 }

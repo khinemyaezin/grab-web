@@ -1,10 +1,6 @@
 import { useEffect } from "react";
 import { FormProvider, useForm, useFormContext, useWatch } from "react-hook-form";
-import {
-  useContextBar,
-  useResetAllSlots,
-  useIsExtensionDirty,
-} from "@khinemyaezin/seller-ui";
+import { useContextBar, useResetAllSlots, useIsExtensionDirty } from "@khinemyaezin/seller-ui";
 import {
   Card,
   CardAction,
@@ -25,7 +21,10 @@ import { pricingEditGroupId } from "@/features/products/lib/pricing-instance-id"
 import { inventoryEditGroupId } from "@/features/products/lib/inventory-group-id";
 import ProductVariantFieldSet from "./product-variant-fieldset";
 import ProductVariantMediaFieldSet from "./product-variant-media-fieldset";
-import { ManageInventoryField, tracksInventory } from "@/features/products/ui/manage-inventory-field";
+import {
+  ManageInventoryField,
+  tracksInventory,
+} from "@/features/products/ui/manage-inventory-field";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 
 export type ProductVariantEditFormProps = {
@@ -77,7 +76,12 @@ function ProductVariantEditFormFields({
   actions,
   onLifecycleEvent,
 }: ProductVariantEditFormProps) {
-  const { handleSubmit, reset, formState: { isDirty }, control } = useFormContext<ProductVariantForm>();
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+    control,
+  } = useFormContext<ProductVariantForm>();
   const [isExtensionDirty, resetExtensionDirty] = useIsExtensionDirty();
   const resetAllSlots = useResetAllSlots();
 

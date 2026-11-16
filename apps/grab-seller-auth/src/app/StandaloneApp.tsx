@@ -24,10 +24,7 @@ export default function StandaloneApp() {
       <QueryClientProvider client={client}>
         <BrowserRouter>
           <Toaster />
-          <AuthRoutes
-            link={{ href: import.meta.env.VITE_API_IDENTITY_URL }}
-            platform={platform}
-          />
+          <AuthRoutes link={{ href: import.meta.env.VITE_API_IDENTITY_URL }} platform={platform} />
         </BrowserRouter>
       </QueryClientProvider>
     </ThemeProvider>

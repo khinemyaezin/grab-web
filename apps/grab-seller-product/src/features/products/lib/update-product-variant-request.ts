@@ -15,9 +15,10 @@ export function buildUpdateProductVariantRequest(
 ): UpdateProductVariantRequest {
   const manageInventory = tracksInventory(variant.manageInventory);
   const price = toVariantPrice(variant.sku, contributions.pricingLines);
-  const inventoryLines = manageInventory && contributions.inventoryLines?.length
-    ? contributions.inventoryLines
-    : undefined;
+  const inventoryLines =
+    manageInventory && contributions.inventoryLines?.length
+      ? contributions.inventoryLines
+      : undefined;
 
   return {
     productId,
@@ -37,8 +38,7 @@ function toVariantPrice(
     return undefined;
   }
 
-  const line =
-    pricingLines.find((pricingLine) => pricingLine.sku === sku) ?? pricingLines[0];
+  const line = pricingLines.find((pricingLine) => pricingLine.sku === sku) ?? pricingLines[0];
 
   if (!line) {
     return undefined;

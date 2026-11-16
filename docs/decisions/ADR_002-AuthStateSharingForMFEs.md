@@ -34,9 +34,10 @@ MFEs remain independently deployable and keep ownership of their local UI state,
 
 ## 2.1. Visual Overview
 
-> *Diagrams to understand the architecture at a glance.*
+> _Diagrams to understand the architecture at a glance._
 
 ### High-Level Flow / Components
+
 ```mermaid
 flowchart TB
     Browser["Browser"]
@@ -80,6 +81,7 @@ flowchart TB
 ```
 
 ### Authentication and Session Flow
+
 ```mermaid
 sequenceDiagram
     actor User
@@ -155,7 +157,7 @@ sequenceDiagram
 
 ## 2.2. Contract Definitions
 
-> *The TypeScript interfaces that define the integration surface between Shell and MFEs.*
+> _The TypeScript interfaces that define the integration surface between Shell and MFEs._
 
 ### SessionSnapshot (Discriminated Union State Machine)
 
@@ -222,19 +224,13 @@ interface SellerPlatform {
 }
 
 interface PlatformEvents {
-  publish<K extends keyof EventPayloads>(
-    type: K,
-    payload: EventPayloads[K]
-  ): void;
+  publish<K extends keyof EventPayloads>(type: K, payload: EventPayloads[K]): void;
   subscribe<K extends keyof EventPayloads>(
     type: K,
     handler: (payload: EventPayloads[K]) => void,
-    opts?: { replay?: boolean }
+    opts?: { replay?: boolean },
   ): () => void;
-  getSnapshot<K extends keyof EventPayloads>(
-    type: K,
-    key?: string
-  ): EventPayloads[K] | undefined;
+  getSnapshot<K extends keyof EventPayloads>(type: K, key?: string): EventPayloads[K] | undefined;
   clear(scope?: unknown): void;
 }
 
@@ -331,6 +327,7 @@ For same-origin deployments (Shell and gateway share the same domain), `SameSite
 ## 3. Why This Approach
 
 **Primary reasons:**
+
 1. **Reduced credential exposure:** `HttpOnly` cookies keep raw access and refresh credentials unavailable to Shell and MFE JavaScript. No token fields exist in any contract or event payload.
 2. **Single integration surface:** The `SellerPlatform` object is the only thing an MFE needs to integrate. It replaces ad-hoc props, shared React contexts, global singletons, and event bus imports with one standardized interface.
 3. **Clear ownership:** The Shell owns application session state, while MFEs own their own UI state, data fetching, and cache invalidation. The discriminated union state machine makes ownership boundaries explicit at the type level.
@@ -343,16 +340,16 @@ For same-origin deployments (Shell and gateway share the same domain), `SameSite
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|-------|-------|
-| Raw tokens are never exposed to frontend code, event payloads, or contracts. | Cookie-based auth requires correct gateway, domain, HTTPS, `SameSite`, and CSRF configuration. |
-| `SellerPlatform` gives every MFE a single, uniform integration surface. | The platform contract must be versioned and maintained; breaking changes affect all MFEs. |
-| Discriminated union `SessionSnapshot` gives MFEs exhaustive, compiler-checked state handling. | MFEs must handle all three states (`loading`, `anonymous`, `authenticated`), even if trivially. |
-| Refresh mutex prevents concurrent token rotation conflicts. | Adds complexity to the Shell; the mutex must handle timeout, failure, and re-entrancy correctly. |
-| Signal-only events keep one source of truth (`SessionSnapshot`). | MFEs must call `platform.session.getSnapshot()` after receiving an event, rather than using event data directly. |
-| The same contract serves React and non-React MFEs. | Non-React MFEs need a mount adapter that wraps `SellerPlatform` into their framework's lifecycle. |
-| MFEs keep local data ownership and cache boundaries. | Consumers may need to refetch data after session or domain events. |
-| Tab visibility revalidation prevents stale sessions. | Adds an extra network request on each tab re-activation. |
+| Pros                                                                                          | Cons                                                                                                             |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Raw tokens are never exposed to frontend code, event payloads, or contracts.                  | Cookie-based auth requires correct gateway, domain, HTTPS, `SameSite`, and CSRF configuration.                   |
+| `SellerPlatform` gives every MFE a single, uniform integration surface.                       | The platform contract must be versioned and maintained; breaking changes affect all MFEs.                        |
+| Discriminated union `SessionSnapshot` gives MFEs exhaustive, compiler-checked state handling. | MFEs must handle all three states (`loading`, `anonymous`, `authenticated`), even if trivially.                  |
+| Refresh mutex prevents concurrent token rotation conflicts.                                   | Adds complexity to the Shell; the mutex must handle timeout, failure, and re-entrancy correctly.                 |
+| Signal-only events keep one source of truth (`SessionSnapshot`).                              | MFEs must call `platform.session.getSnapshot()` after receiving an event, rather than using event data directly. |
+| The same contract serves React and non-React MFEs.                                            | Non-React MFEs need a mount adapter that wraps `SellerPlatform` into their framework's lifecycle.                |
+| MFEs keep local data ownership and cache boundaries.                                          | Consumers may need to refetch data after session or domain events.                                               |
+| Tab visibility revalidation prevents stale sessions.                                          | Adds an extra network request on each tab re-activation.                                                         |
 
 ---
 

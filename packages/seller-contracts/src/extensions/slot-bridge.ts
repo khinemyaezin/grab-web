@@ -14,9 +14,7 @@ export type SlotContribution = {
 };
 
 export type SlotHandle<TValue = unknown, TErrors = ExtensionFieldErrors> = {
-  validate: (
-    signal?: AbortSignal,
-  ) => Promise<{ valid: boolean; value?: TValue; errors?: TErrors }>;
+  validate: (signal?: AbortSignal) => Promise<{ valid: boolean; value?: TValue; errors?: TErrors }>;
   getValues: () => TValue;
   reset?: () => void;
   project?: () => SlotContribution[];

@@ -12,9 +12,11 @@ export function SimpleLayout() {
       <header className="fixed top-0 left-0 right-0 z-50">
         <div className="flex h-14 items-center justify-end px-8 gap-3">
           <ThemeToggle />
-          {isAuthenticated && (<Button variant="destructive" onClick={logout}>
-            <LogOutIcon className="size-4" />
-          </Button>)}
+          {isAuthenticated && (
+            <Button variant="destructive" onClick={logout}>
+              <LogOutIcon className="size-4" />
+            </Button>
+          )}
         </div>
       </header>
       <main>

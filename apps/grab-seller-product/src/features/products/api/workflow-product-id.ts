@@ -12,7 +12,10 @@ export async function resolveWorkflowProductId(
     return result.response.productId;
   }
 
-  const getLink = resolveLink(result.response?._links, SellerApiLinks.workflow.getCreateSellableProduct);
+  const getLink = resolveLink(
+    result.response?._links,
+    SellerApiLinks.workflow.getCreateSellableProduct,
+  );
   if (!getLink) {
     throw new Error("Missing product id after create");
   }

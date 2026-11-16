@@ -1,7 +1,7 @@
-import * as React from "react"
-import { ChevronLeftIcon, ChevronRightIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react"
+import * as React from "react";
+import { ChevronLeftIcon, ChevronRightIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import {
   Attachment,
   AttachmentAction,
@@ -9,8 +9,8 @@ import {
   AttachmentDescription,
   AttachmentMedia,
   AttachmentTitle,
-} from "@/components/ui/attachment"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/attachment";
+import { Badge } from "@/components/ui/badge";
 
 export const DEFAULT_MEDIA_ACCEPT = [
   "image/jpeg",
@@ -18,67 +18,67 @@ export const DEFAULT_MEDIA_ACCEPT = [
   "image/webp",
   "image/gif",
   "video/mp4",
-] as const
+] as const;
 
-export const DEFAULT_MEDIA_MAX_SIZE_BYTES = 10_485_760
+export const DEFAULT_MEDIA_MAX_SIZE_BYTES = 10_485_760;
 
-export type MediaGalleryItemStatus = "idle" | "uploading" | "error" | "done"
+export type MediaGalleryItemStatus = "idle" | "uploading" | "error" | "done";
 
 export type MediaGalleryItem = {
-  id: string
-  url: string
-  contentType: string
-  name?: string
-  sizeBytes?: number
-  file?: File
-  rank: number
-  storageKey?: string
-  status?: MediaGalleryItemStatus
-  error?: string
-}
+  id: string;
+  url: string;
+  contentType: string;
+  name?: string;
+  sizeBytes?: number;
+  file?: File;
+  rank: number;
+  storageKey?: string;
+  status?: MediaGalleryItemStatus;
+  error?: string;
+};
 
 export type MediaGalleryRules = {
-  accept?: string[]
-  maxSizeBytes?: number
-  maxItems?: number
-  multiple?: boolean
-}
+  accept?: string[];
+  maxSizeBytes?: number;
+  maxItems?: number;
+  multiple?: boolean;
+};
 
-export type MediaGalleryRejectionReason = "type" | "size" | "maxItems"
+export type MediaGalleryRejectionReason = "type" | "size" | "maxItems";
 
 export type MediaGalleryRejection = {
-  name: string
-  reason: MediaGalleryRejectionReason
-  message: string
-}
+  name: string;
+  reason: MediaGalleryRejectionReason;
+  message: string;
+};
 
 export type MediaGalleryFileResult = {
-  accepted: File[]
-  rejected: MediaGalleryRejection[]
-}
+  accepted: File[];
+  rejected: MediaGalleryRejection[];
+};
 
 type MediaGalleryContextValue = {
-  items: MediaGalleryItem[]
-  onChange: (items: MediaGalleryItem[]) => void
-  accept: string[]
-  maxSizeBytes: number
-  maxItems?: number
-  multiple: boolean
-  invalid?: boolean
-  disabled?: boolean
-  featuredLabel: string
-  errors: MediaGalleryRejection[]
-  setErrors: (errors: MediaGalleryRejection[]) => void
-}
+  items: MediaGalleryItem[];
+  onChange: (items: MediaGalleryItem[]) => void;
+  accept: string[];
+  maxSizeBytes: number;
+  maxItems?: number;
+  multiple: boolean;
+  invalid?: boolean;
+  disabled?: boolean;
+  featuredLabel: string;
+  errors: MediaGalleryRejection[];
+  setErrors: (errors: MediaGalleryRejection[]) => void;
+};
 
-const MediaGalleryContext = React.createContext<MediaGalleryContextValue | null>(null)
+const MediaGalleryContext = React.createContext<MediaGalleryContextValue | null>(null);
 
 export function useMediaGallery() {
-  const context = React.useContext(MediaGalleryContext)
+  const context = React.useContext(MediaGalleryContext);
   if (!context) {
-    throw new Error("MediaGallery components must be used within <MediaGallery />")
+    throw new Error("MediaGallery components must be used within <MediaGallery />");
   }
-  return context
+  return context;
 }
 
 export function createMediaGalleryItem(file: File, rank = 0): MediaGalleryItem {
@@ -91,23 +91,23 @@ export function createMediaGalleryItem(file: File, rank = 0): MediaGalleryItem {
     file,
     rank,
     status: "idle",
-  }
+  };
 }
 
 export function validateMediaFiles(
   files: File[],
   rules: MediaGalleryRules & { currentCount?: number } = {},
 ): MediaGalleryFileResult {
-  const accept = rules.accept ?? [...DEFAULT_MEDIA_ACCEPT]
-  const maxSizeBytes = rules.maxSizeBytes ?? DEFAULT_MEDIA_MAX_SIZE_BYTES
-  const multiple = rules.multiple ?? true
-  const currentCount = rules.currentCount ?? 0
-  const maxItems = multiple ? rules.maxItems : 1
+  const accept = rules.accept ?? [...DEFAULT_MEDIA_ACCEPT];
+  const maxSizeBytes = rules.maxSizeBytes ?? DEFAULT_MEDIA_MAX_SIZE_BYTES;
+  const multiple = rules.multiple ?? true;
+  const currentCount = rules.currentCount ?? 0;
+  const maxItems = multiple ? rules.maxItems : 1;
   const remaining =
-    maxItems == null ? Number.POSITIVE_INFINITY : Math.max(0, maxItems - currentCount)
+    maxItems == null ? Number.POSITIVE_INFINITY : Math.max(0, maxItems - currentCount);
 
-  const accepted: File[] = []
-  const rejected: MediaGalleryRejection[] = []
+  const accepted: File[] = [];
+  const rejected: MediaGalleryRejection[] = [];
 
   for (const file of files) {
     if (!accept.includes(file.type)) {
@@ -115,29 +115,29 @@ export function validateMediaFiles(
         name: file.name,
         reason: "type",
         message: `${file.name} is not an allowed file type.`,
-      })
-      continue
+      });
+      continue;
     }
     if (file.size > maxSizeBytes) {
       rejected.push({
         name: file.name,
         reason: "size",
         message: `${file.name} exceeds the ${formatBytes(maxSizeBytes)} limit.`,
-      })
-      continue
+      });
+      continue;
     }
     if (accepted.length >= remaining) {
       rejected.push({
         name: file.name,
         reason: "maxItems",
         message: `Only ${maxItems} file${maxItems === 1 ? "" : "s"} can be added.`,
-      })
-      continue
+      });
+      continue;
     }
-    accepted.push(file)
+    accepted.push(file);
   }
 
-  return { accepted, rejected }
+  return { accepted, rejected };
 }
 
 export function reorderMediaGalleryItems(
@@ -145,25 +145,19 @@ export function reorderMediaGalleryItems(
   from: number,
   to: number,
 ): MediaGalleryItem[] {
-  if (
-    from === to ||
-    from < 0 ||
-    to < 0 ||
-    from >= items.length ||
-    to >= items.length
-  ) {
-    return items.map((item, rank) => ({ ...item, rank }))
+  if (from === to || from < 0 || to < 0 || from >= items.length || to >= items.length) {
+    return items.map((item, rank) => ({ ...item, rank }));
   }
 
-  const next = [...items]
-  const [moved] = next.splice(from, 1)
-  next.splice(to, 0, moved)
-  return next.map((item, rank) => ({ ...item, rank }))
+  const next = [...items];
+  const [moved] = next.splice(from, 1);
+  next.splice(to, 0, moved);
+  return next.map((item, rank) => ({ ...item, rank }));
 }
 
 export function revokeMediaGalleryUrl(item: MediaGalleryItem): void {
   if (item.file && item.url.startsWith("blob:")) {
-    URL.revokeObjectURL(item.url)
+    URL.revokeObjectURL(item.url);
   }
 }
 
@@ -171,33 +165,31 @@ export function isMediaGalleryDirty(
   items: MediaGalleryItem[],
   seed: MediaGalleryItem[] = [],
 ): boolean {
-  if (items.some((item) => item.file)) return true
-  if (items.length !== seed.length) return true
+  if (items.some((item) => item.file)) return true;
+  if (items.length !== seed.length) return true;
   return items.some((item, index) => {
-    const previous = seed[index]
+    const previous = seed[index];
     return (
       item.id !== previous?.id ||
       item.rank !== previous?.rank ||
       item.storageKey !== previous?.storageKey
-    )
-  })
+    );
+  });
 }
 
 export type MediaAttachmentPayload = {
-  id?: string
-  storageKey: string
-  contentType: string
-  rank: number
-}
+  id?: string;
+  storageKey: string;
+  contentType: string;
+  rank: number;
+};
 
-export function formatMediaReplacements(
-  items: MediaGalleryItem[],
-): MediaAttachmentPayload[] {
+export function formatMediaReplacements(items: MediaGalleryItem[]): MediaAttachmentPayload[] {
   return [...items]
     .sort((left, right) => left.rank - right.rank)
     .map((item) => {
       if (!item.storageKey) {
-        throw new Error("Missing storage key for media item")
+        throw new Error("Missing storage key for media item");
       }
 
       return {
@@ -205,28 +197,28 @@ export function formatMediaReplacements(
         storageKey: item.storageKey,
         contentType: item.contentType,
         rank: item.rank,
-      }
-    })
+      };
+    });
 }
 
 export function extractMediaFileName(storageKey?: string, fallback = "Media"): string {
   if (!storageKey) {
-    return fallback
+    return fallback;
   }
-  const slash = storageKey.lastIndexOf("/")
-  const name = slash >= 0 ? storageKey.slice(slash + 1) : storageKey
-  return name || fallback
+  const slash = storageKey.lastIndexOf("/");
+  const name = slash >= 0 ? storageKey.slice(slash + 1) : storageKey;
+  return name || fallback;
 }
 
 export type RemoteMediaSource = {
-  id: string
-  url: string
-  contentType: string
-  rank: number
-  storageKey?: string
-  name?: string
-  sizeBytes?: number
-}
+  id: string;
+  url: string;
+  contentType: string;
+  rank: number;
+  storageKey?: string;
+  name?: string;
+  sizeBytes?: number;
+};
 
 export function toMediaGalleryItems<T extends RemoteMediaSource>(
   medias: T[] | null | undefined,
@@ -240,28 +232,27 @@ export function toMediaGalleryItems<T extends RemoteMediaSource>(
     name: media.name ?? extractMediaFileName(media.storageKey),
     sizeBytes: media.sizeBytes,
     status: "done" as const,
-  }))
+  }));
 }
 
-
 function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
-  return `${Math.round(bytes / (1024 * 1024))} MB`
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${Math.round(bytes / (1024 * 1024))} MB`;
 }
 
 function isVideo(contentType: string) {
-  return contentType.startsWith("video/")
+  return contentType.startsWith("video/");
 }
 
 export type MediaGalleryProps = React.ComponentProps<"div"> &
   MediaGalleryRules & {
-    value: MediaGalleryItem[]
-    onChange: (items: MediaGalleryItem[]) => void
-    invalid?: boolean
-    disabled?: boolean
-    featuredLabel?: string
-  }
+    value: MediaGalleryItem[];
+    onChange: (items: MediaGalleryItem[]) => void;
+    invalid?: boolean;
+    disabled?: boolean;
+    featuredLabel?: string;
+  };
 
 export function MediaGallery({
   value,
@@ -277,8 +268,8 @@ export function MediaGallery({
   children,
   ...props
 }: MediaGalleryProps) {
-  const [errors, setErrors] = React.useState<MediaGalleryRejection[]>([])
-  const items = value ?? []
+  const [errors, setErrors] = React.useState<MediaGalleryRejection[]>([]);
+  const items = value ?? [];
 
   const context = React.useMemo<MediaGalleryContextValue>(
     () => ({
@@ -306,7 +297,7 @@ export function MediaGallery({
       featuredLabel,
       errors,
     ],
-  )
+  );
 
   return (
     <MediaGalleryContext.Provider value={context}>
@@ -320,7 +311,7 @@ export function MediaGallery({
         {children}
       </div>
     </MediaGalleryContext.Provider>
-  )
+  );
 }
 
 export function MediaGalleryDropzone({
@@ -328,45 +319,37 @@ export function MediaGalleryDropzone({
   children,
   ...props
 }: React.ComponentProps<"div">) {
-  const {
-    items,
-    onChange,
-    accept,
-    maxSizeBytes,
-    maxItems,
-    multiple,
-    disabled,
-    setErrors,
-  } = useMediaGallery()
-  const inputRef = React.useRef<HTMLInputElement>(null)
-  const [isDragging, setIsDragging] = React.useState(false)
+  const { items, onChange, accept, maxSizeBytes, maxItems, multiple, disabled, setErrors } =
+    useMediaGallery();
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = React.useState(false);
 
   const addFiles = React.useCallback(
     (fileList: FileList | File[]) => {
-      const files = Array.from(fileList)
+      const files = Array.from(fileList);
       const { accepted, rejected } = validateMediaFiles(files, {
         accept,
         maxSizeBytes,
         maxItems,
         multiple,
         currentCount: items.length,
-      })
-      setErrors(rejected)
-      if (!accepted.length) return
+      });
+      setErrors(rejected);
+      if (!accepted.length) return;
 
-      const startRank = multiple ? items.length : 0
+      const startRank = multiple ? items.length : 0;
       const nextItems = accepted.map((file, index) =>
         createMediaGalleryItem(file, startRank + index),
-      )
+      );
       if (multiple) {
-        onChange([...items, ...nextItems])
-        return
+        onChange([...items, ...nextItems]);
+        return;
       }
-      items.forEach(revokeMediaGalleryUrl)
-      onChange(nextItems)
+      items.forEach(revokeMediaGalleryUrl);
+      onChange(nextItems);
     },
     [accept, items, maxItems, maxSizeBytes, multiple, onChange, setErrors],
-  )
+  );
 
   return (
     <div
@@ -381,14 +364,14 @@ export function MediaGalleryDropzone({
       )}
       onClick={() => inputRef.current?.click()}
       onDragOver={(event) => {
-        event.preventDefault()
-        if (!disabled) setIsDragging(true)
+        event.preventDefault();
+        if (!disabled) setIsDragging(true);
       }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={(event) => {
-        event.preventDefault()
-        setIsDragging(false)
-        if (!disabled) addFiles(event.dataTransfer.files)
+        event.preventDefault();
+        setIsDragging(false);
+        if (!disabled) addFiles(event.dataTransfer.files);
       }}
       {...props}
     >
@@ -400,8 +383,8 @@ export function MediaGalleryDropzone({
         multiple={multiple}
         disabled={disabled}
         onChange={(event) => {
-          if (event.target.files) addFiles(event.target.files)
-          event.target.value = ""
+          if (event.target.files) addFiles(event.target.files);
+          event.target.value = "";
         }}
       />
       {children ?? (
@@ -411,14 +394,10 @@ export function MediaGalleryDropzone({
         </>
       )}
     </div>
-  )
+  );
 }
 
-export function MediaGalleryEmpty({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"div">) {
+export function MediaGalleryEmpty({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="media-gallery-empty"
@@ -435,34 +414,25 @@ export function MediaGalleryEmpty({
         </>
       )}
     </div>
-  )
+  );
 }
 
-export function MediaGalleryList({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"div">) {
-  const { items } = useMediaGallery()
+export function MediaGalleryList({ className, children, ...props }: React.ComponentProps<"div">) {
+  const { items } = useMediaGallery();
 
   if (!items.length && !children) {
-    return <MediaGalleryEmpty />
+    return <MediaGalleryEmpty />;
   }
 
   return (
     <div
       data-slot="media-gallery-list"
-      className={cn(
-        "grid grid-cols-2 gap-3 sm:grid-cols-3",
-        className,
-      )}
+      className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3", className)}
       {...props}
     >
-      {children ?? items.map((item) => (
-        <MediaGalleryItem key={item.id} item={item} />
-      ))}
+      {children ?? items.map((item) => <MediaGalleryItem key={item.id} item={item} />)}
     </div>
-  )
+  );
 }
 
 export function MediaGalleryItem({
@@ -471,25 +441,24 @@ export function MediaGalleryItem({
   children,
   ...props
 }: React.ComponentProps<"div"> & { item: MediaGalleryItem }) {
-  const { items, onChange, disabled, featuredLabel } = useMediaGallery()
-  const index = items.findIndex((entry) => entry.id === item.id)
-  const state = item.status === "error" ? "error" : item.status === "uploading" ? "uploading" : "done"
-  const video = isVideo(item.contentType)
+  const { items, onChange, disabled, featuredLabel } = useMediaGallery();
+  const index = items.findIndex((entry) => entry.id === item.id);
+  const state =
+    item.status === "error" ? "error" : item.status === "uploading" ? "uploading" : "done";
+  const video = isVideo(item.contentType);
 
   const move = (to: number) => {
-    if (disabled || index < 0) return
-    onChange(reorderMediaGalleryItems(items, index, to))
-  }
+    if (disabled || index < 0) return;
+    onChange(reorderMediaGalleryItems(items, index, to));
+  };
 
   const remove = () => {
-    if (disabled || index < 0) return
-    revokeMediaGalleryUrl(item)
+    if (disabled || index < 0) return;
+    revokeMediaGalleryUrl(item);
     onChange(
-      items
-        .filter((entry) => entry.id !== item.id)
-        .map((entry, rank) => ({ ...entry, rank })),
-    )
-  }
+      items.filter((entry) => entry.id !== item.id).map((entry, rank) => ({ ...entry, rank })),
+    );
+  };
 
   return (
     <Attachment
@@ -548,15 +517,12 @@ export function MediaGalleryItem({
         </>
       )}
     </Attachment>
-  )
+  );
 }
 
-export function MediaGalleryErrors({
-  className,
-  ...props
-}: React.ComponentProps<"ul">) {
-  const { errors } = useMediaGallery()
-  if (!errors.length) return null
+export function MediaGalleryErrors({ className, ...props }: React.ComponentProps<"ul">) {
+  const { errors } = useMediaGallery();
+  if (!errors.length) return null;
 
   return (
     <ul
@@ -568,5 +534,5 @@ export function MediaGalleryErrors({
         <li key={`${error.reason}-${error.name}`}>{error.message}</li>
       ))}
     </ul>
-  )
+  );
 }

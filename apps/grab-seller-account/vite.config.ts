@@ -1,34 +1,37 @@
-import { federation } from '@module-federation/vite';
-import react from '@vitejs/plugin-react';
-import { defineConfig, loadEnv } from 'vite';
+import { federation } from "@module-federation/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig, loadEnv } from "vite";
 import { fileURLToPath, URL } from "node:url";
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, process.cwd(), "");
   return {
-    base: env.NODE_ENV === 'development' ? 'http://localhost:3004/' : '/mfe/seller-account/',
+    base: env.NODE_ENV === "development" ? "http://localhost:3004/" : "/mfe/seller-account/",
     plugins: [
       react(),
       tailwindcss(),
       federation({
-        name: 'grab_seller_account',
-        filename: 'remoteEntry.js',
+        name: "grab_seller_account",
+        filename: "remoteEntry.js",
         manifest: true,
         bundleAllCSS: true,
-        dts: process.env.MF_DTS === "0" ? false : {
-          generateTypes: {
-            tsConfigPath: "./tsconfig.app.json",
-            abortOnError: true,
-          },
-        },
+        dts:
+          process.env.MF_DTS === "0"
+            ? false
+            : {
+                generateTypes: {
+                  tsConfigPath: "./tsconfig.app.json",
+                  abortOnError: true,
+                },
+              },
         exposes: {
-          './Routes': './src/app/AppRoutes.tsx',
-          './StorefrontRoutes': './src/app/StorefrontRoutes.tsx',
-          './Service': './src/features/merchant/api/seller-account-service.ts'
+          "./Routes": "./src/app/AppRoutes.tsx",
+          "./StorefrontRoutes": "./src/app/StorefrontRoutes.tsx",
+          "./Service": "./src/features/merchant/api/seller-account-service.ts",
         },
         shared: {
-          "react": { singleton: true, requiredVersion: "19.2.4" },
+          react: { singleton: true, requiredVersion: "19.2.4" },
           "react-dom": { singleton: true, requiredVersion: "19.2.4" },
           "react-router": { singleton: true, requiredVersion: "7.18.0" },
           "react-hook-form": { singleton: true, requiredVersion: "7.74.0" },
@@ -45,18 +48,18 @@ export default defineConfig(({ mode }) => {
       origin: env.VITE_ORIGIN,
       cors: { origin: env.VITE_CORS_ORIGIN },
       proxy: {
-        '/api': {
+        "/api": {
           target: env.VITE_API_URL,
           changeOrigin: true,
           xfwd: true,
           timeout: 0,
-          proxyTimeout: 0
+          proxyTimeout: 0,
         },
       },
     },
     preview: { port: 3004 },
     build: {
-      target: 'chrome111',
+      target: "chrome111",
       minify: false,
       cssCodeSplit: false,
     },

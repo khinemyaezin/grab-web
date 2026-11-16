@@ -4,7 +4,13 @@ import { LoginFormValues } from "../types/auth.form";
 import { Button } from "@khinemyaezin/seller-ui/components/button";
 import { LoginRequest } from "../types/auth.request";
 import { HateoasLink } from "@khinemyaezin/seller-api";
-import { FieldGroup, Field, FieldLabel, FieldError, FieldDescription } from "@khinemyaezin/seller-ui/components/field";
+import {
+  FieldGroup,
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+} from "@khinemyaezin/seller-ui/components/field";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
 import { ButtonStatus } from "@khinemyaezin/seller-ui/components/index";
 import { Link } from "react-router";
@@ -13,27 +19,37 @@ import { routes } from "@khinemyaezin/seller-contracts";
 export type LoginFormProps = {
   link: HateoasLink;
   onLoginSuccess: () => void;
-  onLoginError:({title, description}:{title:string, description: string}) => void;
-}
+  onLoginError: ({ title, description }: { title: string; description: string }) => void;
+};
 
 export function LoginForm({ link, onLoginSuccess, onLoginError }: LoginFormProps) {
   const loginMutation = useLoginMutation();
   const form = useForm<LoginFormValues>();
-  const { handleSubmit, register, formState: { errors } } = form;
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = form;
 
   const onSubmit = (data: LoginFormValues) => {
     const payload: LoginRequest = {
       email: data.email,
       password: data.password,
     };
-    loginMutation.mutate({ link: link, request: payload }, {
-      onSuccess: () => {
-        window.setTimeout(onLoginSuccess, 700);
+    loginMutation.mutate(
+      { link: link, request: payload },
+      {
+        onSuccess: () => {
+          onLoginSuccess();
+        },
+        onError: (_err) => {
+          onLoginError({
+            title: "There was a problem",
+            description: "Unable to find your account.",
+          });
+        },
       },
-      onError: (err) => {
-        onLoginError({ title: "There was a problem" , description: "Unable to find your account."})
-      }
-    });
+    );
   };
 
   return (
@@ -90,11 +106,7 @@ export function LoginForm({ link, onLoginSuccess, onLoginError }: LoginFormProps
           >
             <ButtonStatus
               status={
-                loginMutation.isPending
-                  ? "pending"
-                  : loginMutation.isSuccess
-                    ? "success"
-                    : "idle"
+                loginMutation.isPending ? "pending" : loginMutation.isSuccess ? "success" : "idle"
               }
               pendingLabel="Signing in..."
               successLabel="Success"
@@ -103,7 +115,6 @@ export function LoginForm({ link, onLoginSuccess, onLoginError }: LoginFormProps
             </ButtonStatus>
           </Button>
         </Field>
-
       </form>
     </FormProvider>
   );

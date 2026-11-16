@@ -1,5 +1,9 @@
 import { useCallback } from "react";
-import { Filter, type FilterField, type FilterValues } from "@khinemyaezin/seller-ui/components/filter";
+import {
+  Filter,
+  type FilterField,
+  type FilterValues,
+} from "@khinemyaezin/seller-ui/components/filter";
 import type { ProductSearchCriteria } from "./use-product-filter";
 import { ProductStatus } from "@/features/products/types/catalog.model";
 
@@ -16,13 +20,13 @@ const FIELDS: FilterField[] = [
     placeholder: "Search products",
     debounceMs: 300,
   },
-   {
-      type: "select",
-      name: "size",
-      label: "",
-      placeholder: "Page size",
-      options: PAGE_SIZES.map((size) => ({ label: String(size), value: String(size) })),
-    },
+  {
+    type: "select",
+    name: "size",
+    label: "",
+    placeholder: "Page size",
+    options: PAGE_SIZES.map((size) => ({ label: String(size), value: String(size) })),
+  },
 ];
 
 const DEFAULT_VALUES: FilterValues = {
@@ -39,7 +43,8 @@ export default function ProductsFilter({ onChange }: ProductsFilterProps) {
   const handleChange = useCallback(
     (values: FilterValues) => {
       const query = typeof values.query === "string" ? values.query.trim() : "";
-      const productStatus = values.productStatus === ALL ? null : (values.productStatus as ProductStatus);
+      const productStatus =
+        values.productStatus === ALL ? null : (values.productStatus as ProductStatus);
 
       onChange({
         query,
@@ -47,7 +52,7 @@ export default function ProductsFilter({ onChange }: ProductsFilterProps) {
         size: Number(values.size ?? DEFAULT_SIZE),
       });
     },
-    [onChange]
+    [onChange],
   );
 
   return (

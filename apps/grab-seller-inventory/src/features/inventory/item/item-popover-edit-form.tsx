@@ -41,13 +41,19 @@ function QuantityTrigger({ value, ...props }: ComponentProps<typeof Button> & { 
   );
 }
 
-export default function ItemPopoverEditForm({ context, value, onChange, registerHandle }: InventoryItemEditProps) {
-  const { formValue, isLoading, locations, confirmForItem, applyLocationSelection } = useInventoryEdit({
-    context,
-    value,
-    onChange,
-    registerHandle,
-  });
+export default function ItemPopoverEditForm({
+  context,
+  value,
+  onChange,
+  registerHandle,
+}: InventoryItemEditProps) {
+  const { formValue, isLoading, locations, confirmForItem, applyLocationSelection } =
+    useInventoryEdit({
+      context,
+      value,
+      onChange,
+      registerHandle,
+    });
   const [pickerOpen, setPickerOpen] = useState(false);
   const selectedIds = useMemo(
     () => formValue?.items.map((item) => item.locationId) ?? [],
@@ -68,7 +74,12 @@ export default function ItemPopoverEditForm({ context, value, onChange, register
             <TableHeader>
               <TableRow className="bg-muted">
                 <TableHead>
-                  <Button type="button" variant="secondary" size="icon-sm" onClick={() => setPickerOpen(true)}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon-sm"
+                    onClick={() => setPickerOpen(true)}
+                  >
                     <Pencil data-icon="inline-end" />
                   </Button>
                 </TableHead>
@@ -80,7 +91,9 @@ export default function ItemPopoverEditForm({ context, value, onChange, register
               {formValue?.items.length ? (
                 formValue.items.map((item) => (
                   <TableRow key={item.locationId}>
-                    <TableCell className="text-sm">{item.locationName || item.locationId}</TableCell>
+                    <TableCell className="text-sm">
+                      {item.locationName || item.locationId}
+                    </TableCell>
                     <TableCell>
                       {item.op === "CREATE" ? (
                         <StockOperationPopover

@@ -1,12 +1,12 @@
-import type * as React from "react"
+import type * as React from "react";
 
-import { cn } from "@/lib/utils"
-import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type PageLoadingSkeletonProps = React.ComponentProps<"div"> & {
-  rows?: number
-  actions?: number
-}
+  rows?: number;
+  actions?: number;
+};
 
 function PageLoadingSkeleton({
   className,
@@ -14,8 +14,8 @@ function PageLoadingSkeleton({
   actions = 1,
   ...props
 }: PageLoadingSkeletonProps) {
-  const rowCount = Math.max(0, Math.floor(rows))
-  const actionCount = Math.max(0, Math.floor(actions))
+  const rowCount = Math.max(0, Math.floor(rows));
+  const actionCount = Math.max(0, Math.floor(actions));
 
   return (
     <div
@@ -24,7 +24,7 @@ function PageLoadingSkeleton({
       data-slot="page-loading-skeleton"
       className={cn(
         "rounded-xl bg-card py-6 text-sm text-card-foreground shadow-xs ring-1 ring-foreground/10",
-        className
+        className,
       )}
       {...props}
     >
@@ -44,7 +44,7 @@ function PageLoadingSkeleton({
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export { PageLoadingSkeleton }
+export { PageLoadingSkeleton };

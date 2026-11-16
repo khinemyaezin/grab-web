@@ -10,47 +10,44 @@ import ProductActionsMenu from "./product-edit-actions";
 import type { ProductLifecycleEvent } from "@/features/products/types";
 
 export type ProductEditViewProps = {
-    productId: string;
-    onLifecycleEvent?: (event: ProductLifecycleEvent) => void;
+  productId: string;
+  onLifecycleEvent?: (event: ProductLifecycleEvent) => void;
 };
 
-export default function ProductEditView({
+export default function ProductEditView({ productId, onLifecycleEvent }: ProductEditViewProps) {
+  const { isLoading, isError, seed, actions } = useProductEdit({
     productId,
-    onLifecycleEvent,
-}: ProductEditViewProps) {
-    const { isLoading, isError, seed, actions } = useProductEdit({
-        productId,
-    });
+  });
 
-    return (
-        <>
-            <Header
-                title={`Edit ${seed?.product.name ?? " Product"}`}
-                description="Update your product details."
-            >
-                <ButtonGroup>
-                    <ButtonGroup>
-                        <Button type="button" variant="secondary" asChild>
-                            <Link to=".." className="flex gap-2 items-center">
-                                <ArrowLeftIcon />
-                            </Link>
-                        </Button>
-                    </ButtonGroup>
-                    <ButtonGroup>
-                        <ProductActionsMenu links={actions} onLifecycleEvent={onLifecycleEvent} />
-                    </ButtonGroup>
-                </ButtonGroup>
-            </Header>
-            <QueryState isLoading={isLoading || !seed} isError={isError && !seed}>
-                {seed ? (
-                    <ProductEditForm
-                        productId={productId}
-                        seed={seed}
-                        actions={actions}
-                        onLifecycleEvent={onLifecycleEvent}
-                    />
-                ) : null}
-            </QueryState>
-        </>
-    );
+  return (
+    <>
+      <Header
+        title={`Edit ${seed?.product.name ?? " Product"}`}
+        description="Update your product details."
+      >
+        <ButtonGroup>
+          <ButtonGroup>
+            <Button type="button" variant="secondary" asChild>
+              <Link to=".." className="flex gap-2 items-center">
+                <ArrowLeftIcon />
+              </Link>
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup>
+            <ProductActionsMenu links={actions} onLifecycleEvent={onLifecycleEvent} />
+          </ButtonGroup>
+        </ButtonGroup>
+      </Header>
+      <QueryState isLoading={isLoading || !seed} isError={isError && !seed}>
+        {seed ? (
+          <ProductEditForm
+            productId={productId}
+            seed={seed}
+            actions={actions}
+            onLifecycleEvent={onLifecycleEvent}
+          />
+        ) : null}
+      </QueryState>
+    </>
+  );
 }

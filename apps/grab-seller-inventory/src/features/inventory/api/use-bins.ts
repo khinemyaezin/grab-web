@@ -1,8 +1,11 @@
-
 import { binService } from "./bin";
 import { resolveUrlTemplate } from "@khinemyaezin/seller-api";
 import type { HateoasLink, Pageable } from "@khinemyaezin/seller-api";
-import type { BinsFilterForm, CreateBinRequest, UpdateBinRequest } from "@/features/inventory/types";
+import type {
+  BinsFilterForm,
+  CreateBinRequest,
+  UpdateBinRequest,
+} from "@/features/inventory/types";
 import type { BinResponse, ListBinResponse } from "@/features/inventory/types/inventory.response";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "@khinemyaezin/seller-ui";

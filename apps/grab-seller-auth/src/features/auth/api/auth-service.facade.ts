@@ -5,13 +5,22 @@ import type { IdentityLinks } from "../../shared/types/identity-model";
 import { linkDiscoveryService } from "@/features/shared/api/link-discovery";
 import { UserProfile } from "../types";
 
+/**
+ * @deprecated Use createIdentityService from @khinemyaezin/seller-api and IdentityService from @khinemyaezin/seller-contracts.
+ */
 export interface AuthServiceFacade {
   getProfile(): Promise<UserProfile>;
   logout(): Promise<void>;
   refreshToken(): Promise<void>;
 }
 
-export function createAuthService(api: PlatformApiClient, entryLink: HateoasLink): AuthServiceFacade {
+/**
+ * @deprecated Use createIdentityService from @khinemyaezin/seller-api directly.
+ */
+export function createAuthService(
+  api: PlatformApiClient,
+  entryLink: HateoasLink,
+): AuthServiceFacade {
   let discoveryPromise: Promise<IdentityLinks> | null = null;
 
   function ensureDiscovery(): Promise<IdentityLinks> {
@@ -30,7 +39,7 @@ export function createAuthService(api: PlatformApiClient, entryLink: HateoasLink
       if (!root.getProfile) {
         throw new Error("Identity root does not expose a 'get-profile' link");
       }
-      return authService.readProfile(api, root.getProfile).then(res => {
+      return authService.readProfile(api, root.getProfile).then((res) => {
         const user: UserProfile = {
           id: res.id,
           email: res.email,
@@ -38,8 +47,8 @@ export function createAuthService(api: PlatformApiClient, entryLink: HateoasLink
           avatar: "",
           createdAt: res.createdAt,
           accessContexts: [...res.accessContexts],
-          currentAccessContext: res.currentAccessContext
-        }
+          currentAccessContext: res.currentAccessContext,
+        };
         return user;
       });
     },

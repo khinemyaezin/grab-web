@@ -1,5 +1,9 @@
 import { useCallback } from "react";
-import { Filter, type FilterField, type FilterValues } from "@khinemyaezin/seller-ui/components/filter";
+import {
+  Filter,
+  type FilterField,
+  type FilterValues,
+} from "@khinemyaezin/seller-ui/components/filter";
 import type { BinSearchCriteria } from "./use-bin-filter";
 
 const PAGE_SIZES = [5, 10, 20];
@@ -13,7 +17,7 @@ const FIELDS: FilterField[] = [
     label: "",
     placeholder: "Search bins",
     debounceMs: 300,
-  }
+  },
 ];
 
 const DEFAULT_VALUES: FilterValues = {
@@ -38,7 +42,7 @@ export default function BinFilter({ onChange }: BinFilterProps) {
         size: Number(values.size ?? DEFAULT_SIZE),
       });
     },
-    [onChange]
+    [onChange],
   );
 
   return (

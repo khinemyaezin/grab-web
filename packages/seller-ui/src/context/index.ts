@@ -1,5 +1,5 @@
 export { EntryLinkProvider, useEntryLink } from "./entry-link-provider";
-export { PlatformProvider, usePlatform, useApi } from "./platform-provider";
+export { PlatformProvider, usePlatform, useRequiredPlatform, useApi } from "./platform-provider";
 export { ExtensionProvider, type ExtensionProviderProps } from "./extension-provider";
 export { useExtension, type ExtensionRegistry } from "./extension-registry";
 export { ExtensionSlot, type ExtensionSlotProps } from "./extension-slot";

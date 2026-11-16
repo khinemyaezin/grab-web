@@ -7,7 +7,7 @@ import { useIdentityGet } from "@/features/shared/hook/use-identity";
 export default function LoginPage() {
   const { data } = useIdentityGet();
   const platform = usePlatform();
-  const [error, setError] = useState<{ title: string, description: string } | undefined>(undefined)
+  const [error, setError] = useState<{ title: string; description: string } | undefined>(undefined);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
@@ -21,7 +21,7 @@ export default function LoginPage() {
               platform?.events.emit("auth:login-success:v1", {});
             }}
             onLoginError={({ title, description }) => {
-              setError({ title, description })
+              setError({ title, description });
             }}
           />
         )}

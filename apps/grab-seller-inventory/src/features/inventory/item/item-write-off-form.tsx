@@ -4,7 +4,11 @@ import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
 import { Field, FieldGroup, FieldLabel } from "@khinemyaezin/seller-ui/components/field";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
-import type { ItemLifecycleEvent, WriteOffStockFormValues, WriteOffStockRequest } from "@/features/inventory/types";
+import type {
+  ItemLifecycleEvent,
+  WriteOffStockFormValues,
+  WriteOffStockRequest,
+} from "@/features/inventory/types";
 import { useWriteOffMutation } from "@/features/inventory/api/use-items";
 
 export type ItemWriteOffFormProps = {
@@ -15,8 +19,16 @@ export type ItemWriteOffFormProps = {
 const DEFAULT_VALUES: WriteOffStockFormValues = { quantity: 1, reason: "", notes: "" };
 
 export default function ItemWriteOffForm({ link, onLifecycleEvent }: ItemWriteOffFormProps) {
-  const form = useForm<WriteOffStockFormValues>({ defaultValues: DEFAULT_VALUES, mode: "onSubmit" });
-  const { register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+  const form = useForm<WriteOffStockFormValues>({
+    defaultValues: DEFAULT_VALUES,
+    mode: "onSubmit",
+  });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useWriteOffMutation();
 
   const onSubmit = async (values: WriteOffStockFormValues) => {

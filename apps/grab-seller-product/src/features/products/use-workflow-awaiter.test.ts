@@ -1,9 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import {
-  useWorkflowAwaiter,
-  type WorkflowUpdatedV1,
-} from "./use-workflow-awaiter";
+import { useWorkflowAwaiter, type WorkflowUpdatedV1 } from "./use-workflow-awaiter";
 import type { PlatformEvents } from "@khinemyaezin/seller-contracts";
 
 function createMockPlatform(subscribers: Map<string, Set<(payload: any) => void>>) {
@@ -32,9 +29,7 @@ import { usePlatform } from "@khinemyaezin/seller-ui";
 const IDEMPOTENCY_KEY =
   "11111111-1111-4111-8111-111111111111" as `${string}-${string}-${string}-${string}-${string}`;
 
-function terminalEvent(
-  overrides: Partial<WorkflowUpdatedV1> = {},
-): WorkflowUpdatedV1 {
+function terminalEvent(overrides: Partial<WorkflowUpdatedV1> = {}): WorkflowUpdatedV1 {
   return {
     producerId: "backend",
     workflowId: "wf-1",
@@ -102,9 +97,7 @@ describe("useWorkflowAwaiter", () => {
       resolveTrigger = resolve;
     });
 
-    const awaitPromise = result.current.awaitWorkflow(
-      () => triggerPromise as Promise<any>,
-    );
+    const awaitPromise = result.current.awaitWorkflow(() => triggerPromise as Promise<any>);
 
     const handlers = subscribers.get("workflow:updated:v1");
     expect(handlers?.size).toBe(1);

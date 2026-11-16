@@ -6,28 +6,28 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { ProductFormValue } from "@/features/products/types";
 
 export function PricingStandalone() {
-    const { control } = useFormContext<ProductFormValue>();
-    const isStandalone = useWatch({
-        control,
-        name: "variationTypes",
-        compute: (value) => isStandaloneProductForm(value),
-    })
-    const sku = useWatch({
-        control,
-        name: "product.standaloneVariant.sku",
-        defaultValue: "",
-    });
+  const { control } = useFormContext<ProductFormValue>();
+  const isStandalone = useWatch({
+    control,
+    name: "variationTypes",
+    compute: (value) => isStandaloneProductForm(value),
+  });
+  const sku = useWatch({
+    control,
+    name: "product.standaloneVariant.sku",
+    defaultValue: "",
+  });
 
-    if (!isStandalone) return;
-    
-    return (
-        <Card>
-            <CardContent>
-                <PricingLineFullSlot
-                    groupId={STANDALONE_PRICING_INSTANCE_ID}
-                    context={{ sku: sku ?? "" }}
-                />
-            </CardContent>
-        </Card>
-    )
+  if (!isStandalone) return;
+
+  return (
+    <Card>
+      <CardContent>
+        <PricingLineFullSlot
+          groupId={STANDALONE_PRICING_INSTANCE_ID}
+          context={{ sku: sku ?? "" }}
+        />
+      </CardContent>
+    </Card>
+  );
 }

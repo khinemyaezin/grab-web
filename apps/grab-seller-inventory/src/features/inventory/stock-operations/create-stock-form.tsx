@@ -11,11 +11,7 @@ export type CreateStockFormProps = {
   ref: Ref<StockOperationFormHandle>;
 };
 
-export default function CreateStockForm({
-  value,
-  locations,
-  ref,
-}: CreateStockFormProps) {
+export default function CreateStockForm({ value, locations, ref }: CreateStockFormProps) {
   const form = useForm<CreateInventoryItemValues>({
     defaultValues: value ?? {
       locationId: locations?.locationId ?? "",
@@ -39,15 +35,19 @@ export default function CreateStockForm({
     }
   }, [value, reset]);
 
-  useImperativeHandle(ref, () => ({
-    submit: () =>
-      new Promise<StockOperationSubmit | null>((resolve) => {
-        void handleSubmit(
-          (values) => resolve({ op: "CREATE", value: values }),
-          () => resolve(null),
-        )();
-      }),
-  }), [handleSubmit]);
+  useImperativeHandle(
+    ref,
+    () => ({
+      submit: () =>
+        new Promise<StockOperationSubmit | null>((resolve) => {
+          void handleSubmit(
+            (values) => resolve({ op: "CREATE", value: values }),
+            () => resolve(null),
+          )();
+        }),
+    }),
+    [handleSubmit],
+  );
 
   return (
     <div className="grid gap-3">

@@ -1,6 +1,6 @@
-import { Fragment } from "react"
-import { Link } from "react-router"
-import { ThemeToggle } from "@khinemyaezin/seller-ui"
+import { Fragment } from "react";
+import { Link } from "react-router";
+import { ThemeToggle } from "@khinemyaezin/seller-ui";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,18 +8,18 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@khinemyaezin/seller-ui/components/breadcrumb"
-import { SidebarTrigger } from "@khinemyaezin/seller-ui/components/index"
-import { useBreadcrumbs } from "../hooks/use-breadcrumbs"
+} from "@khinemyaezin/seller-ui/components/breadcrumb";
+import { SidebarTrigger } from "@khinemyaezin/seller-ui/components/index";
+import { useBreadcrumbs } from "../hooks/use-breadcrumbs";
 
 function RouteBreadcrumb() {
-  const crumbs = useBreadcrumbs()
+  const crumbs = useBreadcrumbs();
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
         {crumbs.map((crumb, index) => {
-          const isLast = index === crumbs.length - 1
+          const isLast = index === crumbs.length - 1;
 
           return (
             <Fragment key={`${crumb.label}-${index}`}>
@@ -34,11 +34,11 @@ function RouteBreadcrumb() {
                 )}
               </BreadcrumbItem>
             </Fragment>
-          )
+          );
         })}
       </BreadcrumbList>
     </Breadcrumb>
-  )
+  );
 }
 
 export function AdminSiteHeader() {
@@ -53,6 +53,6 @@ export function AdminSiteHeader() {
           <ThemeToggle />
         </div>
       </div>
-    </header >
-  )
+    </header>
+  );
 }

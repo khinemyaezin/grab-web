@@ -40,7 +40,9 @@ export function useItems(searchLink?: HateoasLink, filters?: ItemsFilterForm & P
 export function useInventoryExistence(locationId?: string, skus?: string[]) {
   const api = useApi();
   const checkExistenceLink = useInventoryLink("checkInventoryExistence");
-  const uniqueSkus = Array.from(new Set((skus ?? []).map((sku) => sku.trim()).filter(Boolean))).slice(0, 100);
+  const uniqueSkus = Array.from(
+    new Set((skus ?? []).map((sku) => sku.trim()).filter(Boolean)),
+  ).slice(0, 100);
   const request: CheckInventoryExistenceRequest = {
     locationId: locationId!,
     skus: uniqueSkus,
@@ -55,9 +57,8 @@ export function useInventoryExistence(locationId?: string, skus?: string[]) {
 
 export function useItem(link?: HateoasLink, itemId?: string) {
   const api = useApi();
-  const expandedLink = link && itemId
-    ? resolveUrlTemplate({ inventoryItemId: itemId }, link)
-    : undefined;
+  const expandedLink =
+    link && itemId ? resolveUrlTemplate({ inventoryItemId: itemId }, link) : undefined;
 
   return useQuery<InventoryItemResponse>({
     queryKey: ["inventory-item", itemId],
@@ -89,7 +90,11 @@ export function useItemReservations(link?: HateoasLink, pageable?: Pageable) {
 export function useCreateItemMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: CreateInventoryRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: CreateInventoryRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.createItem(api, link, request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inventory-items"] });
@@ -102,7 +107,11 @@ export function useCreateItemMutation() {
 export function useReceiveStockMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: ReceiveStockRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: ReceiveStockRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.receiveStock(api, link, request),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["inventory-items"] });
@@ -115,7 +124,11 @@ export function useReceiveStockMutation() {
 export function useAdjustStockMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: AdjustStockRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: AdjustStockRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.adjustStock(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
@@ -133,7 +146,11 @@ function invalidateItemQueries(queryClient: ReturnType<typeof useQueryClient>, i
 export function useMarkDamagedMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: MarkDamagedRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: MarkDamagedRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.markDamaged(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
@@ -142,7 +159,11 @@ export function useMarkDamagedMutation() {
 export function useWriteOffMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: WriteOffStockRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: WriteOffStockRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.writeOff(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
@@ -151,7 +172,11 @@ export function useWriteOffMutation() {
 export function useReturnToVendorMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: ReturnToVendorRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: ReturnToVendorRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.returnToVendor(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
@@ -187,7 +212,11 @@ export function useDiscontinueInventoryMutation() {
 export function useTransferInventoryMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<TransferInventoryResponse, Error, { link: HateoasLink; request: TransferInventoryRequest }>({
+  return useMutation<
+    TransferInventoryResponse,
+    Error,
+    { link: HateoasLink; request: TransferInventoryRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.transfer(api, link, request),
     onSuccess: (data) => {
       invalidateItemQueries(queryClient, data.source.id);
@@ -199,7 +228,11 @@ export function useTransferInventoryMutation() {
 export function useAnnounceInTransitMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: AnnounceInTransitRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: AnnounceInTransitRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.announceInTransit(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
@@ -208,7 +241,11 @@ export function useAnnounceInTransitMutation() {
 export function useReceiveInTransitMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: ReceiveInTransitRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: ReceiveInTransitRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.receiveInTransit(api, link, request),
     onSuccess: (data) => invalidateItemQueries(queryClient, data.id),
   });
@@ -217,7 +254,11 @@ export function useReceiveInTransitMutation() {
 export function useUpdateReorderConfigMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<InventoryItemResponse, Error, { link: HateoasLink; request: UpdateReorderConfigRequest }>({
+  return useMutation<
+    InventoryItemResponse,
+    Error,
+    { link: HateoasLink; request: UpdateReorderConfigRequest }
+  >({
     mutationFn: ({ link, request }) => itemService.updateReorderConfig(api, link, request),
     onSuccess: (data) => {
       invalidateItemQueries(queryClient, data.id);
@@ -226,7 +267,10 @@ export function useUpdateReorderConfigMutation() {
   });
 }
 
-export function useReorderSuggestions(link?: HateoasLink, params?: { locationId?: string; sku?: string }) {
+export function useReorderSuggestions(
+  link?: HateoasLink,
+  params?: { locationId?: string; sku?: string },
+) {
   const api = useApi();
   return useQuery<ReorderSuggestionsResponse>({
     queryKey: ["reorder-suggestions", link?.href, params],

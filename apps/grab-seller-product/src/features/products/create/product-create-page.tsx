@@ -13,7 +13,7 @@ import { ArrowLeftIcon } from "lucide-react";
 
 export type ProductCreatePageProps = {};
 
-export default function NewProductPage({ }: ProductCreatePageProps) {
+export default function NewProductPage({}: ProductCreatePageProps) {
   const platform = usePlatform();
   const navigate = useNavigate();
   const { data, isLoading, isError } = useRoot();
@@ -32,10 +32,7 @@ export default function NewProductPage({ }: ProductCreatePageProps) {
 
   return (
     <div className="container mx-auto max-w-2xl lg:max-w-5xl p-6">
-      <Header
-        title="Add Product"
-        description="Add a new product to your seller catalog."
-      >
+      <Header title="Add Product" description="Add a new product to your seller catalog.">
         <ButtonGroup>
           <Button type="button" variant="secondary" asChild>
             <Link to=".." className="flex gap-2 items-center">
@@ -44,24 +41,15 @@ export default function NewProductPage({ }: ProductCreatePageProps) {
           </Button>
         </ButtonGroup>
       </Header>
-      <QueryState
-        isLoading={isLoading}
-        isError={isError}
-        errorMessage="Failed to load catalog."
-      >
+      <QueryState isLoading={isLoading} isError={isError} errorMessage="Failed to load catalog.">
         {createSellableProductLink ? (
           <SlotProvider>
-            <ProductNewForm
-              link={createSellableProductLink}
-              onLifecycleEvent={handleEvent}
-            />
+            <ProductNewForm link={createSellableProductLink} onLifecycleEvent={handleEvent} />
           </SlotProvider>
         ) : (
           <Card>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Product creation is not available.
-              </p>
+              <p className="text-sm text-muted-foreground">Product creation is not available.</p>
             </CardContent>
           </Card>
         )}

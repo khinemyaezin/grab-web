@@ -21,7 +21,11 @@ export type ProductVariantMediaFieldSetProps = {
 export default function ProductVariantMediaFieldSet({
   productMedias,
 }: ProductVariantMediaFieldSetProps) {
-  const { control, setValue, formState: { isSubmitting } } = useFormContext<ProductVariantForm>();
+  const {
+    control,
+    setValue,
+    formState: { isSubmitting },
+  } = useFormContext<ProductVariantForm>();
   const mediaIds = useWatch({ control, name: "mediaIds" }) ?? [];
   const assignedItems = useMemo(
     () => toVariantGalleryItems(productMedias, mediaIds),
@@ -81,11 +85,7 @@ export default function ProductVariantMediaFieldSet({
                     aria-label="Add image to variant"
                     className="size-16 sm:size-20 overflow-hidden rounded-md border bg-muted text-left transition hover:border-primary hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
-                    <img
-                      src={media.url}
-                      alt=""
-                      className="aspect-square size-full object-cover"
-                    />
+                    <img src={media.url} alt="" className="aspect-square size-full object-cover" />
                   </button>
                 ))}
               </div>

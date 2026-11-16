@@ -10,13 +10,13 @@ jobs:
       NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-        with: 
-          path: grab-seller-onboarding 
+        with:
+          path: grab-seller-onboarding
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@khinemyaezin'
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@khinemyaezin"
           cache: npm
           cache-dependency-path: grab-seller-onboarding/package-lock.json
       - run: npm ci

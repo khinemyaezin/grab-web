@@ -23,23 +23,25 @@ function sseResponse(chunks: string[], status = 200): Response {
 
 describe("consumeSseBuffer", () => {
   it("drops comment-only heartbeat blocks", () => {
-    const { frames, rest } = consumeSseBuffer(": ping\n\nid: 1\nevent: ready\ndata: {\"producerId\":\"backend\"}\n\n");
+    const { frames, rest } = consumeSseBuffer(
+      ': ping\n\nid: 1\nevent: ready\ndata: {"producerId":"backend"}\n\n',
+    );
 
     expect(frames).toHaveLength(1);
     expect(frames[0]).toEqual({
       id: "1",
       event: "ready",
-      data: "{\"producerId\":\"backend\"}",
+      data: '{"producerId":"backend"}',
     });
     expect(rest).toBe("");
   });
 
   it("joins multiline data and keeps a partial trailing block", () => {
-    const { frames, rest } = consumeSseBuffer("event: workflow\ndata: {\"a\":1}\ndata: {\"b\":2}\n\nevent: workflow\ndata: {");
+    const { frames, rest } = consumeSseBuffer(
+      'event: workflow\ndata: {"a":1}\ndata: {"b":2}\n\nevent: workflow\ndata: {',
+    );
 
-    expect(frames).toEqual([
-      { event: "workflow", data: "{\"a\":1}\n{\"b\":2}" },
-    ]);
+    expect(frames).toEqual([{ event: "workflow", data: '{"a":1}\n{"b":2}' }]);
     expect(rest).toBe("event: workflow\ndata: {");
   });
 });
@@ -62,8 +64,8 @@ describe("createBackendEventStream", () => {
       fetchImpl: vi.fn(async () =>
         sseResponse([
           ": ping\n\n",
-          "id: evt-1\nevent: ready\ndata: {\"producerId\":\"backend\"}\n\n",
-          "id: evt-2\nevent: workflow\ndata: {\"workflowId\":\"wf-1\",\"status\":\"COMPLETED\"}\n\n",
+          'id: evt-1\nevent: ready\ndata: {"producerId":"backend"}\n\n',
+          'id: evt-2\nevent: workflow\ndata: {"workflowId":"wf-1","status":"COMPLETED"}\n\n',
         ]),
       ),
       delay: async () => undefined,

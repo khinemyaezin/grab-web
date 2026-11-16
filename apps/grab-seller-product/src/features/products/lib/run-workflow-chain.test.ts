@@ -116,7 +116,14 @@ describe("runWorkflowChain", () => {
 
   it("wraps non-Error throws", async () => {
     const result = await runWorkflowChain<Ctx>(
-      [{ id: "stageMedia", run: async () => { throw "nope"; } }],
+      [
+        {
+          id: "stageMedia",
+          run: async () => {
+            throw "nope";
+          },
+        },
+      ],
       {},
     );
 
@@ -128,10 +135,7 @@ describe("runWorkflowChain", () => {
   it("stops remaining steps without aborting when onFailure is stop", async () => {
     const seen: string[] = [];
     const result = await runWorkflowChain<Ctx>(
-      [
-        record("stageMedia", "failed"),
-        record("attachMedia"),
-      ],
+      [record("stageMedia", "failed"), record("attachMedia")],
       { seen },
     );
 

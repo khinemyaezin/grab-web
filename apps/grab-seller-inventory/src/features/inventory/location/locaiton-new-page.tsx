@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router";
 import { ArrowLeftIcon } from "lucide-react";
 import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
@@ -38,7 +37,6 @@ export default function NewLocationPage() {
               <ArrowLeftIcon />
             </Link>
           </Button>
-
         </ButtonGroup>
       </Header>
       <LocationNewForm onLifecycleEvent={handleEvent} />

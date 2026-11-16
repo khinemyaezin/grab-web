@@ -44,7 +44,7 @@ describe("AuthServiceFacade", () => {
         status: "",
         accessContexts: [],
         currentAccessContext: {} as any,
-        _links: {}
+        _links: {},
       });
 
       const facade = createAuthService(mockApi, mockEntryLink);
@@ -74,7 +74,7 @@ describe("AuthServiceFacade", () => {
         status: "",
         accessContexts: [],
         currentAccessContext: {} as any,
-        _links: {}
+        _links: {},
       });
 
       await facade.getProfile();
@@ -94,7 +94,7 @@ describe("AuthServiceFacade", () => {
         status: "",
         accessContexts: [],
         currentAccessContext: {} as any,
-        _links: {}
+        _links: {},
       });
 
       const facade = createAuthService(mockApi, mockEntryLink);
@@ -116,7 +116,9 @@ describe("AuthServiceFacade", () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce({} as IdentityLinks);
       const facade = createAuthService(mockApi, mockEntryLink);
 
-      await expect(facade.getProfile()).rejects.toThrow("Identity root does not expose a 'get-profile' link");
+      await expect(facade.getProfile()).rejects.toMatchObject({
+        message: "Identity root does not expose a 'get-profile' link",
+      });
     });
   });
 
@@ -135,7 +137,9 @@ describe("AuthServiceFacade", () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce({} as IdentityLinks);
       const facade = createAuthService(mockApi, mockEntryLink);
 
-      await expect(facade.logout()).rejects.toThrow("Identity root does not expose a 'logout' link");
+      await expect(facade.logout()).rejects.toMatchObject({
+        message: "Identity root does not expose a 'logout' link",
+      });
     });
   });
 
@@ -154,7 +158,9 @@ describe("AuthServiceFacade", () => {
       vi.mocked(linkDiscoveryService.root).mockResolvedValueOnce({} as IdentityLinks);
       const facade = createAuthService(mockApi, mockEntryLink);
 
-      await expect(facade.refreshToken()).rejects.toThrow("Identity root does not expose a 'refresh' link");
+      await expect(facade.refreshToken()).rejects.toMatchObject({
+        message: "Identity root does not expose a 'refresh' link",
+      });
     });
   });
 });

@@ -21,6 +21,7 @@ Keeping bearer tokens in browser-readable storage allows an XSS vulnerability in
 Use a Shell-owned, framework-neutral Platform API for global frontend concerns; keep business state within its owning MFE or backend; communicate through explicit inputs and versioned events; and use backend-managed `HttpOnly` authentication cookies instead of exposing JWTs to MFEs.
 
 **Key changes:**
+
 - The Shell owns session state, routing, runtime configuration, layout, theme, and other application-wide concerns.
 - Each MFE owns its local UI state and server-state cache. The backend remains the source of truth for business entities.
 - Parent-child communication uses explicit inputs and callbacks. Cross-MFE business notifications use versioned, framework-neutral events containing identifiers rather than complete entities.
@@ -34,16 +35,16 @@ Product and Inventory remain independently deployable MFEs. The Seller gateway c
 
 ### State ownership and communication rules
 
-| Concern | Owner | Communication mechanism |
-|---|---|---|
-| Form, modal, selection, and table state | Individual MFE | Internal framework state |
-| Product, inventory, and other business data | Backend and owning MFE | HTTP API and MFE-local cache |
-| Authentication status and current user | Shell | Read-only session contract/subscription |
-| Access and refresh credentials | Backend/BFF | `HttpOnly` cookies only |
-| Current route and shareable filters | Shell/URL | Platform navigation API and URL parameters |
-| Theme, locale, and runtime configuration | Shell | Read-only Platform API |
-| Parent-to-child data | Composing application | Props, attributes, or mount parameters |
-| Cross-MFE business changes | Producing MFE | Versioned event with entity identifiers |
+| Concern                                     | Owner                  | Communication mechanism                    |
+| ------------------------------------------- | ---------------------- | ------------------------------------------ |
+| Form, modal, selection, and table state     | Individual MFE         | Internal framework state                   |
+| Product, inventory, and other business data | Backend and owning MFE | HTTP API and MFE-local cache               |
+| Authentication status and current user      | Shell                  | Read-only session contract/subscription    |
+| Access and refresh credentials              | Backend/BFF            | `HttpOnly` cookies only                    |
+| Current route and shareable filters         | Shell/URL              | Platform navigation API and URL parameters |
+| Theme, locale, and runtime configuration    | Shell                  | Read-only Platform API                     |
+| Parent-to-child data                        | Composing application  | Props, attributes, or mount parameters     |
+| Cross-MFE business changes                  | Producing MFE          | Versioned event with entity identifiers    |
 
 Cross-MFE events announce that something happened; they do not replicate a shared database in the browser. For example, `product.updated.v1` carries a `productId`, and a consumer refetches any data it owns that may have changed.
 
@@ -51,7 +52,7 @@ Cross-MFE events announce that something happened; they do not replicate a share
 
 ## 2.1. Visual Overview
 
-> *Diagrams to understand the architecture at a glance.*
+> _Diagrams to understand the architecture at a glance._
 
 ### High-Level Components and Communication
 
@@ -137,6 +138,7 @@ sequenceDiagram
 ## 3. Why This Approach
 
 **Primary reasons:**
+
 1. **Reduced credential exposure:** `HttpOnly` cookies prevent JavaScript from reading and exfiltrating tokens. XSS can still perform actions as the user, so CSP, output encoding, remote integrity controls, and backend authorization remain required.
 2. **Framework independence:** The Platform API and event payloads are JavaScript/JSON contracts rather than React Context or a particular state-management library.
 3. **Clear ownership:** Local UI state stays local, business data stays backend-owned, and only genuine application-wide concerns live in the Shell.
@@ -147,20 +149,21 @@ sequenceDiagram
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|---|---|
-| Raw credentials are unavailable to Shell and MFE JavaScript. | Cookie authentication requires correct gateway, domain, HTTPS, `SameSite`, and CORS configuration. |
-| MFEs no longer inject or exchange bearer tokens. | The Shell must call the profile endpoint to restore a session after reload. |
-| Framework-neutral contracts support React and non-React MFEs. | Platform and event contracts require ownership, versioning, and compatibility tests. |
-| State ownership prevents a large shared frontend store. | Consumers may refetch data after an event instead of reusing another MFE's cache. |
-| Same-origin gateway routing simplifies browser security configuration. | Cookie-based authentication requires CSRF controls appropriate to the selected `SameSite` policy. |
-| Backend-managed token rotation centralizes credential lifecycle. | Refresh requests must be coordinated so concurrent `401` responses do not trigger multiple rotations. |
+| Pros                                                                   | Cons                                                                                                  |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Raw credentials are unavailable to Shell and MFE JavaScript.           | Cookie authentication requires correct gateway, domain, HTTPS, `SameSite`, and CORS configuration.    |
+| MFEs no longer inject or exchange bearer tokens.                       | The Shell must call the profile endpoint to restore a session after reload.                           |
+| Framework-neutral contracts support React and non-React MFEs.          | Platform and event contracts require ownership, versioning, and compatibility tests.                  |
+| State ownership prevents a large shared frontend store.                | Consumers may refetch data after an event instead of reusing another MFE's cache.                     |
+| Same-origin gateway routing simplifies browser security configuration. | Cookie-based authentication requires CSRF controls appropriate to the selected `SameSite` policy.     |
+| Backend-managed token rotation centralizes credential lifecycle.       | Refresh requests must be coordinated so concurrent `401` responses do not trigger multiple rotations. |
 
 ---
 
 ## 5. What Needs to Change
 
 **New components/modules to build:**
+
 - A framework-neutral Platform API contract for session, navigation, runtime configuration, and versioned events.
 - Shell session bootstrap using `GET /api/v1/identity/profile`.
 - Protected-route handling for authenticated Shell routes.
@@ -168,6 +171,7 @@ sequenceDiagram
 - Contract tests covering login, profile restoration, refresh rotation, logout, unauthorized responses, and cross-MFE events.
 
 **Changes to existing systems:**
+
 - Remove `token` from frontend `AuthState` and stop persisting `seller-access-token` and `seller-user` in `localStorage`.
 - Update login and logout to rely on cookies set or cleared by `/api/v1/identity/auth/login` and `/api/v1/identity/auth/logout`.
 - Keep `credentials: "include"` enabled in the shared API client and remove bearer-token injection from frontend code.
@@ -178,6 +182,7 @@ sequenceDiagram
 - Apply CSRF protection for state-changing requests if deployment requirements relax `SameSite=Strict` or introduce cross-site traffic.
 
 **Team impact:**
+
 - Frontend teams treat authentication as a session capability and never handle raw tokens.
 - MFE teams publish and consume reviewed, versioned event contracts rather than importing other MFEs or sharing mutable stores.
 - Backend and platform teams jointly own cookie attributes, CSRF policy, refresh behavior, and gateway authentication translation.

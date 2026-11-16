@@ -8,7 +8,10 @@ const DEFAULT_FILTER: ProductFilterFormValue = {
   size: 5,
 };
 
-export type ProductSearchCriteria = Pick<ProductFilterFormValue, "query" | "productStatus" | "size">;
+export type ProductSearchCriteria = Pick<
+  ProductFilterFormValue,
+  "query" | "productStatus" | "size"
+>;
 
 export function useProductFilter(initial?: Partial<ProductFilterFormValue>) {
   const [filter, setFilter] = useState<ProductFilterFormValue>({ ...DEFAULT_FILTER, ...initial });

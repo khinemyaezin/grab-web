@@ -11,7 +11,7 @@ export const PricingPayloadSchema = {
   type: "object" as const,
   properties: {
     sku: {
-      type: "string" as const
+      type: "string" as const,
     },
     currencyCode: {
       type: "string" as const,
@@ -24,7 +24,7 @@ export const PricingPayloadSchema = {
       errorMessage: {
         type: "Amount must be a number",
         minimum: "Amount must be greater than or equal to 0",
-      }
+      },
     },
   },
   required: ["currencyCode", "amount"],
@@ -41,7 +41,7 @@ export const PricingEditPayloadSchema = {
   type: "object" as const,
   properties: {
     sku: {
-      type: "string" as const
+      type: "string" as const,
     },
     currencyCode: {
       type: "string" as const,
@@ -54,7 +54,7 @@ export const PricingEditPayloadSchema = {
       errorMessage: {
         type: "Amount must be a number",
         minimum: "Amount must be greater than or equal to 0",
-      }
+      },
     },
     priceSetId: {
       type: "string" as const,

@@ -9,44 +9,40 @@ import { usePlatform, useShellBreadcrumbSegment } from "@khinemyaezin/seller-ui"
 import { useLocationZoneLinks } from "@/features/inventory/use-location-zone-links";
 
 export default function NewZonePage() {
-    const { locationId } = useParams<{ locationId: string }>();
-    if (!locationId)
-        throw new Error("Missing locationId route parameter");
-    const { locationName, createZone } = useLocationZoneLinks(locationId);
-    const platform = usePlatform();
+  const { locationId } = useParams<{ locationId: string }>();
+  if (!locationId) throw new Error("Missing locationId route parameter");
+  const { locationName, createZone } = useLocationZoneLinks(locationId);
+  const platform = usePlatform();
 
-    useShellBreadcrumbSegment(":locationId", locationName);
-    const toast = (type: "success" | "error", message: string) =>
-        platform?.events.emit("shell:toast:v1", { type, message, position: "top-center" });
+  useShellBreadcrumbSegment(":locationId", locationName);
+  const toast = (type: "success" | "error", message: string) =>
+    platform?.events.emit("shell:toast:v1", { type, message, position: "top-center" });
 
-    const handleEvent = (event: ZoneLifecycleEvent) => {
-        switch (event.type) {
-            case "created":
-                toast("success", "Zone created successfully");
-                break;
-            case "createFailed":
-                toast("error", "Failed to create zone");
-                break;
-        }
-    };
+  const handleEvent = (event: ZoneLifecycleEvent) => {
+    switch (event.type) {
+      case "created":
+        toast("success", "Zone created successfully");
+        break;
+      case "createFailed":
+        toast("error", "Failed to create zone");
+        break;
+    }
+  };
 
-    return (
-        <div className="container mx-auto max-w-3xl p-6">
-            <Header
-                title={`New Zone`}
-                description="Create zone."
-            >
-                <ButtonGroup>
-                    <Button variant="secondary" size="icon" type="button" asChild>
-                        <Link to=".." relative="path" className="flex gap-2 items-center">
-                            <ArrowLeftIcon />
-                        </Link>
-                    </Button>
-                </ButtonGroup>
-            </Header>
-            {createZone && (
-                <ZoneNewForm link={createZone} locationId={locationId} onLifecycleEvent={handleEvent} />
-            )}
-        </div>
-    )
+  return (
+    <div className="container mx-auto max-w-3xl p-6">
+      <Header title={`New Zone`} description="Create zone.">
+        <ButtonGroup>
+          <Button variant="secondary" size="icon" type="button" asChild>
+            <Link to=".." relative="path" className="flex gap-2 items-center">
+              <ArrowLeftIcon />
+            </Link>
+          </Button>
+        </ButtonGroup>
+      </Header>
+      {createZone && (
+        <ZoneNewForm link={createZone} locationId={locationId} onLifecycleEvent={handleEvent} />
+      )}
+    </div>
+  );
 }

@@ -71,9 +71,7 @@ describe("create sellable product inventory tracking", () => {
     const request = buildCreateSellableProductRequest(values);
 
     expect(request.product.status).toBe("ACTIVE");
-    expect(request.publicationLines).toEqual([
-      { sku: "SKU-DIGITAL", salesChannelId: "web-1" },
-    ]);
+    expect(request.publicationLines).toEqual([{ sku: "SKU-DIGITAL", salesChannelId: "web-1" }]);
   });
 
   it("copies staged medias and descriptions onto the workflow request", () => {
