@@ -28,6 +28,7 @@ vi.mock("@khinemyaezin/seller-ui", () => ({
   collectSlotFieldErrors: (...args: unknown[]) => mockCollectSlotFieldErrors(...args),
   mergeContributions: (...args: unknown[]) => mockMergeContributions(...args),
   useValidateAllSlots: () => ({ validate: mockValidate }),
+  useApi: () => ({}),
 }));
 
 vi.mock("@khinemyaezin/seller-contracts", () => ({
@@ -172,6 +173,7 @@ describe("useProductVariantUpdateSubmit", () => {
     );
     expect(mockExecute).toHaveBeenCalledWith(payload);
     expect(mockAttachVariantMedia).toHaveBeenCalledWith({
+      api: expect.anything(),
       link: { href: "/products/prod-1/variants/var-1/images/batch" },
       mediaIds: ["m1"],
       thumbnailMediaId: "m1",

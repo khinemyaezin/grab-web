@@ -1,4 +1,5 @@
-import { api, HateoasLink } from "@khinemyaezin/seller-api";
+import { HateoasLink } from "@khinemyaezin/seller-api";
+import { useApi } from "@khinemyaezin/seller-ui";
 import { useQuery } from "@tanstack/react-query";
 
 type RegionCountryResponse = { countryCode: string };
@@ -10,6 +11,7 @@ type RegionCountriesResponse = {
 };
 
 export function useRegionCountries(link?: HateoasLink) {
+    const api = useApi();
     return useQuery<string[]>({
         queryKey: ["region-countries", link?.href],
         queryFn: async () => {

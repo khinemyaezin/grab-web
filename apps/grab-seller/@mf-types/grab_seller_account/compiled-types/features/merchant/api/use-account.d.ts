@@ -1,5 +1,5 @@
 import { HateoasLink } from "@khinemyaezin/seller-api";
-import { CreateSellerAccountResponse, C2CApplicationStatusResponse, SubmitSellerAccountResponse, RetailerApplicationStatusResponse, SellerAccountResponse } from "@/features/merchant/types";
+import { CreateSellerAccountResponse, C2CApplicationStatusResponse, SubmitSellerAccountResponse, RetailerApplicationStatusResponse } from "@/features/merchant/types";
 import { CreateAccountRequest, UpdateBasicMerchantProfileRequest, UpdateRetailerRegistrationRequest } from "@/features/merchant/types";
 export declare function useAccount(): import("@tanstack/react-query").UseMutationResult<CreateSellerAccountResponse, Error, {
     link: HateoasLink;
@@ -14,4 +14,3 @@ export declare function useRetailerApplicationGet(link?: HateoasLink): import("@
 export declare function useAccountApplicationSubmit(): import("@tanstack/react-query").UseMutationResult<SubmitSellerAccountResponse, Error, {
     link: HateoasLink;
 }, unknown>;
-export declare function useCurrentAccountGet(link?: HateoasLink): import("@tanstack/react-query").UseQueryResult<SellerAccountResponse, Error>;

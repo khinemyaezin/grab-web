@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
+import { useApi } from "@khinemyaezin/seller-ui";
 import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
 import {
   attachProductDescriptions,
@@ -32,6 +33,7 @@ export function useProductDescriptionSync({
   seed = EMPTY_SEED,
   actions,
 }: UseProductDescriptionSyncOptions = {}): UseProductDescriptionSyncResult {
+  const api = useApi();
   const { getValues } = useFormContext<ProductFormValue>();
   const rootReplaceLink = useCatalogLink("replaceProductDescriptions");
 
@@ -51,6 +53,7 @@ export function useProductDescriptionSync({
 
       try {
         await attachProductDescriptions({
+          api,
           productId,
           items,
           seed,
@@ -61,7 +64,7 @@ export function useProductDescriptionSync({
         return { status: "failed", error: toError(error) };
       }
     },
-    [actions, getValues, rootReplaceLink, seed],
+    [actions, api, getValues, rootReplaceLink, seed],
   );
 
   return { attach };

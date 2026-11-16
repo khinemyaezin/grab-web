@@ -1,4 +1,5 @@
 import { resolveUrlTemplate, type HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import {
   PRODUCT_OVERVIEW_DESCRIPTION_NAME,
   PRODUCT_OVERVIEW_DESCRIPTION_TITLE,
@@ -10,6 +11,7 @@ import type {
 } from "@/features/products/types";
 
 export type AttachProductDescriptionsOptions = {
+  api: PlatformApiClient;
   productId: string;
   items: ProductDescription[];
   seed?: ProductDescription[];
@@ -91,6 +93,7 @@ export function isDescriptionsDirty(
 }
 
 export async function attachProductDescriptions({
+  api,
   productId,
   items,
   seed = [],
@@ -101,6 +104,7 @@ export async function attachProductDescriptions({
   }
 
   await catalogService.replaceProductDescriptions(
+    api,
     resolveUrlTemplate({ productId }, replaceDescriptionsLink),
     { descriptions: toReplaceDescriptionsPayload(items) },
   );

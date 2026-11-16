@@ -107,6 +107,8 @@ describe("isDescriptionsDirty", () => {
 });
 
 describe("attachProductDescriptions", () => {
+  const mockApi = {} as any;
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -114,6 +116,7 @@ describe("attachProductDescriptions", () => {
   it("skips when descriptions are unchanged", async () => {
     const items = [overview()];
     await attachProductDescriptions({
+      api: mockApi,
       productId: "prod-1",
       items,
       seed: items,
@@ -127,16 +130,17 @@ describe("attachProductDescriptions", () => {
     mockReplaceProductDescriptions.mockResolvedValue({ productId: "prod-1", descriptions: [] });
 
     await attachProductDescriptions({
+      api: mockApi,
       productId: "prod-1",
       items: [overview({ description: "Updated" })],
       seed: [overview()],
       replaceDescriptionsLink: replaceLink,
     });
 
-    expect(mockReplaceProductDescriptions.mock.calls[0][0].href).toBe(
+    expect(mockReplaceProductDescriptions.mock.calls[0][1].href).toBe(
       "/catalog/products/prod-1/descriptions",
     );
-    expect(mockReplaceProductDescriptions.mock.calls[0][1]).toEqual({
+    expect(mockReplaceProductDescriptions.mock.calls[0][2]).toEqual({
       descriptions: [
         {
           id: "desc-1",
@@ -148,12 +152,13 @@ describe("attachProductDescriptions", () => {
     });
 
     await attachProductDescriptions({
+      api: mockApi,
       productId: "prod-1",
       items: [],
       seed: [overview()],
       replaceDescriptionsLink: replaceLink,
     });
 
-    expect(mockReplaceProductDescriptions.mock.calls[1][1]).toEqual({ descriptions: [] });
+    expect(mockReplaceProductDescriptions.mock.calls[1][2]).toEqual({ descriptions: [] });
   });
 });

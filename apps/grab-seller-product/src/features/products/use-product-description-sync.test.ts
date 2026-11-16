@@ -8,6 +8,10 @@ const mockUseCatalogLink = vi.fn();
 const mockAttachProductDescriptions = vi.fn();
 const mockIsDescriptionsDirty = vi.fn();
 
+vi.mock("@khinemyaezin/seller-ui", () => ({
+  useApi: () => ({}),
+}));
+
 vi.mock("react-hook-form", () => ({
   useFormContext: () => ({ getValues: mockGetValues }),
 }));

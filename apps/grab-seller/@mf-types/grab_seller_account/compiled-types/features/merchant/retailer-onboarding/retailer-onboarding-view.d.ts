@@ -1,7 +1,8 @@
 import { HateoasLink } from "@khinemyaezin/seller-api";
 export type AccountOnboardingViewProps = {
+    listRegionCountriesLink?: HateoasLink;
     createApplicationLink?: HateoasLink;
     getApplicationLink?: HateoasLink;
     onSuccess?: () => void;
 };
-export default function RetailerAccountOnboardingView({ createApplicationLink, getApplicationLink, onSuccess }: AccountOnboardingViewProps): import("react").JSX.Element;
+export default function RetailerAccountOnboardingView({ createApplicationLink, getApplicationLink, listRegionCountriesLink, onSuccess }: AccountOnboardingViewProps): import("react").JSX.Element;

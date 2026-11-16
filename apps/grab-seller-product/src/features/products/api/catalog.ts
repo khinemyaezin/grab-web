@@ -30,56 +30,57 @@ import type {
   UnpublishProductFromChannelRequest,
   ProductPublicationResponse,
 } from "@/features/products/types";
-import { api } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 
 export const catalogService = {
-  createVariationMatrix: (link: HateoasLink, request: VariationMatrixRequest, headers?: Record<string, string>) =>
+  createVariationMatrix: (api: PlatformApiClient, link: HateoasLink, request: VariationMatrixRequest, headers?: Record<string, string>) =>
     api.followLink<VariationMatrixResponse>(link, "POST", request, undefined, headers),
 
-  getCategories: (link: HateoasLink, headers?: Record<string, string>) =>
+  getCategories: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<CategoryLeavesResult>(link, "GET", undefined, undefined, headers),
 
-  createProduct: (link: HateoasLink, request: CreateProductRequest, headers?: Record<string, string>) =>
+  createProduct: (api: PlatformApiClient, link: HateoasLink, request: CreateProductRequest, headers?: Record<string, string>) =>
     api.followLink<void>(link, "POST", request, undefined, headers),
 
-  getVariationType: (link: HateoasLink, headers?: Record<string, string>) =>
+  getVariationType: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<GetVariationTypeResult>(link, "GET", undefined, undefined, headers),
 
-  getVariationOption: (link: HateoasLink, headers?: Record<string, string>) =>
+  getVariationOption: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<GetVariationOptionResult>(link, "GET", undefined, undefined, headers),
 
-  searchProducts: (link: HateoasLink, request: ProductSearchRequest, headers?: Record<string, string>) => {
+  searchProducts: (api: PlatformApiClient, link: HateoasLink, request: ProductSearchRequest, headers?: Record<string, string>) => {
     const { page, size, ...body } = request;
     const params = { page: String(page), size: String(size) };
     return api.followLink<ProductSearchResponse>(link, "POST", body, params, headers);
   },
 
-  getFullProduct: (link: HateoasLink, headers?: Record<string, string>) =>
+  getFullProduct: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<GetFullProductResponse>(link, "GET", undefined, undefined, headers),
 
-  getVariant: (link: HateoasLink, headers?: Record<string, string>) =>
+  getVariant: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<GetVariantResponse>(link, "GET", undefined, undefined, headers),
 
-  updateProduct: (link: HateoasLink, request: UpdateProductRequest, headers?: Record<string, string>) =>
+  updateProduct: (api: PlatformApiClient, link: HateoasLink, request: UpdateProductRequest, headers?: Record<string, string>) =>
     api.followLink<UpdateProductResponse>(link, "PUT", request, undefined, headers),
 
-  deleteProduct: (link: HateoasLink, headers?: Record<string, string>) =>
+  deleteProduct: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<DeleteProductResponse>(link, "DELETE", undefined, undefined, headers),
 
-  restoreProduct: (link: HateoasLink, headers?: Record<string, string>) =>
+  restoreProduct: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<ProductModerationResponse>(link, "POST", undefined, undefined, headers),
 
-  publishProduct: (link: HateoasLink, headers?: Record<string, string>) =>
+  publishProduct: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<ProductModerationResponse>(link, "POST", undefined, undefined, headers),
 
-  suspendProduct: (link: HateoasLink, headers?: Record<string, string>) =>
+  suspendProduct: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<ProductModerationResponse>(link, "POST", undefined, undefined, headers),
 
-  getCreateSellableProduct: (link: HateoasLink, headers?: Record<string, string>) =>
+  getCreateSellableProduct: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<CreateSellableProductResponse>(link, "GET", undefined, undefined, headers),
 
   createProductMediaUpload: (
+    api: PlatformApiClient,
     link: HateoasLink,
     request: CreateProductMediaUploadRequest,
     headers?: Record<string, string>,
@@ -87,6 +88,7 @@ export const catalogService = {
     api.followLink<ProductMediaUploadResponse>(link, "POST", request, undefined, headers),
 
   replaceProductMedia: (
+    api: PlatformApiClient,
     link: HateoasLink,
     request: ReplaceProductMediaRequest,
     headers?: Record<string, string>,
@@ -94,6 +96,7 @@ export const catalogService = {
     api.followLink<ReplaceProductMediaResponse>(link, "PUT", request, undefined, headers),
 
   replaceProductDescriptions: (
+    api: PlatformApiClient,
     link: HateoasLink,
     request: ReplaceProductDescriptionsRequest,
     headers?: Record<string, string>,
@@ -101,6 +104,7 @@ export const catalogService = {
     api.followLink<ReplaceProductDescriptionsResponse>(link, "PUT", request, undefined, headers),
 
   createSellableProduct: (
+    api: PlatformApiClient,
     link: HateoasLink,
     request: CreateSellableProductRequest,
     headers?: Record<string, string>,
@@ -108,6 +112,7 @@ export const catalogService = {
     api.followLink<CreateSellableProductResponse>(link, "POST", request, undefined, headers),
 
   updateSellableProduct: (
+    api: PlatformApiClient,
     link: HateoasLink,
     request: UpdateSellableProductRequest,
     headers?: Record<string, string>,
@@ -115,19 +120,21 @@ export const catalogService = {
     api.followLink<UpdateSellableProductResponse>(link, "POST", request, undefined, headers),
 
   updateProductVariant: (
+    api: PlatformApiClient,
     link: HateoasLink,
     request: UpdateProductVariantRequest,
     headers?: Record<string, string>,
   ) =>
     api.followLink<UpdateProductVariantResponse>(link, "POST", request, undefined, headers),
 
-  deleteProductVariant: (link: HateoasLink, headers?: Record<string, string>) =>
+  deleteProductVariant: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<void>(link, "DELETE", undefined, undefined, headers),
 
-  restoreProductVariant: (link: HateoasLink, headers?: Record<string, string>) =>
+  restoreProductVariant: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<void>(link, "POST", undefined, undefined, headers),
 
   unpublishProductFromChannel: (
+    api: PlatformApiClient,
     link: HateoasLink,
     request: UnpublishProductFromChannelRequest,
     headers?: Record<string, string>,
@@ -135,6 +142,7 @@ export const catalogService = {
     api.followLink<ProductPublicationResponse>(link, "POST", request, undefined, headers),
 
   setVariantMedia: (
+    api: PlatformApiClient,
     link: HateoasLink,
     request: BatchVariantImagesRequest,
     headers?: Record<string, string>,

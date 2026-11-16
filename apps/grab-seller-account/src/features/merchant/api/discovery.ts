@@ -1,7 +1,8 @@
 import { MerchantRoot } from "@/features/merchant/types";
-import { api, HalLinks, HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
+import { HalLinks, HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 
-export async function fetchMerchantRoot(link: HateoasLink): Promise<MerchantRoot> {
+export async function fetchMerchantRoot(api: PlatformApiClient, link: HateoasLink): Promise<MerchantRoot> {
     const response = await api.followLink<{ _links: HalLinks }>(link, "GET");
     return {
         listMerchants: resolveLink(response?._links, SellerApiLinks.merchant.listMerchants),

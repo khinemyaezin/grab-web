@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { http, HttpResponse } from "msw";
-import { configureApi } from "@khinemyaezin/seller-api";
+import { createApiClient } from "@khinemyaezin/seller-api";
 import { server } from "@/test/server";
 import { fetchMerchantRoot } from "./discovery";
 
 describe("merchant discovery", () => {
   it("maps merchant HAL relations including storefronts", async () => {
-    configureApi({ baseUrl: "http://api.test" });
+    const api = createApiClient({ baseUrl: "http://api.test" });
     server.use(http.get("http://api.test/merchants", () => HttpResponse.json({
       _links: {
         self: { href: "/merchants" },
@@ -18,7 +18,7 @@ describe("merchant discovery", () => {
       },
     }, { headers: { "content-type": "application/hal+json" } })));
 
-    const root = await fetchMerchantRoot({ href: "/merchants" });
+    const root = await fetchMerchantRoot(api, { href: "/merchants" });
     expect(root.listStorefronts?.href).toBe("/merchants/storefronts");
     expect(root.createStorefront?.href).toBe("/merchants/storefronts");
     expect(root.getStorefront?.href).toBe("/merchants/storefronts/{id}");

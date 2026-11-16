@@ -10,13 +10,15 @@ vi.mock("./catalog", () => ({
 }));
 
 describe("resolveWorkflowProductId", () => {
+  const mockApi = {} as any;
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("uses productId on the completed response", async () => {
     await expect(
-      resolveWorkflowProductId({
+      resolveWorkflowProductId(mockApi, {
         response: { workflowId: "wf-1", status: "COMPLETED", productId: "prod-1" },
       }),
     ).resolves.toBe("prod-1");
@@ -32,7 +34,7 @@ describe("resolveWorkflowProductId", () => {
     });
 
     await expect(
-      resolveWorkflowProductId({
+      resolveWorkflowProductId(mockApi, {
         response: {
           workflowId: "wf-1",
           status: "COMPLETED",
@@ -40,12 +42,12 @@ describe("resolveWorkflowProductId", () => {
         },
       }),
     ).resolves.toBe("prod-2");
-    expect(mockGetCreateSellableProduct).toHaveBeenCalledWith(getLink);
+    expect(mockGetCreateSellableProduct).toHaveBeenCalledWith(mockApi, getLink);
   });
 
   it("throws when productId cannot be resolved", async () => {
     await expect(
-      resolveWorkflowProductId({
+      resolveWorkflowProductId(mockApi, {
         response: { workflowId: "wf-1", status: "COMPLETED" },
       }),
     ).rejects.toThrow("Missing product id after create");

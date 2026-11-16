@@ -1,4 +1,5 @@
-import { api, HateoasLink, resolveUrlTemplate } from "@khinemyaezin/seller-api";
+import { HateoasLink, resolveUrlTemplate } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import { SellerAccount, MerchantRoot, SellerAccountResponse } from "@/features/merchant/types";
 import { fetchMerchantRoot } from "./discovery";
 
@@ -6,12 +7,12 @@ export interface SellerAccountServiceFacade {
     getAccount: () => Promise<SellerAccount>;
 }
 
-export function createSellerAccountService(entryLink: HateoasLink, merchantId?: string): SellerAccountServiceFacade {
+export function createSellerAccountService(api: PlatformApiClient, entryLink: HateoasLink, merchantId?: string): SellerAccountServiceFacade {
     let discoveryPromise: Promise<MerchantRoot> | null = null;
 
     const ensureDiscovery = (): Promise<MerchantRoot> => {
         if (!discoveryPromise) {
-            discoveryPromise = fetchMerchantRoot(entryLink).catch((error) => {
+            discoveryPromise = fetchMerchantRoot(api, entryLink).catch((error) => {
                 discoveryPromise = null;
                 throw error;
             });

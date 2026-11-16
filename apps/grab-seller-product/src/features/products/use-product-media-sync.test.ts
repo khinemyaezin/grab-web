@@ -10,6 +10,10 @@ const mockStageProductMedia = vi.fn();
 const mockAttachProductMedia = vi.fn();
 const mockIsGalleryDirty = vi.fn();
 
+vi.mock("@khinemyaezin/seller-ui", () => ({
+  useApi: () => ({}),
+}));
+
 vi.mock("react-hook-form", () => ({
   useFormContext: () => ({ getValues: mockGetValues, setValue: mockSetValue }),
 }));

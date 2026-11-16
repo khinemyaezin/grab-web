@@ -4,27 +4,30 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useAccount, useUpdateAccount, useC2CApplicationGet, useRetailerApplicationGet, useAccountApplicationSubmit } from './use-account';
-import { api } from '@khinemyaezin/seller-api';
+import { PlatformProvider } from '@khinemyaezin/seller-ui';
+import type { PlatformApiClient, SellerPlatform } from '@khinemyaezin/seller-contracts';
 import React from 'react';
 
-vi.mock('@khinemyaezin/seller-api', async (importOriginal) => {
-    const actual = await importOriginal();
-    return {
-        ...(actual as any),
-        api: {
-            followLink: vi.fn(),
-        },
-    };
-});
+const mockApi = {
+    request: vi.fn(),
+    followLink: vi.fn(),
+    withConfig: vi.fn(),
+};
+
+const mockPlatform = {
+    api: mockApi as unknown as PlatformApiClient,
+} as unknown as SellerPlatform;
 
 const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
 });
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-        {children}
-    </QueryClientProvider>
+    <PlatformProvider platform={mockPlatform}>
+        <QueryClientProvider client={queryClient}>
+            {children}
+        </QueryClientProvider>
+    </PlatformProvider>
 );
 
 describe('useAccount hooks', () => {
@@ -37,7 +40,7 @@ describe('useAccount hooks', () => {
         it('should call api.followLink with POST and request body', async () => {
             const { result } = renderHook(() => useAccount(), { wrapper });
             const mockResponse = { id: 'account1' };
-            vi.mocked(api.followLink).mockResolvedValue(mockResponse as any);
+            mockApi.followLink.mockResolvedValue(mockResponse as any);
 
             const link = { href: '/api/account', rel: 'create' };
             const request = { type: 'C2C' } as any;
@@ -48,7 +51,7 @@ describe('useAccount hooks', () => {
                 expect(result.current.isSuccess).toBe(true);
             });
 
-            expect(api.followLink).toHaveBeenCalledWith(link, "POST", request);
+            expect(mockApi.followLink).toHaveBeenCalledWith(link, "POST", request);
             expect(result.current.data).toEqual(mockResponse);
         });
     });
@@ -57,7 +60,7 @@ describe('useAccount hooks', () => {
         it('should call api.followLink with PATCH and request body', async () => {
             const { result } = renderHook(() => useUpdateAccount(), { wrapper });
             const mockResponse = { id: 'account1' };
-            vi.mocked(api.followLink).mockResolvedValue(mockResponse as any);
+            mockApi.followLink.mockResolvedValue(mockResponse as any);
 
             const link = { href: '/api/account/1', rel: 'update' };
             const request = { legalName: 'New Name' } as any;
@@ -68,7 +71,7 @@ describe('useAccount hooks', () => {
                 expect(result.current.isSuccess).toBe(true);
             });
 
-            expect(api.followLink).toHaveBeenCalledWith(link, "PATCH", request);
+            expect(mockApi.followLink).toHaveBeenCalledWith(link, "PATCH", request);
         });
     });
 
@@ -76,12 +79,12 @@ describe('useAccount hooks', () => {
         it('should not fetch if link is not provided', () => {
             const { result } = renderHook(() => useC2CApplicationGet(), { wrapper });
             expect(result.current.isPending).toBe(true);
-            expect(api.followLink).not.toHaveBeenCalled();
+            expect(mockApi.followLink).not.toHaveBeenCalled();
         });
 
         it('should fetch application status when link is provided', async () => {
             const mockResponse = { status: 'ACTIVE' };
-            vi.mocked(api.followLink).mockResolvedValue(mockResponse as any);
+            mockApi.followLink.mockResolvedValue(mockResponse as any);
 
             const link = { href: '/api/c2c', rel: 'self' };
             const { result } = renderHook(() => useC2CApplicationGet(link), { wrapper });
@@ -90,7 +93,7 @@ describe('useAccount hooks', () => {
                 expect(result.current.isSuccess).toBe(true);
             });
 
-            expect(api.followLink).toHaveBeenCalledWith(link, "GET");
+            expect(mockApi.followLink).toHaveBeenCalledWith(link, "GET");
             expect(result.current.data).toEqual(mockResponse);
         });
     });
@@ -98,7 +101,7 @@ describe('useAccount hooks', () => {
     describe('useRetailerApplicationGet', () => {
         it('should fetch application status when link is provided', async () => {
             const mockResponse = { status: 'PENDING_REVIEW' };
-            vi.mocked(api.followLink).mockResolvedValue(mockResponse as any);
+            mockApi.followLink.mockResolvedValue(mockResponse as any);
 
             const link = { href: '/api/retailer', rel: 'self' };
             const { result } = renderHook(() => useRetailerApplicationGet(link), { wrapper });
@@ -107,7 +110,7 @@ describe('useAccount hooks', () => {
                 expect(result.current.isSuccess).toBe(true);
             });
 
-            expect(api.followLink).toHaveBeenCalledWith(link, "GET");
+            expect(mockApi.followLink).toHaveBeenCalledWith(link, "GET");
             expect(result.current.data).toEqual(mockResponse);
         });
     });
@@ -116,7 +119,7 @@ describe('useAccount hooks', () => {
         it('should call api.followLink with POST and no body', async () => {
             const { result } = renderHook(() => useAccountApplicationSubmit(), { wrapper });
             const mockResponse = { success: true };
-            vi.mocked(api.followLink).mockResolvedValue(mockResponse as any);
+            mockApi.followLink.mockResolvedValue(mockResponse as any);
 
             const link = { href: '/api/submit', rel: 'submit' };
             result.current.mutate({ link });
@@ -125,7 +128,7 @@ describe('useAccount hooks', () => {
                 expect(result.current.isSuccess).toBe(true);
             });
 
-            expect(api.followLink).toHaveBeenCalledWith(link, "POST");
+            expect(mockApi.followLink).toHaveBeenCalledWith(link, "POST");
         });
     });
 });

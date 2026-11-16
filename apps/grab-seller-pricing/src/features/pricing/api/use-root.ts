@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEntryLink } from "@khinemyaezin/seller-ui";
+import { useEntryLink, useApi } from "@khinemyaezin/seller-ui";
 import { fetchPricingRoot } from "./discovery";
 import type { PricingRoot } from "../types";
 
 export function usePricingRoot() {
+  const api = useApi();
   const entryLink = useEntryLink();
 
   return useQuery<PricingRoot>({
     queryKey: ["pricing-root", entryLink?.href],
-    queryFn: () => fetchPricingRoot(entryLink!),
+    queryFn: () => fetchPricingRoot(api, entryLink!),
     enabled: !!entryLink,
     staleTime: Infinity,
   });

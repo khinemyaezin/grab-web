@@ -1,9 +1,10 @@
-import { api, resolveLink, SellerApiLinks, type HalLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks, type HalLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { CatalogRoot } from "@/features/products/types";
 
 type RootResponse = { _links: HalLinks };
 
-export async function fetchCatalogRoot(link: HateoasLink): Promise<CatalogRoot> {
+export async function fetchCatalogRoot(api: PlatformApiClient, link: HateoasLink): Promise<CatalogRoot> {
   const response = await api.followLink<RootResponse>(link);
   return {
     self: resolveLink(response._links, SellerApiLinks.discovery.self),

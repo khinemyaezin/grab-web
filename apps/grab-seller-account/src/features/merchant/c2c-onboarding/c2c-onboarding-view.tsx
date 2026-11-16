@@ -36,7 +36,7 @@ export default function C2cAccountOnboardingView({ createApplicationLink, getApp
     const [activeStepId, setActiveStepId] = useState<StepId | undefined>(undefined);
 
     useEffect(() => {
-        if (error && error instanceof ApiError && error.status == 404) {
+        if (error && error.status == 404) {
             setActiveStepId("account-registration");
         }
 

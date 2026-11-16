@@ -36,6 +36,8 @@ function remoteItem(overrides: Partial<ProductMediaFormItem> = {}): ProductMedia
   };
 }
 
+const mockApi = {} as any;
+
 describe("isGalleryDirty", () => {
   it("is false when items match the seed", () => {
     const items = [remoteItem()];
@@ -77,15 +79,16 @@ describe("stageProductMedia", () => {
     mockPutPresignedObject.mockResolvedValue(undefined);
 
     const keys = await stageProductMedia({
+      api: mockApi,
       items: [
         { id: "new", url: "blob:1", contentType: "image/jpeg", name: "first.jpg", file, rank: 0, sizeBytes: 2 },
       ],
       createUploadLink: uploadLink,
     });
 
-    expect(mockCreateProductMediaUpload.mock.calls[0][0].href).toBe("/catalog/media/uploads");
-    expect(mockCreateProductMediaUpload.mock.calls[0][0].href).not.toContain("products/");
-    expect(mockCreateProductMediaUpload.mock.calls[0][1]).toEqual({
+    expect(mockCreateProductMediaUpload.mock.calls[0][1].href).toBe("/catalog/media/uploads");
+    expect(mockCreateProductMediaUpload.mock.calls[0][1].href).not.toContain("products/");
+    expect(mockCreateProductMediaUpload.mock.calls[0][2]).toEqual({
       filename: "first.jpg",
       contentType: "image/jpeg",
       sizeBytes: 2,
@@ -102,6 +105,7 @@ describe("stageProductMedia", () => {
 
   it("skips items that already have a storageKey", async () => {
     await stageProductMedia({
+      api: mockApi,
       items: [
         {
           id: "new",
@@ -138,6 +142,7 @@ describe("stageProductMedia", () => {
       .mockResolvedValueOnce(undefined);
 
     const keys = await stageProductMedia({
+      api: mockApi,
       items: [
         { id: "1", url: "blob:1", contentType: "image/jpeg", name: "hero.jpg", file, rank: 0, sizeBytes: 1 },
       ],
@@ -166,6 +171,7 @@ describe("stageProductMedia", () => {
 
     await expect(
       stageProductMedia({
+        api: mockApi,
         items: [
           {
             id: "1",
@@ -193,6 +199,7 @@ describe("attachProductMedia", () => {
   it("skips when the gallery is unchanged", async () => {
     const items = [remoteItem()];
     await attachProductMedia({
+      api: mockApi,
       productId: "prod-1",
       items,
       seed: items,
@@ -209,6 +216,7 @@ describe("attachProductMedia", () => {
     mockReplaceProductMedia.mockResolvedValue({ productId: "prod-1", medias: [] });
 
     await attachProductMedia({
+      api: mockApi,
       productId: "prod-1",
       items: [
         {
@@ -228,8 +236,8 @@ describe("attachProductMedia", () => {
     });
 
     expect(mockCreateProductMediaUpload).not.toHaveBeenCalled();
-    expect(mockReplaceProductMedia.mock.calls[0][0].href).toBe("/catalog/products/prod-1/media");
-    expect(mockReplaceProductMedia.mock.calls[0][1]).toEqual({
+    expect(mockReplaceProductMedia.mock.calls[0][1].href).toBe("/catalog/products/prod-1/media");
+    expect(mockReplaceProductMedia.mock.calls[0][2]).toEqual({
       medias: [
         { storageKey: "merchants/m/staged/new.jpg", contentType: "image/jpeg", rank: 0 },
         {
@@ -246,6 +254,7 @@ describe("attachProductMedia", () => {
     mockReplaceProductMedia.mockResolvedValue({ productId: "prod-1", medias: [] });
 
     await attachProductMedia({
+      api: mockApi,
       productId: "prod-1",
       items: [],
       seed: [remoteItem()],
@@ -253,6 +262,6 @@ describe("attachProductMedia", () => {
     });
 
     expect(mockCreateProductMediaUpload).not.toHaveBeenCalled();
-    expect(mockReplaceProductMedia.mock.calls[0][1]).toEqual({ medias: [] });
+    expect(mockReplaceProductMedia.mock.calls[0][2]).toEqual({ medias: [] });
   });
 });

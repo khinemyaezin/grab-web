@@ -1,8 +1,9 @@
-import { api, resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { InventoryRoot } from "@/features/inventory/types";
 import { InventoryRootResponse } from "@/features/inventory/types/inventory.response";
 
-export async function fetchInventoryRoot(link: HateoasLink): Promise<InventoryRoot> {
+export async function fetchInventoryRoot(api: PlatformApiClient, link: HateoasLink): Promise<InventoryRoot> {
   const response = await api.followLink<InventoryRootResponse>(link)
 
   return {

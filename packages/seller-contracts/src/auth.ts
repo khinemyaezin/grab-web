@@ -1,3 +1,4 @@
+import { PlatformApiClient } from "./api.js";
 import type {
 } from "./events/core.js";
 import { PlatformEvents } from "./events/index.js";
@@ -52,6 +53,7 @@ export interface SellerPlatform {
   readonly events: PlatformEvents;
   readonly navigation: PlatformNavigation;
   readonly config: Readonly<SellerRuntimeConfig>;
+  readonly api: PlatformApiClient;
 }
 
 export interface PlatformNavigation {

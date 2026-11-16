@@ -4,6 +4,7 @@ import {
   stageMediaDrafts,
   type HateoasLink,
 } from "@khinemyaezin/seller-api";
+import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import {
   formatMediaReplacements,
   isMediaGalleryDirty,
@@ -27,6 +28,7 @@ export type ProductMediaItemStatusHandler = (
 ) => void;
 
 export type StageProductMediaOptions = {
+  api: PlatformApiClient;
   items: ProductMediaFormItem[];
   createUploadLink: HateoasLink;
   onItemStatus?: ProductMediaItemStatusHandler;
@@ -34,6 +36,7 @@ export type StageProductMediaOptions = {
 };
 
 export type AttachProductMediaOptions = {
+  api: PlatformApiClient;
   productId: string;
   items: ProductMediaFormItem[];
   seed?: ProductMediaFormItem[];
@@ -43,10 +46,11 @@ export type AttachProductMediaOptions = {
 export { isMediaGalleryDirty as isGalleryDirty };
 
 export function authorizeStagedUpload(
+  api: PlatformApiClient,
   link: HateoasLink,
   metadata: CreateProductMediaUploadRequest,
 ): Promise<ProductMediaUploadResponse> {
-  return catalogService.createProductMediaUpload(link, metadata);
+  return catalogService.createProductMediaUpload(api, link, metadata);
 }
 
 export function toReplaceMediaPayload(items: ProductMediaFormItem[]): ReplaceProductMediaRequest["medias"] {
@@ -58,6 +62,7 @@ function replacePayload(items: ProductMediaFormItem[]): ReplaceProductMediaReque
 }
 
 export async function stageProductMedia({
+  api,
   items,
   createUploadLink,
   onItemStatus,
@@ -65,7 +70,7 @@ export async function stageProductMedia({
 }: StageProductMediaOptions): Promise<Map<string, string>> {
   return stageMediaDrafts({
     items,
-    authorizer: (metadata) => authorizeStagedUpload(createUploadLink, metadata),
+    authorizer: (metadata) => authorizeStagedUpload(api, createUploadLink, metadata),
     uploader: putPresignedObject,
     maxAttempts: PRODUCT_MEDIA_UPLOAD_ATTEMPTS,
     onItemStatus,
@@ -74,6 +79,7 @@ export async function stageProductMedia({
 }
 
 export async function attachProductMedia({
+  api,
   productId,
   items,
   seed = [],
@@ -82,6 +88,7 @@ export async function attachProductMedia({
   if (!isMediaGalleryDirty(items, seed)) return;
 
   await catalogService.replaceProductMedia(
+    api,
     resolveUrlTemplate({ productId }, replaceMediaLink),
     { medias: replacePayload(items) },
   );

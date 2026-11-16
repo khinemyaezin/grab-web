@@ -79,15 +79,28 @@ Verify slot contracts:
 
 ## 3. Mocking Conventions
 
-### Mocking HATEOAS API Client:
+### Mocking Platform API Client:
+Provide a mock `PlatformApiClient` via `PlatformProvider` or mock `useApi`:
 ```ts
-vi.mock("@khinemyaezin/seller-api", async () => {
-  const actual = await vi.importActual("@khinemyaezin/seller-api");
-  return {
-    ...actual,
-    api: { followLink: vi.fn() },
-  };
-});
+import { PlatformProvider } from "@khinemyaezin/seller-ui";
+import type { PlatformApiClient, SellerPlatform } from "@khinemyaezin/seller-contracts";
+
+const mockApi = {
+  followLink: vi.fn(),
+  request: vi.fn(),
+  withConfig: vi.fn(),
+};
+
+const mockPlatform = {
+  api: mockApi as unknown as PlatformApiClient,
+} as unknown as SellerPlatform;
+
+// In test wrapper:
+<PlatformProvider platform={mockPlatform}>
+  <QueryClientProvider client={queryClient}>
+    {children}
+  </QueryClientProvider>
+</PlatformProvider>
 ```
 
 ### Mocking Navigation (`react-router`):
