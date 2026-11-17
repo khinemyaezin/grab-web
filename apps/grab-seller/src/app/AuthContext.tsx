@@ -22,10 +22,13 @@ export type AuthContextValue = {
 };
 
 const AUTH_CONTEXT_KEY = Symbol.for("@khinemyaezin/grab-seller/AuthContext");
+const globalScope = globalThis as unknown as Record<PropertyKey, unknown>;
 
 export const AuthContext: React.Context<AuthContextValue | null> =
-  (globalThis as any)[AUTH_CONTEXT_KEY] ??
-  ((globalThis as any)[AUTH_CONTEXT_KEY] = createContext<AuthContextValue | null>(null));
+  (globalScope[AUTH_CONTEXT_KEY] as React.Context<AuthContextValue | null> | undefined) ??
+  ((globalScope[AUTH_CONTEXT_KEY] = createContext<AuthContextValue | null>(
+    null,
+  )) as React.Context<AuthContextValue | null>);
 
 export function useAuth(): AuthContextValue {
   const value = useContext(AuthContext);

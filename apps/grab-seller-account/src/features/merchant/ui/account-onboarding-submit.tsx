@@ -1,5 +1,5 @@
 import { Button } from "@khinemyaezin/seller-ui/components/button";
-import { HateoasLink } from "@khinemyaezin/seller-api";
+import type { HateoasLink } from "@khinemyaezin/seller-api";
 import { toast } from "sonner";
 import { useAccountApplicationSubmit } from "@/features/merchant/api/use-account";
 import { ButtonStatus } from "@khinemyaezin/seller-ui/components/index";
@@ -13,11 +13,17 @@ export default function AccountOnboardingSubmit({ link, onSuccess }: AccountOnbo
   const submitApplication = useAccountApplicationSubmit();
 
   async function handleOnSubmit() {
+    if (submitApplication.isPending) return;
+
     try {
       await submitApplication.mutateAsync({ link });
       onSuccess?.();
     } catch (error) {
-      toast.error("");
+      toast.error(
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : "Could not submit your application",
+      );
     }
   }
 

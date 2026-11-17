@@ -1,10 +1,6 @@
 import type { SseFrame } from "@khinemyaezin/seller-api";
-import type { EventPayloads, PlatformEvents } from "@khinemyaezin/seller-contracts";
-import { SseHandler } from "src/types/sse";
-
-export type WorkflowUpdatedV1 = EventPayloads["workflow:updated:v1"] & {
-  idempotencyKey?: string;
-};
+import type { PlatformEvents, WorkflowUpdatedV1 } from "@khinemyaezin/seller-contracts";
+import type { SseHandler } from "../types/sse";
 
 export class WorkflowEventStreamHandler implements SseHandler {
   handle(frame: SseFrame, events: PlatformEvents): boolean {

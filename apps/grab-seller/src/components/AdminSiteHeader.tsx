@@ -22,7 +22,7 @@ function RouteBreadcrumb() {
           const isLast = index === crumbs.length - 1;
 
           return (
-            <Fragment key={`${crumb.label}-${index}`}>
+            <Fragment key={crumb.to ?? `${crumb.label}-${index}`}>
               {index > 0 && <BreadcrumbSeparator />}
               <BreadcrumbItem>
                 {isLast || !crumb.to ? (

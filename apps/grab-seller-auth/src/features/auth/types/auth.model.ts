@@ -1,6 +1,1 @@
-import { User, AccessContext } from "@khinemyaezin/seller-contracts";
-
-export interface UserProfile extends User {
-  accessContexts: AccessContext[];
-  currentAccessContext: AccessContext;
-}
+export type { User, AccessContext, UserProfile } from "@khinemyaezin/seller-contracts";

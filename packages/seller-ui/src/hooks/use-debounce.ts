@@ -15,8 +15,18 @@ export function useDebounce<T extends (...args: Parameters<T>) => void>(
     debounce((...args: Parameters<T>) => {
       callbackRef.current(...args);
     }, delay),
-    [],
+    [delay],
   );
 
-  return { debounceFn } as const;
+  useEffect(() => {
+    return () => {
+      debounceFn.cancel();
+    };
+  }, [debounceFn]);
+
+  return {
+    debounceFn,
+    cancel: debounceFn.cancel,
+    flush: debounceFn.flush,
+  } as const;
 }

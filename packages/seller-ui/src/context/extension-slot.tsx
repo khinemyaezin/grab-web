@@ -23,16 +23,16 @@ class ExtensionErrorBoundary extends Component<
   { fallback?: ReactNode; children: ReactNode },
   { hasError: boolean }
 > {
-  state = { hasError: false };
+  override state = { hasError: false };
 
   static getDerivedStateFromError() {
     return { hasError: true };
   }
-  componentDidCatch(error: Error, info: ErrorInfo) {
+  override componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("ExtensionSlot failed to render:", error, info.componentStack);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return <>{this.props.fallback}</>;
     }

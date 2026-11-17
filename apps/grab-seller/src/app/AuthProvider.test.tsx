@@ -2,7 +2,11 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter, useLocation } from "react-router";
-import type { IdentityProfile, SellerRuntimeConfig } from "@khinemyaezin/seller-contracts";
+import type {
+  IdentityProfile,
+  SellerRuntimeConfig,
+  SessionSnapshot,
+} from "@khinemyaezin/seller-contracts";
 import { AuthProvider } from "./AuthProvider";
 import { useAuth } from "./AuthContext";
 import { useRequiredPlatform } from "@khinemyaezin/seller-ui";
@@ -168,8 +172,8 @@ describe("AuthProvider", () => {
   it("installs the session bridge before child effects and matches platform.session.getSnapshot()", async () => {
     mockGetProfile.mockResolvedValue(sampleProfile);
 
-    let observedAuthSnapshot: unknown;
-    let observedPlatformSnapshot: unknown;
+    let observedAuthSnapshot: SessionSnapshot | undefined;
+    let observedPlatformSnapshot: SessionSnapshot | undefined;
 
     function InspectionConsumer() {
       const auth = useAuth();
@@ -192,7 +196,7 @@ describe("AuthProvider", () => {
     );
 
     await waitFor(() => {
-      expect((observedAuthSnapshot as any)?.status).toBe("authenticated");
+      expect(observedAuthSnapshot?.status).toBe("authenticated");
     });
 
     expect(observedAuthSnapshot).toEqual(observedPlatformSnapshot);

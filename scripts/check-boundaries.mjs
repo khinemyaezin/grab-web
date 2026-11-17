@@ -159,6 +159,57 @@ function checkBoundaries() {
     }
   }
 
+  // Rule 4: Single Shell SSE Connection Invariant (ADR-003)
+  // Remotes must never import createBackendEventStream or instantiate EventSource.
+  // Shell routes must never instantiate SSE or import legacy stream hooks.
+  for (const file of appFiles) {
+    const relFile = relative(rootDir, file);
+    const content = readFileSync(file, "utf8");
+
+    const isRemote = relFile.startsWith("apps/grab-seller-");
+    const isShellRoute = relFile.startsWith("apps/grab-seller/src/routes/");
+    const isShellProvider = relFile === "apps/grab-seller/src/app/EventStreamProvider.tsx";
+    const isShellProviderTest = relFile === "apps/grab-seller/src/app/EventStreamProvider.test.tsx";
+
+    if (
+      isRemote &&
+      (content.includes("createBackendEventStream") || content.includes("new EventSource"))
+    ) {
+      violations.push({
+        rule: "RULE_4_SINGLE_SSE_CONNECTION_ADR003",
+        file: relFile,
+        specifier: "createBackendEventStream / EventSource",
+        message: `Remote MFE must never instantiate an SSE connection directly (ADR-003). Consume domain events exclusively from platform.events.`,
+      });
+    }
+
+    if (
+      isShellRoute &&
+      (content.includes("createBackendEventStream") || content.includes("useSseStream"))
+    ) {
+      violations.push({
+        rule: "RULE_4_SHELL_ROUTE_SSE_ISOLATION",
+        file: relFile,
+        specifier: "createBackendEventStream / useSseStream",
+        message: `Shell routes must not manage SSE connections. The host SSE connection is owned exclusively by EventStreamProvider.`,
+      });
+    }
+
+    if (
+      relFile.startsWith("apps/grab-seller/src/") &&
+      !isShellProvider &&
+      !isShellProviderTest &&
+      content.includes("createBackendEventStream")
+    ) {
+      violations.push({
+        rule: "RULE_4_SINGLE_SSE_CONNECTION_ADR003",
+        file: relFile,
+        specifier: "createBackendEventStream",
+        message: `createBackendEventStream may only be used by EventStreamProvider in the shell host.`,
+      });
+    }
+  }
+
   return violations;
 }
 

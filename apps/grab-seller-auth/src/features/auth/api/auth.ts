@@ -1,7 +1,7 @@
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import { LoginRequest, RegisterUserRequest } from "../types/auth.request";
-import { LoginResponse, RegisterUserReponse, ProfileResponse } from "../types/auth.response";
+import { LoginResponse, RegisterUserResponse, ProfileResponse } from "../types/auth.response";
 
 export const authService = {
   login: (
@@ -19,8 +19,8 @@ export const authService = {
     link: HateoasLink,
     request: RegisterUserRequest,
     headers?: Record<string, string>,
-  ): Promise<RegisterUserReponse> =>
-    api.followLink<RegisterUserReponse>(link, "POST", request, undefined, headers, {
+  ): Promise<RegisterUserResponse> =>
+    api.followLink<RegisterUserResponse>(link, "POST", request, undefined, headers, {
       retryOnUnauthorized: false,
     }),
 

@@ -24,6 +24,7 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc -p tsconfig.json && tsc-alias -p tsconfig.json && cp src/styles.css dist/styles.css",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck:strict": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --exclude 'dist/**'",
     "lint": "eslint ."
   },

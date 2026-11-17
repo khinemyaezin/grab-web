@@ -36,7 +36,7 @@ services:
         APP_NAME: seller-account
         APP_DIR: apps/grab-seller-account
     ports:
-      - "${ONBOARDING_PORT:-3004}:80"
+      - "${ACCOUNT_PORT:-${ONBOARDING_PORT:-3004}}:80"
 
   grab-seller-product:
     <<: *app-common

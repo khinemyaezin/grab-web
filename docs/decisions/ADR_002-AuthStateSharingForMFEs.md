@@ -324,6 +324,25 @@ For same-origin deployments (Shell and gateway share the same domain), `SameSite
 
 ---
 
+## 2.2 Implementation Notes (Remediation Plan Phase 2/7)
+
+1. **`SessionApi.expire()`:**
+   - In addition to user-initiated `logout()`, `SessionApi` exposes `expire()`.
+   - `expire()` immediately transitions the in-memory `SessionSnapshot` to `{ status: "anonymous" }` without firing a backend network call.
+   - It is invoked when token refresh fails (401/403) or when the backend event stream invalidates the session credentials.
+   - This ensures the UI transitions to anonymous immediately, redirecting to login without cascading retry loops.
+
+2. **Publish and Reactive Subscriptions (`useSessionSnapshot`):**
+   - The platform session holds a single authoritative snapshot and notifies registered subscribers via `platform.session.subscribe(listener)`.
+   - In React applications and remotes, components subscribe reactively using the `useSessionSnapshot(platform)` hook from `@khinemyaezin/seller-ui`.
+   - The hook is powered by `useSyncExternalStore`, eliminating tearing and ensuring concurrent React 19 safety.
+
+3. **Tab Visibility Revalidation:**
+   - A `document.addEventListener("visibilitychange", ...)` listener in `AuthProvider` automatically calls the session profile endpoint when an inactive tab returns to foreground (`document.visibilityState === "visible"`).
+   - If the session expired or the user logged out in another tab, the snapshot is updated to anonymous immediately.
+
+---
+
 ## 3. Why This Approach
 
 **Primary reasons:**

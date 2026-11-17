@@ -10,3 +10,7 @@
 docs
 spark-mascot-ui
 grab-seller-shared
+
+# Preserve shell Module Federation declarations for container builds
+!apps/grab-seller/@mf-types
+

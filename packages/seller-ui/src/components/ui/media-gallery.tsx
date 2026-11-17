@@ -151,7 +151,9 @@ export function reorderMediaGalleryItems(
 
   const next = [...items];
   const [moved] = next.splice(from, 1);
-  next.splice(to, 0, moved);
+  if (moved) {
+    next.splice(to, 0, moved);
+  }
   return next.map((item, rank) => ({ ...item, rank }));
 }
 

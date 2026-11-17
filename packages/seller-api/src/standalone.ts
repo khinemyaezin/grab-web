@@ -10,7 +10,6 @@ import { createHostEventBus } from "./events/index.js";
 export type StandalonePlatformOptions = {
   baseUrl?: string;
   appName?: string;
-  getToken?: () => string | undefined | Promise<string | undefined>;
   onNavigate?: (path: string, options?: { replace?: boolean }) => void;
 };
 
@@ -73,7 +72,6 @@ export function createStandalonePlatform(options: StandalonePlatformOptions = {}
 
   const api = createApiClient({
     baseUrl,
-    getToken: options.getToken,
     platform: { session },
   });
 

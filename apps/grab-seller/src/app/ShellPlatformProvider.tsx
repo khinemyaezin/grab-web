@@ -18,13 +18,16 @@ export interface ShellPlatformContextValue {
 }
 
 const SHELL_PLATFORM_CONTEXT_KEY = Symbol.for("@khinemyaezin/grab-seller/ShellPlatformContext");
+const globalScope = globalThis as unknown as Record<PropertyKey, unknown>;
 
 const INITIAL_SESSION_SNAPSHOT: SessionSnapshot = { status: "loading" };
 
 export const ShellPlatformContext: React.Context<ShellPlatformContextValue | null> =
-  (globalThis as any)[SHELL_PLATFORM_CONTEXT_KEY] ??
-  ((globalThis as any)[SHELL_PLATFORM_CONTEXT_KEY] =
-    createContext<ShellPlatformContextValue | null>(null));
+  (globalScope[SHELL_PLATFORM_CONTEXT_KEY] as
+    React.Context<ShellPlatformContextValue | null> | undefined) ??
+  ((globalScope[SHELL_PLATFORM_CONTEXT_KEY] = createContext<ShellPlatformContextValue | null>(
+    null,
+  )) as React.Context<ShellPlatformContextValue | null>);
 
 export function useShellPlatform(): ShellPlatformContextValue {
   const ctx = useContext(ShellPlatformContext);

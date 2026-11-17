@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { PlatformEvents } from "@khinemyaezin/seller-contracts";
 import { usePlatform } from "@/context";
 import { cn } from "@/lib/utils";
@@ -7,7 +7,6 @@ import { ButtonStatus, type ButtonStatusState } from "@/components/ui/button-sta
 
 const DEFAULT_SAVE_TIMEOUT_MS = 10_000;
 const STATUS_RESET_MS = 2_000;
-const BAR_PRODUCER_ID = "context-bar";
 
 type DirtyEntry = {
   dirty: boolean;
@@ -20,29 +19,51 @@ function runSave(
   events: PlatformEvents,
   groupIds: string[],
   timeoutMs: number,
+  producerId: string,
+  signal: AbortSignal,
 ): Promise<Map<string, SaveStatus>> {
   return new Promise((resolve) => {
-    if (groupIds.length === 0) {
+    if (groupIds.length === 0 || signal.aborted) {
       resolve(new Map());
       return;
     }
 
     const pending = new Set(groupIds);
     const results = new Map<string, SaveStatus>();
-    const timers = new Map<string, number>();
+    const timers = new Map<string, ReturnType<typeof setTimeout>>();
+
+    const cleanup = () => {
+      for (const timer of timers.values()) {
+        clearTimeout(timer);
+      }
+      timers.clear();
+      unsubscribe();
+      signal.removeEventListener("abort", onAbort);
+    };
 
     const settle = (groupId: string, status: SaveStatus) => {
       if (!pending.has(groupId)) return;
       pending.delete(groupId);
       results.set(groupId, status);
       const timer = timers.get(groupId);
-      if (timer) window.clearTimeout(timer);
+      if (timer) clearTimeout(timer);
       timers.delete(groupId);
       if (pending.size === 0) {
-        unsubscribe();
+        cleanup();
         resolve(results);
       }
     };
+
+    const onAbort = () => {
+      for (const groupId of pending) {
+        results.set(groupId, "failed");
+      }
+      pending.clear();
+      cleanup();
+      resolve(results);
+    };
+
+    signal.addEventListener("abort", onAbort, { once: true });
 
     const unsubscribe = events.subscribe(
       "form:saved:v1",
@@ -55,9 +76,9 @@ function runSave(
     for (const groupId of groupIds) {
       timers.set(
         groupId,
-        window.setTimeout(() => settle(groupId, "failed"), timeoutMs),
+        setTimeout(() => settle(groupId, "failed"), timeoutMs),
       );
-      events.emit("form:save:v1", { producerId: BAR_PRODUCER_ID, groupId });
+      events.emit("form:save:v1", { producerId, groupId });
     }
   });
 }
@@ -73,11 +94,14 @@ export function ContextBar({
 }: ContextBarProps) {
   const platform = usePlatform();
   const events = platform?.events;
+  const instanceId = useId();
+  const producerId = `context-bar-${instanceId}`;
 
   const [entries, setEntries] = useState<Map<string, DirtyEntry>>(new Map());
   const [status, setStatus] = useState<ButtonStatusState>("idle");
   const savingRef = useRef(false);
-  const statusTimerRef = useRef<number | undefined>(undefined);
+  const saveAbortControllerRef = useRef<AbortController | null>(null);
+  const statusTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     if (!events) return;
@@ -95,7 +119,14 @@ export function ContextBar({
     });
   }, [events]);
 
-  useEffect(() => () => window.clearTimeout(statusTimerRef.current), []);
+  useEffect(() => {
+    return () => {
+      saveAbortControllerRef.current?.abort();
+      if (statusTimerRef.current !== undefined) {
+        clearTimeout(statusTimerRef.current);
+      }
+    };
+  }, []);
 
   const dirtyGroups = useMemo(
     () => [...entries].filter(([, entry]) => entry.dirty).map(([groupId]) => groupId),
@@ -112,26 +143,54 @@ export function ContextBar({
     if (!events || savingRef.current || dirtyGroups.length === 0) return;
 
     savingRef.current = true;
-    window.clearTimeout(statusTimerRef.current);
+    if (statusTimerRef.current !== undefined) {
+      clearTimeout(statusTimerRef.current);
+    }
     setStatus("pending");
 
+    const controller = new AbortController();
+    saveAbortControllerRef.current = controller;
+
     try {
-      const results = await runSave(events, dirtyGroups, saveTimeoutMs);
+      const results = await runSave(
+        events,
+        dirtyGroups,
+        saveTimeoutMs,
+        producerId,
+        controller.signal,
+      );
+      if (controller.signal.aborted) {
+        return;
+      }
       const failed = [...results.values()].some((result) => result === "failed");
       setStatus(failed ? "failed" : "success");
+
+      events.emit("shell:toast:v1", {
+        type: failed ? "error" : "success",
+        message: failed ? "Failed to save changes" : "All changes saved successfully",
+      });
+    } catch {
+      if (!controller.signal.aborted) {
+        setStatus("failed");
+        events.emit("shell:toast:v1", {
+          type: "error",
+          message: "Failed to save changes",
+        });
+      }
     } finally {
       savingRef.current = false;
-      statusTimerRef.current = window.setTimeout(() => setStatus("idle"), STATUS_RESET_MS);
+      saveAbortControllerRef.current = null;
+      statusTimerRef.current = setTimeout(() => setStatus("idle"), STATUS_RESET_MS);
     }
-  }, [events, dirtyGroups, saveTimeoutMs]);
+  }, [events, dirtyGroups, saveTimeoutMs, producerId]);
 
   const handleDiscard = useCallback(() => {
     if (!events || savingRef.current) return;
 
     for (const groupId of dirtyGroups) {
-      events.emit("form:discard:v1", { producerId: BAR_PRODUCER_ID, groupId });
+      events.emit("form:discard:v1", { producerId, groupId });
     }
-  }, [events, dirtyGroups]);
+  }, [events, dirtyGroups, producerId]);
 
   if (dirtyGroups.length === 0) return null;
 

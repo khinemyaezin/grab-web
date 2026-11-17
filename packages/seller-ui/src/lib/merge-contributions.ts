@@ -23,7 +23,10 @@ export function mergeContributions(
       if (!allowed.has(contribution.slice)) {
         throw new UnknownSlotSliceError(contribution.slice);
       }
-      merged[contribution.slice].push(...contribution.append);
+      const targetSlice = merged[contribution.slice];
+      if (targetSlice) {
+        targetSlice.push(...contribution.append);
+      }
     }
   }
 

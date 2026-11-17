@@ -13,21 +13,26 @@ import { Alert, AlertDescription, AlertTitle } from "@khinemyaezin/seller-ui/com
 
 type ErrorBoundaryProps = {
   children: ReactNode;
+  label: string;
   onRetry: () => void;
 };
 
 class RemoteErrorBoundary extends Component<ErrorBoundaryProps, { failed: boolean }> {
-  state = { failed: false };
+  override state = { failed: false };
 
   static getDerivedStateFromError() {
     return { failed: true };
   }
 
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error("Unable to load federated route", error, info.componentStack);
+  override componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error(
+      `Unable to load federated route [${this.props.label}]`,
+      error,
+      info.componentStack,
+    );
   }
 
-  render() {
+  override render() {
     if (this.state.failed) {
       return (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
@@ -64,7 +69,11 @@ export function RemoteBoundary<P extends object = Record<string, never>>({
   const Remote = useMemo(() => lazy(() => loader()), [attempt, loader]);
 
   return (
-    <RemoteErrorBoundary key={attempt} onRetry={() => setAttempt((value) => value + 1)}>
+    <RemoteErrorBoundary
+      key={attempt}
+      label={label}
+      onRetry={() => setAttempt((value) => value + 1)}
+    >
       <Suspense
         fallback={
           <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">

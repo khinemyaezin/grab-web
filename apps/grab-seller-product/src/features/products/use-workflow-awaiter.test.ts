@@ -229,4 +229,68 @@ describe("useWorkflowAwaiter", () => {
 
     await expect(awaitPromise).rejects.toThrow("Catalog write failed");
   });
+
+  it("times out and cleans up subscriptions when workflow does not complete in time", async () => {
+    vi.useFakeTimers();
+    try {
+      const subscribers = new Map<string, Set<(payload: any) => void>>();
+      const mockPlatform = createMockPlatform(subscribers);
+      vi.mocked(usePlatform).mockReturnValue(mockPlatform as any);
+      vi.spyOn(crypto, "randomUUID").mockReturnValue(IDEMPOTENCY_KEY);
+
+      const { result } = renderHook(() =>
+        useWorkflowAwaiter({
+          workflowName: "update-sellable-product",
+          timeoutMs: 5000,
+        }),
+      );
+
+      const trigger = vi.fn().mockResolvedValue({
+        workflowId: "wf-timeout",
+        status: "WAITING_EXTERNAL",
+      });
+
+      const awaitPromise = result.current.awaitWorkflow(trigger);
+      await Promise.resolve();
+
+      expect(subscribers.get("workflow:updated:v1")?.size).toBe(1);
+
+      // Fast-forward time past timeout
+      vi.advanceTimersByTime(5001);
+
+      await expect(awaitPromise).rejects.toThrow("Workflow timed out");
+      expect(subscribers.get("workflow:updated:v1")?.size).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("cleans up active subscription and rejects if unmounted during wait", async () => {
+    const subscribers = new Map<string, Set<(payload: any) => void>>();
+    const mockPlatform = createMockPlatform(subscribers);
+    vi.mocked(usePlatform).mockReturnValue(mockPlatform as any);
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(IDEMPOTENCY_KEY);
+
+    const { result, unmount } = renderHook(() =>
+      useWorkflowAwaiter({
+        workflowName: "update-sellable-product",
+        timeoutMs: 10_000,
+      }),
+    );
+
+    const trigger = vi.fn().mockResolvedValue({
+      workflowId: "wf-unmount",
+      status: "WAITING_EXTERNAL",
+    });
+
+    const awaitPromise = result.current.awaitWorkflow(trigger);
+    await Promise.resolve();
+
+    expect(subscribers.get("workflow:updated:v1")?.size).toBe(1);
+
+    unmount();
+
+    await expect(awaitPromise).rejects.toThrow("Workflow wait cancelled");
+    expect(subscribers.get("workflow:updated:v1")?.size).toBe(0);
+  });
 });

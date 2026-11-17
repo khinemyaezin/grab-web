@@ -10,12 +10,10 @@ import {
 import { ChevronRightIcon } from "lucide-react";
 import { Link } from "react-router";
 import { routes } from "@khinemyaezin/seller-contracts";
-import { useId } from "react";
 
 export type MerchantTypeSelectionViewProps = {};
 
 export default function MerchantTypeSelectionView(_props: MerchantTypeSelectionViewProps) {
-  const id = useId();
   const items = [
     {
       title: "Individual Seller (C2C)",
@@ -32,8 +30,8 @@ export default function MerchantTypeSelectionView(_props: MerchantTypeSelectionV
     <FieldSet>
       <FieldLegend>What type of business do you have?</FieldLegend>
       <div className="flex w-full max-w-md flex-col gap-3">
-        {items.map((value, index) => (
-          <Item variant="outline" key={`${id}-${index}`} asChild>
+        {items.map((value) => (
+          <Item variant="outline" key={value.route} asChild>
             <Link to={value.route}>
               <ItemContent>
                 <ItemTitle>{value.title}</ItemTitle>

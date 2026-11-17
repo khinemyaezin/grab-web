@@ -1164,15 +1164,15 @@ Revert the provider refactor. The old `ShellPlatformContext` can be restored tem
 
 ### 11.4 Acceptance criteria
 
-- [ ] Navigating dashboard → products → inventory keeps exactly one SSE connection.
-- [ ] A workflow started on the product page resolves after navigating away and back.
-- [ ] Logout aborts the stream; login starts a new one.
-- [ ] Access-context change restarts the stream with the new scope.
-- [ ] Refresh failure expires the session and does not reconnect forever.
-- [ ] `grep -R "createBackendEventStream" apps/*/src` only matches the shell provider (and tests).
-- [ ] `grep -R "useSseStream" apps/grab-seller/src/routes` returns nothing.
-- [ ] Heartbeat comments never appear on `platform.events`.
-- [ ] Nginx/Vite proxy config prevents buffering and idle cuts.
+- [x] Navigating dashboard → products → inventory keeps exactly one SSE connection.
+- [x] A workflow started on the product page resolves after navigating away and back.
+- [x] Logout aborts the stream; login starts a new one.
+- [x] Access-context change restarts the stream with the new scope.
+- [x] Refresh failure expires the session and does not reconnect forever.
+- [x] `grep -R "createBackendEventStream" apps/*/src` only matches the shell provider (and tests).
+- [x] `grep -R "useSseStream" apps/grab-seller/src/routes` returns nothing.
+- [x] Heartbeat comments never appear on `platform.events`.
+- [x] Nginx/Vite proxy config prevents buffering and idle cuts.
 
 ### 11.5 Dependencies
 
@@ -1346,15 +1346,15 @@ Add `VITE_HOST_EVENT_STREAM=0` to fall back to the old `CatalogRemote` mount for
 
 ### 12.4 Acceptance criteria
 
-- [ ] Submitting an application refreshes the session snapshot and emits `seller-merchant:registration-success:v1` exactly once.
-- [ ] The host navigates to home after registration with the new merchant access context active (no bounce back to `/onboarding`).
-- [ ] C2C and retailer share one onboarding flow hook; no duplicated step logic.
-- [ ] No `setTimeout` in onboarding views.
-- [ ] `onSuccess` props are used.
-- [ ] `useDebounce` cancels pending work on unmount.
-- [ ] `useSlotChangeEmitter` cannot invoke a callback after unmount.
-- [ ] No `key={index}` in domain lists; no `as any` in the shell sidebar.
-- [ ] `pnpm lint` passes for changed files with hooks rules.
+- [x] Submitting an application refreshes the session snapshot and emits `seller-merchant:registration-success:v1` exactly once.
+- [x] The host navigates to home after registration with the new merchant access context active (no bounce back to `/onboarding`).
+- [x] C2C and retailer share one onboarding flow hook; no duplicated step logic.
+- [x] No `setTimeout` in onboarding views.
+- [x] `onSuccess` props are used.
+- [x] `useDebounce` cancels pending work on unmount.
+- [x] `useSlotChangeEmitter` cannot invoke a callback after unmount.
+- [x] No `key={index}` in domain lists; no `as any` in the shell sidebar.
+- [x] `pnpm lint` passes for changed files with hooks rules.
 
 ### 12.5 Dependencies
 
@@ -1514,15 +1514,15 @@ Revert the onboarding hook/view changes. The event emission is additive; the hos
 
 ### 13.4 Acceptance criteria
 
-- [ ] API client handles JSON, HAL, problem+json, 204, empty, text, timeout, and abort.
-- [ ] `followLink` expands URI templates; no silent template stripping.
-- [ ] `ApiError` carries status/body and helpers.
-- [ ] One shared definition for login/profile/access-context types.
-- [ ] `pnpm typecheck:strict` passes for `packages/*`; apps are enabled or have documented exceptions.
-- [ ] No `any`/`ts-ignore` in shell `src` except documented UI primitives.
-- [ ] Invalid runtime config fails fast with a readable error.
-- [ ] Remote load failure has a retry path.
-- [ ] Query retry defaults do not retry 4xx.
+- [x] API client handles JSON, HAL, problem+json, 204, empty, text, timeout, and abort.
+- [x] `followLink` expands URI templates; no silent template stripping.
+- [x] `ApiError` carries status/body and helpers.
+- [x] One shared definition for login/profile/access-context types.
+- [x] `pnpm typecheck:strict` passes for `packages/*`; apps are enabled or have documented exceptions.
+- [x] No `any`/`ts-ignore` in shell `src` except documented UI primitives.
+- [x] Invalid runtime config fails fast with a readable error.
+- [x] Remote load failure has a retry path.
+- [x] Query retry defaults do not retry 4xx.
 
 ### 13.5 Dependencies
 
@@ -1713,15 +1713,15 @@ Revert individual hardening commits. The API client changes are backward-compati
 
 ### 14.4 Acceptance criteria
 
-- [ ] All Vite configs use the shared helper and `mode` (no `env.NODE_ENV` drift).
-- [ ] Ports and MF type URLs are environment-driven and documented.
-- [ ] CI runs `types`, `quality`, `test`, and `build`; the Docker job is green or scheduled.
-- [ ] `MF_DTS=0` builds only run after `pnpm mf:types`; Docker copies or generates `@mf-types` before the shell build.
-- [ ] Coverage is reported and thresholds are defined.
-- [ ] `docker compose build` + healthchecks pass for the shell and at least one remote.
-- [ ] Every standalone remote uses `createStandalonePlatform`.
-- [ ] README, architecture doc, runbook, and ADRs match the code.
-- [ ] Release checklist is part of the PR/release process.
+- [x] All Vite configs use the shared helper and `mode` (no `env.NODE_ENV` drift).
+- [x] Ports and MF type URLs are environment-driven and documented.
+- [x] CI runs `types`, `quality`, `test`, and `build`; the Docker job is green or scheduled.
+- [x] `MF_DTS=0` builds only run after `pnpm mf:types`; Docker copies or generates `@mf-types` before the shell build.
+- [x] Coverage is reported and thresholds are defined.
+- [x] `docker compose build` + healthchecks pass for the shell and at least one remote.
+- [x] Every standalone remote uses `createStandalonePlatform`.
+- [x] README, architecture doc, runbook, and ADRs match the code.
+- [x] Release checklist is part of the PR/release process.
 
 ### 14.5 Dependencies
 

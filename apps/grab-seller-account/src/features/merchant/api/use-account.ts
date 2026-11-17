@@ -1,13 +1,11 @@
 import { ApiError, HateoasLink } from "@khinemyaezin/seller-api";
 import { useApi } from "@khinemyaezin/seller-ui";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
+import type {
   CreateSellerAccountResponse,
   C2CApplicationStatusResponse,
   SubmitSellerAccountResponse,
   RetailerApplicationStatusResponse,
-} from "@/features/merchant/types";
-import {
   CreateAccountRequest,
   UpdateBasicMerchantProfileRequest,
   UpdateRetailerRegistrationRequest,
@@ -45,17 +43,17 @@ export function useC2CApplicationGet(link?: HateoasLink) {
     queryFn: () => api.followLink(link!, "GET"),
     enabled: !!link,
     retry: (failureCount, error) => {
-      if (error.status === 404) {
+      if (error instanceof ApiError && error.status === 404) {
         return false;
       }
-      return failureCount < 3;
+      return failureCount < 2;
     },
   });
 }
 
 export function useRetailerApplicationGet(link?: HateoasLink) {
   const api = useApi();
-  return useQuery<RetailerApplicationStatusResponse>({
+  return useQuery<RetailerApplicationStatusResponse, ApiError>({
     queryKey: ["retailer-application", link?.href],
     queryFn: () => api.followLink(link!, "GET"),
     enabled: !!link,
@@ -63,7 +61,7 @@ export function useRetailerApplicationGet(link?: HateoasLink) {
       if (error instanceof ApiError && error.status === 404) {
         return false;
       }
-      return failureCount < 3;
+      return failureCount < 2;
     },
   });
 }

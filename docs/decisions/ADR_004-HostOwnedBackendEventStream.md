@@ -224,3 +224,27 @@ Already rejected by ADR_003. Slot hydrate and pricing drafts stay on the host-me
 
 **Rejected: Superseding ADR_003 with this stream**  
 The two paths have different failure domains: page-session last-value cache vs best-effort backend push. REST remains authoritative for business data.
+
+---
+
+## 8. Implementation Notes (Remediation Plan Phase 4/7)
+
+1. **Provider Mount Point:**
+   - The SSE stream is managed by `EventStreamProvider`, mounted inside `AuthProvider` at the shell level.
+   - Because it resides above `ShellRoutes`, navigating between remotes (e.g. Products → Inventory → Pricing) never unmounts the stream or causes socket thrashing.
+   - The stream only opens when `session.status === "authenticated"`, and automatically closes on logout or session expiration.
+
+2. **Proxy and Reverse-Proxy Buffering Configurations:**
+   - **Vite Development Server:** The `/api` proxy sets `timeout: 0` and `proxyTimeout: 0` to prevent socket timeout terminations during inactive intervals.
+   - **Nginx Reverse Proxies (Gateway & Remotes):** A dedicated `location /api/v1/events/stream` is placed before the catch-all `location /api/`. It explicitly configures:
+     - `proxy_buffering off;`
+     - `proxy_cache off;`
+     - `proxy_read_timeout 1h;`
+     - `proxy_send_timeout 1h;`
+     - `proxy_http_version 1.1;`
+     - `proxy_set_header Connection "";`
+     - `chunked_transfer_encoding off;`
+
+3. **Session Invalidation & Expire Behavior:**
+   - If the stream receives an HTTP 401 or authentication failure, it does not loop. It invokes `platform.session.expire()`.
+   - `expire()` sets the session snapshot to anonymous and tears down the active stream connection cleanly.

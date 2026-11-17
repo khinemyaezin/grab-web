@@ -34,6 +34,7 @@ export default function InventoryDashboardView() {
 
       {isLoading && (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {/* Static skeleton loading list; indices are stable across render */}
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="py-6">

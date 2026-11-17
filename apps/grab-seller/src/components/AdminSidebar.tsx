@@ -24,7 +24,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
     {
       title: "Catalog",
       url: `/`,
-      icon: Store as any,
+      icon: Store,
       items: [
         {
           title: "Product",
@@ -35,7 +35,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
     {
       title: "Inventory",
       url: `/${routes.inventory}`,
-      icon: LayoutGrid as any,
+      icon: LayoutGrid,
       items: [
         {
           title: "Locations",
@@ -50,7 +50,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
     {
       title: "Storefronts",
       url: `/${routes.storefronts}`,
-      icon: ShoppingBag as any,
+      icon: ShoppingBag,
       items: [],
     },
   ];
@@ -87,7 +87,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
                       size="lg"
                       className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
-                      <UserAvatarDetails avatar={(user as any).avatar} email={user.email} />
+                      <UserAvatarDetails avatar={user.avatar} email={user.email} />
                       <ChevronsUpDown className="ml-auto size-4" />
                     </SidebarMenuButton>
                   }

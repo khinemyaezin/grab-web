@@ -17,8 +17,8 @@ permissions:
   contents: read
 
 jobs:
-  build-and-test:
-    name: Build & Test
+  types:
+    name: Generate Module Federation Types
     runs-on: ubuntu-latest
 
     steps:
@@ -49,11 +49,180 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Module Federation declarations
+        run: pnpm mf:types
+
+      - name: Upload MF type declarations
+        uses: actions/upload-artifact@v4
+        with:
+          name: mf-types
+          path: apps/grab-seller/@mf-types
+          retention-days: 7
+
+  quality:
+    name: Code Quality & Type Checks
+    needs: [types]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Set up Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download MF type declarations
+        uses: actions/download-artifact@v4
+        with:
+          name: mf-types
+          path: apps/grab-seller/@mf-types
+
+      - name: Verify MF declarations presence
+        run: pnpm check:mf-types
+
+      - name: Lint codebase
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
       - name: Typecheck monorepo
         run: pnpm typecheck
+
+      - name: Strict typecheck packages
+        run: pnpm typecheck:strict
+
+      - name: Check HATEOAS relations
+        run: pnpm check:hateoas
+
+      - name: Check architectural boundaries
+        run: pnpm check:boundaries
+
+  test:
+    name: Unit & Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Set up Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run unit & integration tests
         run: pnpm test
 
+  build:
+    name: Build Applications & Packages
+    needs: [types]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Set up Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download MF type declarations
+        uses: actions/download-artifact@v4
+        with:
+          name: mf-types
+          path: apps/grab-seller/@mf-types
+
       - name: Build applications and packages
-        run: pnpm build
+        run: MF_DTS=0 pnpm build
+
+  docker-smoke:
+    name: Docker Container Smoke Check
+    needs: [types]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Download MF type declarations
+        uses: actions/download-artifact@v4
+        with:
+          name: mf-types
+          path: apps/grab-seller/@mf-types
+
+      - name: Run Docker container smoke test
+        run: bash scripts/docker-smoke.sh

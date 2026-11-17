@@ -1,9 +1,20 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ApiError, createApiClient } from "./client.js";
+import {
+  AbortError,
+  ApiError,
+  TimeoutError,
+  createApiClient,
+  isAbortError,
+  isApiError,
+  isNotFound,
+  isTimeoutError,
+  isUnauthorized,
+} from "./client.js";
 
 describe("createApiClient", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   it("creates an isolated client using its own baseUrl", async () => {
@@ -26,11 +37,8 @@ describe("createApiClient", () => {
   });
 
   describe("401 unauthorized handling & concurrency", () => {
-    it("retries on 401 with refreshed token", async () => {
-      let token = "old-token";
-      const refreshMock = vi.fn().mockImplementation(async () => {
-        token = "refreshed-token";
-      });
+    it("retries on 401 when platform session refresh succeeds", async () => {
+      const refreshMock = vi.fn().mockResolvedValue(undefined);
       const expireMock = vi.fn();
 
       const mockResponse401 = {
@@ -57,7 +65,6 @@ describe("createApiClient", () => {
 
       const client = createApiClient({
         baseUrl: "https://api.test",
-        getToken: () => token,
         platform: {
           session: {
             refresh: refreshMock,
@@ -73,10 +80,9 @@ describe("createApiClient", () => {
       expect(expireMock).not.toHaveBeenCalled();
       expect(fetchMock).toHaveBeenCalledTimes(2);
 
-      // Verify first request had old token
-      expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe("Bearer old-token");
-      // Verify retry request had fresh token
-      expect(fetchMock.mock.calls[1][1].headers.Authorization).toBe("Bearer refreshed-token");
+      // Verify requests send credentials: "include"
+      expect(fetchMock.mock.calls[0][1].credentials).toBe("include");
+      expect(fetchMock.mock.calls[1][1].credentials).toBe("include");
     });
 
     it("does not trigger refresh when retryOnUnauthorized: false", async () => {
@@ -253,17 +259,20 @@ describe("createApiClient", () => {
       expect(res).toBeUndefined();
     });
 
-    it("parses application/problem+json on error and includes data in ApiError", async () => {
+    it("parses application/problem+json on error and includes data, code, detail, and requestId in ApiError", async () => {
       const fetchMock = vi.fn().mockResolvedValue({
         ok: false,
         status: 422,
         statusText: "Unprocessable Entity",
-        headers: new Headers({ "content-type": "application/problem+json" }),
+        headers: new Headers({
+          "content-type": "application/problem+json",
+          "x-request-id": "req-987",
+        }),
         json: () =>
           Promise.resolve({
             type: "https://api.example.com/errors/invalid-input",
             title: "Validation Error",
-            status: 422,
+            code: "VALIDATION_FAILED",
             detail: "Field 'name' is required",
           }),
       });
@@ -271,15 +280,27 @@ describe("createApiClient", () => {
 
       const client = createApiClient({ baseUrl: "https://api.test" });
 
-      await expect(client.post("/items", {})).rejects.toMatchObject({
-        name: "ApiError",
-        status: 422,
-        statusText: "Unprocessable Entity",
-        data: {
-          title: "Validation Error",
-          detail: "Field 'name' is required",
-        },
+      let caughtError: unknown;
+      try {
+        await client.post("/items", {});
+      } catch (err) {
+        caughtError = err;
+      }
+
+      expect(isApiError(caughtError)).toBe(true);
+      const apiErr = caughtError as ApiError;
+      expect(apiErr.status).toBe(422);
+      expect(apiErr.statusText).toBe("Unprocessable Entity");
+      expect(apiErr.code).toBe("VALIDATION_FAILED");
+      expect(apiErr.detail).toBe("Field 'name' is required");
+      expect(apiErr.requestId).toBe("req-987");
+      expect(apiErr.body).toEqual({
+        type: "https://api.example.com/errors/invalid-input",
+        title: "Validation Error",
+        code: "VALIDATION_FAILED",
+        detail: "Field 'name' is required",
       });
+      expect(apiErr.data).toEqual(apiErr.body);
     });
 
     it("falls back to raw text when response is plain text", async () => {
@@ -295,6 +316,124 @@ describe("createApiClient", () => {
       const res = await client.get<string>("/healthz");
 
       expect(res).toBe("OK-PONG");
+    });
+  });
+
+  describe("timeout and abort handling", () => {
+    it("throws TimeoutError when request exceeds timeoutMs", async () => {
+      const fetchMock = vi.fn().mockImplementation((_url, init) => {
+        return new Promise((_resolve, reject) => {
+          if (init?.signal?.aborted) {
+            const err = new Error("The operation was aborted");
+            err.name = "AbortError";
+            reject(err);
+            return;
+          }
+          init?.signal?.addEventListener("abort", () => {
+            const err = new Error("The operation was aborted");
+            err.name = "AbortError";
+            reject(err);
+          });
+        });
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const client = createApiClient({ baseUrl: "https://api.test" });
+      const requestPromise = client.get("/slow-endpoint", undefined, undefined, {
+        timeoutMs: 30,
+      });
+
+      await expect(requestPromise).rejects.toSatisfy((err) => {
+        expect(isTimeoutError(err)).toBe(true);
+        expect(err).toBeInstanceOf(TimeoutError);
+        expect((err as TimeoutError).status).toBe(408);
+        expect((err as TimeoutError).code).toBe("REQUEST_TIMEOUT");
+        return true;
+      });
+    });
+
+    it("throws AbortError when caller signal aborts", async () => {
+      const controller = new AbortController();
+
+      const fetchMock = vi.fn().mockImplementation((_url, init) => {
+        return new Promise((_resolve, reject) => {
+          if (init?.signal?.aborted) {
+            const err = new Error("The operation was aborted");
+            err.name = "AbortError";
+            reject(err);
+            return;
+          }
+          init?.signal?.addEventListener("abort", () => {
+            const err = new Error("The operation was aborted");
+            err.name = "AbortError";
+            reject(err);
+          });
+        });
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const client = createApiClient({ baseUrl: "https://api.test" });
+      const requestPromise = client.get("/endpoint", undefined, undefined, {
+        signal: controller.signal,
+      });
+
+      await Promise.resolve();
+      controller.abort();
+
+      await expect(requestPromise).rejects.toSatisfy((err) => {
+        expect(isAbortError(err)).toBe(true);
+        expect(err).toBeInstanceOf(AbortError);
+        expect((err as AbortError).code).toBe("REQUEST_ABORTED");
+        return true;
+      });
+    });
+  });
+
+  describe("type helpers", () => {
+    it("identifies error types correctly", () => {
+      const err401 = new ApiError(401, "Unauthorized", null);
+      const err404 = new ApiError(404, "Not Found", null);
+      const timeoutErr = new TimeoutError(5000);
+      const abortErr = new AbortError();
+
+      expect(isApiError(err401)).toBe(true);
+      expect(isUnauthorized(err401)).toBe(true);
+      expect(isUnauthorized(err404)).toBe(false);
+
+      expect(isNotFound(err404)).toBe(true);
+      expect(isNotFound(err401)).toBe(false);
+
+      expect(isTimeoutError(timeoutErr)).toBe(true);
+      expect(isTimeoutError(err401)).toBe(false);
+
+      expect(isAbortError(abortErr)).toBe(true);
+      expect(isAbortError(err401)).toBe(false);
+    });
+  });
+
+  describe("followLink template expansion integration", () => {
+    it("expands templated links with params and queries endpoints", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        text: () => Promise.resolve(JSON.stringify({ ok: true })),
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const client = createApiClient({ baseUrl: "https://api.test" });
+
+      await client.followLink(
+        { href: "/api/v1/merchants/{id}/storefronts{?page}", templated: true },
+        "GET",
+        undefined,
+        { id: "m-789", page: "2" },
+      );
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.test/api/v1/merchants/m-789/storefronts?page=2",
+        expect.any(Object),
+      );
     });
   });
 });

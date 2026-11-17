@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { HateoasLink } from "@khinemyaezin/seller-api";
 import { useApi } from "@khinemyaezin/seller-ui";
 import { LoginRequest, RegisterUserRequest } from "../types/auth.request";
-import { LoginResponse, RegisterUserReponse } from "../types/auth.response";
+import { LoginResponse, RegisterUserResponse } from "../types/auth.response";
 import { authService } from "../api/auth";
 
 export const useLoginMutation = () => {
@@ -15,7 +15,7 @@ export const useLoginMutation = () => {
 export const useRegisterMutation = () => {
   const api = useApi();
   return useMutation<
-    RegisterUserReponse,
+    RegisterUserResponse,
     Error,
     { link: HateoasLink; request: RegisterUserRequest }
   >({

@@ -23,9 +23,6 @@ export default function C2cOnboardingPage() {
               <C2cAccountOnboardingView
                 createApplicationLink={root?.createC2cApplication}
                 getApplicationLink={root?.getC2cApplication}
-                onSuccess={() => {
-                  platform?.events?.emit("seller-merchant:registration-success:v1", {});
-                }}
               />
             )}
           </div>

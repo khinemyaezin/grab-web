@@ -155,8 +155,9 @@ function MagicSearch({
 
       if (event.key === "Enter" && isOpen && highlightedIndex >= 0) {
         event.preventDefault();
-        if (items && items.length !== 0) {
-          handleItemClick(items[highlightedIndex]);
+        const target = items?.[highlightedIndex];
+        if (target) {
+          handleItemClick(target);
         }
         return;
       }
