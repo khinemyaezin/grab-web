@@ -11,17 +11,6 @@ export interface IdentityProfile extends User {
   currentAccessContext?: AccessContextSummary;
 }
 
-export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-  expiresInMs: number;
-  userId: string;
-  email: string;
-  roles: string[];
-  status: string;
-  _links?: Record<string, PlatformLink>;
-}
-
 export interface RegisterUserResponse {
   userId?: string;
   email?: string;
@@ -54,6 +43,6 @@ export interface UserProfile extends User {
 
 export interface IdentityService {
   getProfile(): Promise<IdentityProfile>;
+  login(): Promise<void>;
   logout(): Promise<void>;
-  refreshToken(): Promise<void>;
 }

@@ -21,11 +21,11 @@ The architecture is based on **Vite** and **Module Federation** (`@module-federa
 
 ### Shared Packages:
 
-| Package                              | Scope                 | Description                                                                                                                                 |
-| :----------------------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`@khinemyaezin/seller-contracts`** | Types & Schemas       | Shared TypeScript interfaces, Zod schemas, HATEOAS links, event topic definitions, and breadcrumb contracts.                                |
-| **`@khinemyaezin/seller-api`**       | Transport & Clients   | Cookie-credentialed API client with 401 refresh mutex, HATEOAS link expansion, backend event stream (SSE), and standalone platform factory. |
-| **`@khinemyaezin/seller-ui`**        | Design System & Slots | Design system primitives, context bar, extension slot registry, reactive session hooks (`useSessionSnapshot`), and query state wrappers.    |
+| Package                              | Scope                 | Description                                                                                                                                         |
+| :----------------------------------- | :-------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`@khinemyaezin/seller-contracts`** | Types & Schemas       | Shared TypeScript interfaces, Zod schemas, HATEOAS links, event topic definitions, and breadcrumb contracts.                                        |
+| **`@khinemyaezin/seller-api`**       | Transport & Clients   | Cookie-credentialed OIDC BFF client with dynamic CSRF headers, HATEOAS link expansion, backend event stream (SSE), and standalone platform factory. |
+| **`@khinemyaezin/seller-ui`**        | Design System & Slots | Design system primitives, context bar, extension slot registry, reactive session hooks (`useSessionSnapshot`), and query state wrappers.            |
 
 ---
 

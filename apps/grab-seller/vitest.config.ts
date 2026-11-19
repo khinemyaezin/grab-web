@@ -8,7 +8,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
-      grab_seller_auth: `${mfTypes}/grab_seller_auth`,
       grab_seller_account: `${mfTypes}/grab_seller_account`,
       grab_seller_product: `${mfTypes}/grab_seller_product`,
       grab_seller_inventory: `${mfTypes}/grab_seller_inventory`,

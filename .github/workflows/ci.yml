@@ -224,5 +224,18 @@ jobs:
           name: mf-types
           path: apps/grab-seller/@mf-types
 
+      - name: Configure npm auth for Docker builds
+        env:
+          NPMRC_CONTENT: ${{ secrets.NPMRC }}
+        run: |
+          if [ -n "$NPMRC_CONTENT" ]; then
+            printf '%s' "$NPMRC_CONTENT" > "$HOME/.npmrc"
+          else
+            : > "$HOME/.npmrc"
+          fi
+
+      - name: Verify MF declarations for Docker build
+        run: pnpm check:mf-types
+
       - name: Run Docker container smoke test
         run: bash scripts/docker-smoke.sh

@@ -10,7 +10,7 @@ import {
   InventoryStockRemote,
 } from "./inventory";
 import { AccountRemote, StorefrontRemote } from "./account";
-import { AuthRemote } from "./auth";
+import { LoginRedirectPage } from "./auth";
 import { RequireAuth } from "./RequireAuth";
 
 export function ShellRoutes() {
@@ -28,7 +28,7 @@ export function ShellRoutes() {
       </Route>
       <Route element={<SimpleLayout />}>
         <Route path="/onboarding/*" element={<AccountRemote />} />
-        <Route path="/*" element={<AuthRemote />} />
+        <Route path="/*" element={<LoginRedirectPage />} />
       </Route>
     </Routes>
   );

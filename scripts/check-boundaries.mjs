@@ -10,7 +10,6 @@ const rootDir = resolve(__dirname, "..");
 
 const ALLOWED_REMOTE_SPECIFIERS = new Set([
   // Route modules
-  "grab_seller_auth/Routes",
   "grab_seller_account/Routes",
   "grab_seller_account/StorefrontRoutes",
   "grab_seller_product/Routes",
@@ -18,7 +17,6 @@ const ALLOWED_REMOTE_SPECIFIERS = new Set([
   "grab_seller_inventory/LocationRoutes",
   "grab_seller_inventory/StockRoutes",
   // Slot and UI Widgets
-  "grab_seller_auth/UserMenuWidget",
   "grab_seller_pricing/PricingCreateWidget",
   "grab_seller_pricing/PricingEditWidget",
   "grab_seller_inventory/ProductInventoryWidget",

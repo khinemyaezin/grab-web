@@ -8,7 +8,7 @@
 ## 1. The Problem
 
 **What's not working?**  
-The Seller Shell currently persists the access token and user in `localStorage`, while the shared API client is configured without an access token. The React MFEs also rely on implicit shared runtime context, which does not provide a stable communication boundary for MFEs implemented with another framework.
+The frontend's former auth flow assumed JSON login and refresh endpoints. The Seller BFF now owns OIDC login, server-side token storage, session refresh, and logout. Unsafe requests also need to follow the BFF's CSRF contract.
 
 **What's at stake?**  
 Keeping bearer tokens in browser-readable storage allows an XSS vulnerability in the Shell or any loaded MFE to exfiltrate the token. Without explicit state ownership and communication contracts, MFEs can become tightly coupled through shared stores, framework internals, or unversioned events, making independent deployment unsafe.
@@ -26,12 +26,16 @@ Use a Shell-owned, framework-neutral Platform API for global frontend concerns; 
 - Each MFE owns its local UI state and server-state cache. The backend remains the source of truth for business entities.
 - Parent-child communication uses explicit inputs and callbacks. Cross-MFE business notifications use versioned, framework-neutral events containing identifiers rather than complete entities.
 - React MFEs continue to use Module Federation. Non-React MFEs integrate through Web Components or a `mount`/`unmount` adapter and use the same Platform API contracts.
-- Authentication uses the backend-issued `accessToken` and `refreshToken` cookies with `HttpOnly`, `Secure`, and an environment-appropriate `SameSite` policy.
+- The browser authenticates through top-level OIDC navigation to `/oauth2/authorization/seller`. The BFF keeps OAuth tokens server-side and gives the browser an `HttpOnly`, `Secure`, `SameSite=Lax` session cookie.
 - MFEs never read, store, publish, or pass raw access or refresh tokens. Requests are sent with credentials, and the Shell obtains the current user from the authenticated profile endpoint.
+- The Shell restores the session from `GET /api/v1/identity/session`. The BFF refreshes OIDC tokens server-side as needed; the frontend does not call a JSON refresh endpoint or retry business requests after `401`.
+- The shared API client discovers `get-csrf-token` and sends the returned dynamic header on unsafe requests. CSRF tokens stay in memory and are fetched again after a full page navigation.
+- Registration remains a JSON request protected by CSRF. On success, the browser follows the discovered OIDC login link.
+- Logout posts the discovered logout route through a top-level form, including the CSRF form parameter so the BFF and issuer redirects complete in the browser.
 - Authentication and authorization remain backend responsibilities. Frontend route guards improve user experience but are not security controls.
 
 **What stays the same:**  
-Product and Inventory remain independently deployable MFEs. The Seller gateway continues to provide same-origin routes for the Shell, remote assets, and `/api`. Business communication with backend services remains HTTP-based, and the backend remains authoritative for permissions and business data.
+Product and Inventory remain independently deployable MFEs. The Seller gateway continues to provide same-origin routes for the Shell, remote assets, and `/api/v1`. Business communication with backend services remains HTTP-based, and the backend remains authoritative for permissions and business data.
 
 ### State ownership and communication rules
 
@@ -40,7 +44,8 @@ Product and Inventory remain independently deployable MFEs. The Seller gateway c
 | Form, modal, selection, and table state     | Individual MFE         | Internal framework state                   |
 | Product, inventory, and other business data | Backend and owning MFE | HTTP API and MFE-local cache               |
 | Authentication status and current user      | Shell                  | Read-only session contract/subscription    |
-| Access and refresh credentials              | Backend/BFF            | `HttpOnly` cookies only                    |
+| OAuth access and refresh tokens             | Seller BFF             | Server-side OIDC session storage           |
+| Browser session credential                  | Seller BFF             | `HttpOnly` session cookie                  |
 | Current route and shareable filters         | Shell/URL              | Platform navigation API and URL parameters |
 | Theme, locale, and runtime configuration    | Shell                  | Read-only Platform API                     |
 | Parent-to-child data                        | Composing application  | Props, attributes, or mount parameters     |
@@ -103,20 +108,19 @@ flowchart TB
 ```mermaid
 sequenceDiagram
     actor User
+    participant AuthMFE as Auth MFE
     participant Shell as Seller Shell
     participant Gateway as Gateway / BFF
     participant Identity as Identity service
     participant MFE as Business MFE
     participant API as Business service
 
-    User->>Shell: Submit credentials
-    Shell->>Gateway: POST /api/v1/identity/auth/login
-    Gateway->>Identity: Authenticate
-    Identity-->>Gateway: Issue token pair
-    Gateway-->>Shell: Set HttpOnly cookies
-
-    Shell->>Gateway: GET /api/v1/identity/profile
-    Note over Shell,Gateway: Browser sends access cookie automatically
+    User->>AuthMFE: Select Sign in
+    AuthMFE->>Gateway: Top-level navigation to /oauth2/authorization/seller
+    Gateway->>Identity: OIDC authorization code flow
+    Identity-->>Gateway: Authorization response
+    Gateway-->>Browser: Set HttpOnly session cookie and redirect to UI
+    Shell->>Gateway: GET /api/v1/identity/session (credentials: include)
     Gateway-->>Shell: Current user and permissions
 
     MFE->>Gateway: Request business resource with credentials
@@ -124,13 +128,14 @@ sequenceDiagram
     API-->>Gateway: Business response
     Gateway-->>MFE: Business response
 
-    alt Access token expired
+    alt OIDC access token near expiry
         MFE->>Gateway: Protected request
-        Gateway-->>MFE: 401 Unauthorized
-        Shell->>Gateway: POST /api/v1/identity/auth/refresh
-        Gateway-->>Shell: Rotate and set HttpOnly cookies
-        MFE->>Gateway: Retry once
+        Gateway->>Identity: Refresh token server-side
+        Gateway-->>MFE: Business response
     end
+
+    MFE->>Gateway: Unsafe request with CSRF header
+    Gateway-->>MFE: Business response
 ```
 
 ---
@@ -143,43 +148,31 @@ sequenceDiagram
 2. **Framework independence:** The Platform API and event payloads are JavaScript/JSON contracts rather than React Context or a particular state-management library.
 3. **Clear ownership:** Local UI state stays local, business data stays backend-owned, and only genuine application-wide concerns live in the Shell.
 4. **Independent delivery:** MFEs depend on versioned contracts rather than importing one another or mutating a shared global store.
-5. **Backend alignment:** The Identity backend already creates and clears `accessToken` and `refreshToken` cookies and supports cookie-based refresh and logout.
+5. **Backend alignment:** The Seller BFF is the browser OIDC client, keeps OAuth tokens server-side, and protects unsafe routes with CSRF.
 
 ---
 
 ## 4. Trade-offs
 
-| Pros                                                                   | Cons                                                                                                  |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Raw credentials are unavailable to Shell and MFE JavaScript.           | Cookie authentication requires correct gateway, domain, HTTPS, `SameSite`, and CORS configuration.    |
-| MFEs no longer inject or exchange bearer tokens.                       | The Shell must call the profile endpoint to restore a session after reload.                           |
-| Framework-neutral contracts support React and non-React MFEs.          | Platform and event contracts require ownership, versioning, and compatibility tests.                  |
-| State ownership prevents a large shared frontend store.                | Consumers may refetch data after an event instead of reusing another MFE's cache.                     |
-| Same-origin gateway routing simplifies browser security configuration. | Cookie-based authentication requires CSRF controls appropriate to the selected `SameSite` policy.     |
-| Backend-managed token rotation centralizes credential lifecycle.       | Refresh requests must be coordinated so concurrent `401` responses do not trigger multiple rotations. |
+| Pros                                                                   | Cons                                                                                               |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Raw credentials are unavailable to Shell and MFE JavaScript.           | Cookie authentication requires correct gateway, domain, HTTPS, `SameSite`, and CORS configuration. |
+| MFEs no longer inject or exchange bearer tokens.                       | The Shell must call the profile endpoint to restore a session after reload.                        |
+| Framework-neutral contracts support React and non-React MFEs.          | Platform and event contracts require ownership, versioning, and compatibility tests.               |
+| State ownership prevents a large shared frontend store.                | Consumers may refetch data after an event instead of reusing another MFE's cache.                  |
+| Same-origin gateway routing simplifies browser security configuration. | Cookie-based authentication requires CSRF controls appropriate to the selected `SameSite` policy.  |
+| Backend-managed refresh centralizes credential lifecycle.              | Unsafe requests need a fresh CSRF token and must follow the BFF's configured origin/cookie policy. |
 
 ---
 
 ## 5. What Needs to Change
 
-**New components/modules to build:**
+**Implementation:**
 
-- A framework-neutral Platform API contract for session, navigation, runtime configuration, and versioned events.
-- Shell session bootstrap using `GET /api/v1/identity/profile`.
-- Protected-route handling for authenticated Shell routes.
-- A single-flight refresh coordinator that retries an eligible failed request at most once.
-- Contract tests covering login, profile restoration, refresh rotation, logout, unauthorized responses, and cross-MFE events.
-
-**Changes to existing systems:**
-
-- Remove `token` from frontend `AuthState` and stop persisting `seller-access-token` and `seller-user` in `localStorage`.
-- Update login and logout to rely on cookies set or cleared by `/api/v1/identity/auth/login` and `/api/v1/identity/auth/logout`.
-- Keep `credentials: "include"` enabled in the shared API client and remove bearer-token injection from frontend code.
-- On logout, clear the shared query cache and notify mounted MFEs through the session contract.
-- Namespace MFE query keys and event names to prevent collisions.
-- Pass the Platform API explicitly to non-React mount adapters; do not expose Shell implementation details on `window`.
-- Complete the server-side authentication path for protected requests. Cookie issuance is already implemented, but the current bearer authentication filter reads only the `Authorization` header. The Gateway/BFF must translate the access cookie into the downstream bearer credential, or the backend authentication filter must securely accept the access cookie.
-- Apply CSRF protection for state-changing requests if deployment requirements relax `SameSite=Strict` or introduce cross-site traffic.
+- The shared `seller-api` client retains `credentials: "include"`, discovers the BFF CSRF link, and adds its dynamic header to unsafe requests.
+- The Shell bootstraps and revalidates the session through the BFF session profile. A `401` marks the user anonymous; a `403` remains an authorization failure.
+- The auth MFE starts sign-in with a top-level OIDC link, registers with a CSRF-protected request, and logs out with a CSRF-protected top-level form post.
+- API requests do not inject bearer credentials or call a JSON refresh endpoint. Standalone development platforms keep their local mock session behavior.
 
 **Team impact:**
 
@@ -190,14 +183,12 @@ sequenceDiagram
 
 ---
 
-## 6. Migration Plan
+## 6. Verification
 
-- **Phase 1 — Complete the cookie path:** Verify login sets both cookies through the Seller gateway. Implement access-cookie authentication or BFF-to-service bearer translation, then add integration tests for protected API requests, refresh, and logout. Keep the existing JSON token fields temporarily for rollback compatibility.
-- **Phase 2 — Migrate the Shell:** Load the current user from the profile endpoint, add protected routes and coordinated refresh, stop reading or writing tokens and users in `localStorage`, and clear cached server state on logout.
-- **Phase 3 — Standardize MFE communication:** Introduce the Platform API and versioned events, migrate current React MFEs, add a framework-neutral mount adapter, and remove the compatibility token fields after all consumers have migrated.
-
-**Rollback strategy:**  
-During Phases 1 and 2, retain the backend's temporary JSON token response and keep the previous bearer-token client behind a short-lived deployment flag. If cookie delivery or server-side cookie authentication fails, roll the frontend back to the previous client while preserving backend cookie issuance. Do not run both authentication paths indefinitely; remove the fallback and browser token storage after production verification.
+- Shared API tests cover credentialed reads, dynamic CSRF headers on unsafe methods, token reuse within one page load, and `401` handling without client refresh.
+- Auth MFE tests cover OIDC link navigation, registration requests, and logout form submission.
+- Shell tests cover profile-based session revalidation, anonymous state on `401`, and preservation of authenticated state on transient failures.
+- Deployments must route the configured API base URL and HATEOAS links to the Seller BFF. Production uses HTTPS, secure HttpOnly cookies, Redis-backed sessions, and exact OIDC callback and post-logout URLs.
 
 ---
 

@@ -7,7 +7,6 @@ export const DEFAULT_PORTS = {
   seller: 3000,
   product: 3001,
   inventory: 3002,
-  auth: 3003,
   account: 3004,
   pricing: 3005,
 } as const;
@@ -34,15 +33,6 @@ export interface RemoteDefinition {
 }
 
 export const REMOTE_DEFINITIONS = {
-  grab_seller_auth: {
-    name: "grab_seller_auth",
-    envKey: "MF_AUTH_TYPES_URL",
-    portEnvKey: "AUTH_PORT",
-    port: DEFAULT_PORTS.auth,
-    basePath: "/mfe/seller-auth/",
-    manifestPath: "/mfe/seller-auth/mf-manifest.json",
-    defaultUrl: `http://localhost:${DEFAULT_PORTS.auth}/@mf-types.d.ts`,
-  },
   grab_seller_account: {
     name: "grab_seller_account",
     envKey: "MF_ACCOUNT_TYPES_URL",

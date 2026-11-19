@@ -36,180 +36,113 @@ describe("createApiClient", () => {
     expect(fetchMock).toHaveBeenCalledWith("https://api.b.com/items", expect.any(Object));
   });
 
-  describe("401 unauthorized handling & concurrency", () => {
-    it("retries on 401 when platform session refresh succeeds", async () => {
-      const refreshMock = vi.fn().mockResolvedValue(undefined);
+  describe("OIDC unauthorized handling", () => {
+    it("expires the session on 401 without refreshing or retrying", async () => {
       const expireMock = vi.fn();
-
-      const mockResponse401 = {
-        ok: false,
-        status: 401,
-        statusText: "Unauthorized",
-        headers: new Headers({ "content-type": "application/json" }),
-        json: () => Promise.resolve({ error: "expired" }),
-        text: () => Promise.resolve(JSON.stringify({ error: "expired" })),
-      };
-
-      const mockResponse200 = {
-        ok: true,
-        status: 200,
-        headers: new Headers({ "content-type": "application/hal+json" }),
-        text: () => Promise.resolve(JSON.stringify({ success: true })),
-      };
-
-      const fetchMock = vi
-        .fn()
-        .mockResolvedValueOnce(mockResponse401)
-        .mockResolvedValueOnce(mockResponse200);
-      vi.stubGlobal("fetch", fetchMock);
-
-      const client = createApiClient({
-        baseUrl: "https://api.test",
-        platform: {
-          session: {
-            refresh: refreshMock,
-            expire: expireMock,
-          },
-        },
-      });
-
-      const result = await client.get<{ success: boolean }>("/data");
-
-      expect(result).toEqual({ success: true });
-      expect(refreshMock).toHaveBeenCalledTimes(1);
-      expect(expireMock).not.toHaveBeenCalled();
-      expect(fetchMock).toHaveBeenCalledTimes(2);
-
-      // Verify requests send credentials: "include"
-      expect(fetchMock.mock.calls[0][1].credentials).toBe("include");
-      expect(fetchMock.mock.calls[1][1].credentials).toBe("include");
-    });
-
-    it("does not trigger refresh when retryOnUnauthorized: false", async () => {
-      const refreshMock = vi.fn();
-      const expireMock = vi.fn();
-
-      const mockResponse401 = {
+      const fetchMock = vi.fn().mockResolvedValue({
         ok: false,
         status: 401,
         statusText: "Unauthorized",
         headers: new Headers({ "content-type": "application/json" }),
         json: () => Promise.resolve({ error: "unauthorized" }),
         text: () => Promise.resolve(JSON.stringify({ error: "unauthorized" })),
-      };
-
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse401));
-
-      const client = createApiClient({
-        baseUrl: "https://api.test",
-        platform: {
-          session: {
-            refresh: refreshMock,
-            expire: expireMock,
-          },
-        },
       });
-
-      await expect(
-        client.get("/data", undefined, undefined, { retryOnUnauthorized: false }),
-      ).rejects.toThrow("API Error: 401 Unauthorized");
-
-      expect(refreshMock).not.toHaveBeenCalled();
-      expect(expireMock).not.toHaveBeenCalled();
-    });
-
-    it("expires session with 'refresh-failed' when refresh rejects with 401/403", async () => {
-      const refreshMock = vi.fn().mockRejectedValue(new ApiError(401, "Unauthorized", null));
-      const expireMock = vi.fn();
-
-      const mockResponse401 = {
-        ok: false,
-        status: 401,
-        statusText: "Unauthorized",
-        headers: new Headers({ "content-type": "application/json" }),
-        json: () => Promise.resolve({ error: "expired" }),
-        text: () => Promise.resolve(JSON.stringify({ error: "expired" })),
-      };
-
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse401));
-
+      vi.stubGlobal("fetch", fetchMock);
       const client = createApiClient({
         baseUrl: "https://api.test",
-        platform: {
-          session: {
-            refresh: refreshMock,
-            expire: expireMock,
-          },
-        },
+        platform: { session: { expire: expireMock } },
       });
 
       await expect(client.get("/data")).rejects.toThrow("API Error: 401 Unauthorized");
 
-      expect(refreshMock).toHaveBeenCalledTimes(1);
-      expect(expireMock).toHaveBeenCalledWith("refresh-failed");
-    });
-
-    it("does not expire session when refresh rejects with a network error", async () => {
-      const networkError = new TypeError("Failed to fetch");
-      const refreshMock = vi.fn().mockRejectedValue(networkError);
-      const expireMock = vi.fn();
-
-      const mockResponse401 = {
-        ok: false,
-        status: 401,
-        statusText: "Unauthorized",
-        headers: new Headers({ "content-type": "application/json" }),
-        json: () => Promise.resolve({ error: "expired" }),
-        text: () => Promise.resolve(JSON.stringify({ error: "expired" })),
-      };
-
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse401));
-
-      const client = createApiClient({
-        baseUrl: "https://api.test",
-        platform: {
-          session: {
-            refresh: refreshMock,
-            expire: expireMock,
-          },
-        },
-      });
-
-      await expect(client.get("/data")).rejects.toThrow("Failed to fetch");
-
-      expect(refreshMock).toHaveBeenCalledTimes(1);
-      expect(expireMock).not.toHaveBeenCalled();
-    });
-
-    it("expires session with 'unauthorized' when retry also returns 401", async () => {
-      const refreshMock = vi.fn().mockResolvedValue(undefined);
-      const expireMock = vi.fn();
-
-      const mockResponse401 = {
-        ok: false,
-        status: 401,
-        statusText: "Unauthorized",
-        headers: new Headers({ "content-type": "application/json" }),
-        json: () => Promise.resolve({ error: "still unauthorized" }),
-        text: () => Promise.resolve(JSON.stringify({ error: "still unauthorized" })),
-      };
-
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse401));
-
-      const client = createApiClient({
-        baseUrl: "https://api.test",
-        platform: {
-          session: {
-            refresh: refreshMock,
-            expire: expireMock,
-          },
-        },
-      });
-
-      await expect(client.get("/data")).rejects.toThrow("API Error: 401 Unauthorized");
-
-      expect(refreshMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledOnce();
       expect(expireMock).toHaveBeenCalledWith("unauthorized");
+    });
+
+    it("does not expire the session on 403", async () => {
+      const expireMock = vi.fn();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: false,
+          status: 403,
+          statusText: "Forbidden",
+          headers: new Headers({ "content-type": "application/json" }),
+          json: () => Promise.resolve({ error: "forbidden" }),
+          text: () => Promise.resolve(JSON.stringify({ error: "forbidden" })),
+        }),
+      );
+      const client = createApiClient({
+        baseUrl: "https://api.test",
+        platform: { session: { expire: expireMock } },
+      });
+
+      await expect(client.get("/data")).rejects.toMatchObject({ status: 403 });
+      expect(expireMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("OIDC CSRF handling", () => {
+    it("discovers and sends the dynamic CSRF header for unsafe requests", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              _links: { "get-identity-root": { href: "/api/v1/identity" } },
+            }),
+            { headers: { "content-type": "application/hal+json" } },
+          ),
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              _links: { "get-csrf-token": { href: "/api/v1/identity/auth/csrf" } },
+            }),
+            { headers: { "content-type": "application/hal+json" } },
+          ),
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              headerName: "X-CSRF-TOKEN",
+              parameterName: "_csrf",
+              token: "csrf-value",
+            }),
+            { headers: { "content-type": "application/hal+json" } },
+          ),
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ saved: true }), {
+            headers: { "content-type": "application/json" },
+          }),
+        );
+      vi.stubGlobal("fetch", fetchMock);
+      const client = createApiClient({ baseUrl: "https://api.test/api/v1" });
+
+      await client.post("/items", { name: "tea" });
+
+      expect(fetchMock).toHaveBeenCalledTimes(4);
+      const [url, init] = fetchMock.mock.calls[3] as [string, RequestInit];
+      expect(url).toBe("https://api.test/api/v1/items");
+      expect(init.credentials).toBe("include");
+      expect(new Headers(init.headers).get("x-csrf-token")).toBe("csrf-value");
+    });
+
+    it("sends credentialed safe requests without CSRF discovery", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
+        text: () => Promise.resolve("{}"),
+      });
+      vi.stubGlobal("fetch", fetchMock);
+      const client = createApiClient({ baseUrl: "https://api.test" });
+
+      await client.get("/items");
+
+      expect(fetchMock).toHaveBeenCalledOnce();
+      expect(fetchMock.mock.calls[0]?.[1].credentials).toBe("include");
     });
   });
 
@@ -224,7 +157,7 @@ describe("createApiClient", () => {
       vi.stubGlobal("fetch", fetchMock);
 
       const client = createApiClient({ baseUrl: "https://api.test" });
-      const res = await client.post<{ token: string }>("/login", { email: "a@b.com" });
+      const res = await client.get<{ token: string }>("/login");
 
       expect(res).toEqual({ token: "abc", user: { id: "1" } });
     });
@@ -239,7 +172,7 @@ describe("createApiClient", () => {
       vi.stubGlobal("fetch", fetchMock);
 
       const client = createApiClient({ baseUrl: "https://api.test" });
-      const res = await client.delete<void>("/items/1");
+      const res = await client.get<void>("/items/1");
 
       expect(res).toBeUndefined();
     });
@@ -282,7 +215,7 @@ describe("createApiClient", () => {
 
       let caughtError: unknown;
       try {
-        await client.post("/items", {});
+        await client.get("/items");
       } catch (err) {
         caughtError = err;
       }

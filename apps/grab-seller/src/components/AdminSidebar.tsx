@@ -1,5 +1,5 @@
 import { ChevronsUpDown, LayoutGrid, ShoppingBag, Store } from "lucide-react";
-import React, { Suspense, lazy } from "react";
+import React from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -11,14 +11,11 @@ import {
 } from "@khinemyaezin/seller-ui/components/sidebar";
 import { NavItem, NavMain, UserAvatarDetails } from "@khinemyaezin/seller-ui";
 import { useAuth } from "../app/AuthContext";
-import { useEntryLink } from "../app/EntryLinkContext";
 import { routes } from "@khinemyaezin/seller-contracts";
-
-const RemoteUserMenuWidget = lazy(() => import("grab_seller_auth/UserMenuWidget"));
+import { UserMenu } from "./UserMenu";
 
 export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { platform, user, logout } = useAuth();
-  const identityLink = useEntryLink("identity");
+  const { user, logout } = useAuth();
 
   const navItems: NavItem[] = [
     {
@@ -70,29 +67,22 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         <NavMain label="Menu" items={navItems} />
       </SidebarContent>
       <SidebarFooter className="p-3">
-        {user && identityLink && (
+        {user && (
           <SidebarMenu>
             <SidebarMenuItem>
-              <Suspense
-                fallback={
-                  <div className="h-12 w-full animate-pulse bg-sidebar-accent rounded-lg" />
+              <UserMenu
+                user={user}
+                onLogout={logout}
+                trigger={
+                  <SidebarMenuButton
+                    size="lg"
+                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  >
+                    <UserAvatarDetails avatar={user.avatar} email={user.email} />
+                    <ChevronsUpDown className="ml-auto size-4" />
+                  </SidebarMenuButton>
                 }
-              >
-                <RemoteUserMenuWidget
-                  onLogout={logout}
-                  platform={platform}
-                  identityLink={identityLink}
-                  trigger={
-                    <SidebarMenuButton
-                      size="lg"
-                      className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                    >
-                      <UserAvatarDetails avatar={user.avatar} email={user.email} />
-                      <ChevronsUpDown className="ml-auto size-4" />
-                    </SidebarMenuButton>
-                  }
-                />
-              </Suspense>
+              />
             </SidebarMenuItem>
           </SidebarMenu>
         )}

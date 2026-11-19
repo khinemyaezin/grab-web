@@ -19,7 +19,9 @@ export default function App({ runtimeConfig }: { runtimeConfig: Readonly<SellerR
         <BrowserRouter>
           <ShellPlatformProvider runtimeConfig={runtimeConfig}>
             <EntryLinkProvider runtimeConfig={runtimeConfig}>
-              <AuthProvider onSessionCleared={() => queryClient.clear()}>
+              <AuthProvider onSessionCleared={() => queryClient.removeQueries({
+                predicate: (query) => query.queryKey[0] !== "entry-root",
+              })}>
                 <EventStreamProvider>
                   <ShellRoutes />
                 </EventStreamProvider>

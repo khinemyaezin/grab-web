@@ -17,6 +17,7 @@ export type AuthContextValue = {
   isAuthenticated: boolean;
   isLoading: boolean;
   platform: SellerPlatform;
+  login: () => Promise<void>;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
 };

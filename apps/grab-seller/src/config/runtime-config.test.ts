@@ -88,7 +88,7 @@ describe("runtime-config validation", () => {
 
       const config = await loadRuntimeConfig();
       expect(config.appName).toBe("Grab Store");
-      expect(config.apiBaseUrl).toBe("/api");
+      expect(config.apiBaseUrl).toBe("/api/v1");
     });
 
     it("throws RuntimeConfigError if response contains invalid config", async () => {

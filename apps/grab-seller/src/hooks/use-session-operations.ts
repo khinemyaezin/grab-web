@@ -1,11 +1,9 @@
 import { useCallback, useRef } from "react";
-import { useNavigate } from "react-router";
 import {
   type IdentityService,
   type PlatformEvents,
   type SessionExpiredReason,
   SessionSnapshot,
-  routes,
 } from "@khinemyaezin/seller-contracts";
 import { RefreshCoordinator } from "../app/RefreshCoordinator";
 import { profileToSnapshot } from "./use-session-state";
@@ -31,7 +29,6 @@ export function useSessionOperations({
   events: PlatformEvents;
   retryDelayMs?: number;
 }) {
-  const navigate = useNavigate();
   const refreshCoordinatorRef = useRef(new RefreshCoordinator());
   const inFlightLoadRef = useRef<Promise<SessionSnapshot> | null>(null);
 
@@ -62,7 +59,7 @@ export function useSessionOperations({
               return profileToSnapshot(profile);
             } catch (err: unknown) {
               const status = (err as { status?: number })?.status;
-              if (status === 401 || status === 403) {
+              if (status === 401) {
                 return { status: "anonymous" as const };
               }
               attempt++;
@@ -103,20 +100,19 @@ export function useSessionOperations({
         }
 
         try {
-          await authService.refreshToken();
           const profile = await authService.getProfile();
           const next = profileToSnapshot(profile);
           publishSnapshot(next);
           if (next.status === "authenticated") {
             events.emit("auth:session-refreshed:v1", {});
           } else {
-            expireSession("refresh-failed");
-            throw new Error("Session refresh completed without an authenticated profile");
+            expireSession("unauthorized");
+            throw new Error("Session revalidation completed without an authenticated profile");
           }
         } catch (err: unknown) {
           const status = (err as { status?: number })?.status;
-          if (status === 401 || status === 403) {
-            expireSession("refresh-failed");
+          if (status === 401) {
+            expireSession("unauthorized");
           }
           throw err;
         }
@@ -124,23 +120,25 @@ export function useSessionOperations({
     [events, expireSession, authService, publishSnapshot],
   );
 
-  const logout = useCallback(async () => {
-    try {
-      await authService?.logout();
-    } catch (e) {
-      console.warn("Logout request failed", e);
-    } finally {
-      publishSnapshot({ status: "anonymous" });
-      onSessionCleared?.();
-      events.emit("auth:logout:v1", {});
-      navigate(`/${routes.login}`, { replace: true });
+  const login = useCallback(async () => {
+    if (!authService) {
+      throw new Error("Identity module link is not available");
     }
-  }, [events, navigate, onSessionCleared, publishSnapshot, authService]);
+    await authService.login();
+  }, [authService]);
+
+  const logout = useCallback(async () => {
+    if (!authService) {
+      throw new Error("Identity module link is not available");
+    }
+    await authService.logout();
+  }, [authService]);
 
   return {
     loadSession,
     expireSession,
     refresh,
+    login,
     logout,
   };
 }

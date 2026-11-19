@@ -41,12 +41,6 @@ const REMOTES = [
     port: 3002,
   },
   {
-    name: "grab_seller_auth",
-    packageName: "seller-auth",
-    dir: path.join(ROOT, "apps", "grab-seller-auth"),
-    port: 3003,
-  },
-  {
     name: "grab_seller_account",
     packageName: "seller-account",
     dir: path.join(ROOT, "apps", "grab-seller-account"),

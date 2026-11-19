@@ -23,7 +23,7 @@ export function AuthProvider({
   const authService = useAuthService(platform.api);
   const { snapshotRef, publishSnapshot, subscribe } = useSessionState();
 
-  const { loadSession, expireSession, refresh, logout } = useSessionOperations({
+  const { loadSession, expireSession, refresh, login, logout } = useSessionOperations({
     authService,
     publishSnapshot,
     snapshotRef,
@@ -37,9 +37,10 @@ export function AuthProvider({
       subscribe,
       refresh,
       expire: expireSession,
+      login,
       logout,
     }),
-    [expireSession, logout, refresh, snapshotRef, subscribe],
+    [expireSession, login, logout, refresh, snapshotRef, subscribe],
   );
 
   useLayoutEffect(() => {
@@ -65,10 +66,11 @@ export function AuthProvider({
       isAuthenticated: snapshot.status === "authenticated",
       isLoading: snapshot.status === "loading",
       platform,
+      login,
       refresh,
       logout,
     }),
-    [logout, platform, refresh, snapshot],
+    [login, logout, platform, refresh, snapshot],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

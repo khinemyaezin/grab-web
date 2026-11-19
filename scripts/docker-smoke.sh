@@ -23,6 +23,7 @@ if [ ! -f "apps/grab-seller/@mf-types/index.d.ts" ]; then
   echo "[docker:smoke] Generating missing @mf-types before container build..."
   pnpm mf:types
 fi
+pnpm check:mf-types
 
 # 4. Clean up any previous test containers on exit
 CLEANUP=true
@@ -40,29 +41,38 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# 5. Build services: shell and auth remote
-echo "[docker:smoke] Building grab-seller-auth and grab-seller images..."
-docker compose build grab-seller-auth grab-seller
+# 5. Build services: shell and account remote
+echo "[docker:smoke] Building grab-seller-account and grab-seller images..."
+docker compose build grab-seller-account grab-seller
 
 # 6. Start services
-echo "[docker:smoke] Starting grab-seller-auth and grab-seller..."
-docker compose up -d grab-seller-auth grab-seller
+echo "[docker:smoke] Starting grab-seller-account and grab-seller..."
+docker compose up -d grab-seller-account grab-seller
 
 # 7. Wait for containers to be healthy or respond to HTTP
 echo "[docker:smoke] Waiting for services to respond..."
-AUTH_PORT="${AUTH_PORT:-3003}"
+ACCOUNT_PORT="${ACCOUNT_PORT:-3004}"
 SELLER_PORT="${SELLER_PORT:-3000}"
 
 max_retries=30
 counter=0
-auth_ok=false
+account_ok=false
 seller_ok=false
+account_healthy=false
+seller_healthy=false
+
+service_healthy() {
+  local container_id
+  container_id="$(docker compose ps -q "$1")"
+  [[ -n "$container_id" ]] &&
+    [[ "$(docker inspect --format '{{.State.Health.Status}}' "$container_id" 2>/dev/null)" == "healthy" ]]
+}
 
 while [ $counter -lt $max_retries ]; do
-  if [ "$auth_ok" = false ]; then
-    if curl -s -f -o /dev/null "http://localhost:${AUTH_PORT}/mf-manifest.json"; then
-      echo "[docker:smoke] grab-seller-auth is responding at http://localhost:${AUTH_PORT}/mf-manifest.json"
-      auth_ok=true
+  if [ "$account_ok" = false ]; then
+    if curl -s -f -o /dev/null "http://localhost:${ACCOUNT_PORT}/mf-manifest.json"; then
+      echo "[docker:smoke] grab-seller-account is responding at http://localhost:${ACCOUNT_PORT}/mf-manifest.json"
+      account_ok=true
     fi
   fi
 
@@ -73,7 +83,18 @@ while [ $counter -lt $max_retries ]; do
     fi
   fi
 
-  if [ "$auth_ok" = true ] && [ "$seller_ok" = true ]; then
+  if [ "$account_healthy" = false ] && service_healthy grab-seller-account; then
+    echo "[docker:smoke] grab-seller-account Docker healthcheck is healthy"
+    account_healthy=true
+  fi
+
+  if [ "$seller_healthy" = false ] && service_healthy grab-seller; then
+    echo "[docker:smoke] grab-seller Docker healthcheck is healthy"
+    seller_healthy=true
+  fi
+
+  if [ "$account_ok" = true ] && [ "$seller_ok" = true ] && \
+    [ "$account_healthy" = true ] && [ "$seller_healthy" = true ]; then
     break
   fi
 
@@ -81,7 +102,8 @@ while [ $counter -lt $max_retries ]; do
   sleep 2
 done
 
-if [ "$auth_ok" != true ] || [ "$seller_ok" != true ]; then
+if [ "$account_ok" != true ] || [ "$seller_ok" != true ] || \
+  [ "$account_healthy" != true ] || [ "$seller_healthy" != true ]; then
   echo "[docker:smoke] Healthcheck failed after timeout!"
   docker compose ps
   docker compose logs --tail=50

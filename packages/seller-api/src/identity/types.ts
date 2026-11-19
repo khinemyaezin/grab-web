@@ -7,7 +7,7 @@ export interface IdentityLinks {
   login?: HateoasLink;
   register?: HateoasLink;
   logout?: HateoasLink;
-  refreshToken?: HateoasLink;
+  csrfToken?: HateoasLink;
   listAccessContext?: HateoasLink;
 }
 

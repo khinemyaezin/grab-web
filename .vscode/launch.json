@@ -43,14 +43,6 @@
       "url": "http://localhost:3004",
       "webRoot": "${workspaceFolder}/apps/grab-seller-account",
       "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "grab-seller-auth",
-      "url": "http://localhost:3003",
-      "webRoot": "${workspaceFolder}/apps/grab-seller-auth",
-      "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium"
     }
   ]
 }

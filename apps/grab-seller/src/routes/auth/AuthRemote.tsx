@@ -1,26 +1,44 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "../../app/AuthContext";
-import { useEntryLink } from "../../app/EntryLinkContext";
-import { RemoteBoundary } from "../../components/RemoteBoundary";
 
-const loadAuth = () => import("grab_seller_auth/Routes");
+export function LoginRedirectPage() {
+  const { login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
-export function AuthRemote() {
-  const { platform } = useAuth();
-  const identityLink = useEntryLink("identity");
+  useEffect(() => {
+    let active = true;
 
-  if (!identityLink) {
-    return null;
+    login().catch((err) => {
+      if (!active) return;
+      console.error("Failed to initiate login redirect", err);
+      setError("Failed to initiate login redirect.");
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [login]);
+
+  if (error) {
+    return (
+      <div className="flex min-h-svh flex-col items-center justify-center p-6">
+        <div role="alert" className="text-sm text-destructive">
+          {error}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <RemoteBoundary
-      key="seller-auth"
-      loader={loadAuth}
-      label="Auth"
-      remoteProps={{
-        platform,
-        link: identityLink,
-      }}
-    />
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
+      <div className="w-full max-w-sm grid gap-6">
+        <div role="status" className="p-8 text-center text-sm text-muted-foreground">
+          Redirecting to login…
+        </div>
+      </div>
+    </div>
   );
 }
+
+/** Backwards-compatible alias for existing route references */
+export const AuthRemote = LoginRedirectPage;

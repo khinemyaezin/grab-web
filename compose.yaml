@@ -16,17 +16,6 @@ x-app-build: &app-build
     - npmrc
 
 services:
-  grab-seller-auth:
-    <<: *app-common
-    image: grab-seller-auth:local
-    build:
-      <<: *app-build
-      args:
-        APP_NAME: seller-auth
-        APP_DIR: apps/grab-seller-auth
-    ports:
-      - "${AUTH_PORT:-3003}:80"
-
   grab-seller-account:
     <<: *app-common
     image: grab-seller-account:local
@@ -84,8 +73,6 @@ services:
     ports:
       - "${SELLER_PORT:-3000}:80"
     depends_on:
-      grab-seller-auth:
-        condition: service_started
       grab-seller-account:
         condition: service_started
       grab-seller-product:

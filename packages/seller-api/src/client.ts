@@ -15,16 +15,20 @@ type RequestOptions = {
   headers?: Record<string, string>;
   body?: unknown;
   params?: Record<string, string>;
-  retryOnUnauthorized?: boolean;
   timeoutMs?: number;
   signal?: AbortSignal;
+};
+
+type CsrfTokenResponse = {
+  headerName: string;
+  parameterName: string;
+  token: string;
 };
 
 export type ApiClientConfig = {
   baseUrl?: string;
   platform?: {
     session: {
-      refresh(): Promise<void>;
       expire(reason?: SessionExpiredReason): void;
     };
   };
@@ -199,16 +203,21 @@ async function buildUrl(endpoint: string, params?: Record<string, string>): Prom
 }
 
 async function buildRequestInit(
-  _config: ApiClientConfig,
+  csrfToken: () => Promise<CsrfTokenResponse>,
   { method = "GET", headers = {}, body, signal }: RequestOptions,
 ): Promise<RequestInit> {
+  const requestHeaders = new Headers({
+    "Content-Type": "application/json",
+    Accept: "application/hal+json, application/problem+json",
+    ...headers,
+  });
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(method.toUpperCase())) {
+    const csrf = await csrfToken();
+    requestHeaders.set(csrf.headerName, csrf.token);
+  }
   return {
     method,
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/hal+json, application/problem+json",
-      ...headers,
-    },
+    headers: requestHeaders,
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
     credentials: "include",
     ...(signal ? { signal } : {}),
@@ -233,19 +242,6 @@ async function buildFullUrl(
 
   const normalizedUrl = url.startsWith("/") ? url.slice(1) : url;
   return `${base}/${normalizedUrl}`;
-}
-
-class RefreshCoordinator {
-  private inFlight: Promise<void> | null = null;
-
-  run(task: () => Promise<void>): Promise<void> {
-    if (!this.inFlight) {
-      this.inFlight = task().finally(() => {
-        this.inFlight = null;
-      });
-    }
-    return this.inFlight;
-  }
 }
 
 async function readResponse<T>(response: Response): Promise<T> {
@@ -323,14 +319,77 @@ async function readResponse<T>(response: Response): Promise<T> {
 
 export function createApiClient(initialConfig: ApiClientConfig = {}): ApiClient {
   const clientConfig: Required<Pick<ApiClientConfig, "baseUrl">> & ApiClientConfig = {
-    baseUrl: "/api",
+    baseUrl: "/api/v1",
     ...initialConfig,
   };
-  const refreshCoordinator = new RefreshCoordinator();
-  let lastRefreshedAt = 0;
+  let csrfTokenPromise: Promise<CsrfTokenResponse> | null = null;
+
+  async function fetchCsrfToken(): Promise<CsrfTokenResponse> {
+    if (!csrfTokenPromise) {
+      csrfTokenPromise = (async () => {
+        const rootUrl = new URL(
+          clientConfig.baseUrl.replace(/\/$/, ""),
+          typeof window === "undefined" ? "http://localhost" : window.location.origin,
+        ).toString();
+        const rootResponse = await fetch(rootUrl, {
+          method: "GET",
+          headers: { Accept: "application/hal+json, application/json" },
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (!rootResponse.ok) {
+          throw new ApiError(rootResponse.status, rootResponse.statusText, null);
+        }
+        const apiRoot = (await rootResponse.json()) as {
+          _links?: Record<string, { href: string }>;
+        };
+        const identityRootLink = apiRoot._links?.["get-identity-root"];
+        if (!identityRootLink?.href) {
+          throw new Error("API root does not expose a 'get-identity-root' link");
+        }
+
+        const identityRootUrl = new URL(identityRootLink.href, rootUrl).toString();
+        const identityResponse = await fetch(identityRootUrl, {
+          method: "GET",
+          headers: { Accept: "application/hal+json, application/json" },
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (!identityResponse.ok) {
+          throw new ApiError(identityResponse.status, identityResponse.statusText, null);
+        }
+        const identityRoot = (await identityResponse.json()) as {
+          _links?: Record<string, { href: string }>;
+        };
+        const csrfLink = identityRoot._links?.["get-csrf-token"];
+        if (!csrfLink?.href) {
+          throw new Error("Identity root does not expose a 'get-csrf-token' link");
+        }
+
+        const csrfUrl = new URL(csrfLink.href, identityRootUrl).toString();
+        const csrfResponse = await fetch(csrfUrl, {
+          method: "GET",
+          headers: { Accept: "application/hal+json, application/json" },
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (!csrfResponse.ok) {
+          throw new ApiError(csrfResponse.status, csrfResponse.statusText, null);
+        }
+        const value = (await csrfResponse.json()) as Partial<CsrfTokenResponse>;
+        if (!value.headerName || !value.parameterName || !value.token) {
+          throw new Error("CSRF endpoint returned an invalid token response");
+        }
+        return value as CsrfTokenResponse;
+      })().catch((error) => {
+        csrfTokenPromise = null;
+        throw error;
+      });
+    }
+    return csrfTokenPromise;
+  }
 
   async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    const requestInitiatedAt = Date.now();
     const timeoutMs = options.timeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS;
     const { signal, cleanup, isTimeout } = createRequestSignal(timeoutMs, options.signal);
 
@@ -338,7 +397,7 @@ export function createApiClient(initialConfig: ApiClientConfig = {}): ApiClient 
     let fullUrl: string;
     try {
       fullUrl = await buildFullUrl(clientConfig, endpoint, options.params);
-      const config = await buildRequestInit(clientConfig, { ...options, signal });
+      const config = await buildRequestInit(fetchCsrfToken, { ...options, signal });
       response = await fetch(fullUrl, config);
     } catch (fetchError: unknown) {
       cleanup();
@@ -354,47 +413,8 @@ export function createApiClient(initialConfig: ApiClientConfig = {}): ApiClient 
       throw fetchError;
     }
 
-    if (response.status === 401 && options.retryOnUnauthorized !== false && clientConfig.platform) {
-      const platformSession = clientConfig.platform.session;
-      if (requestInitiatedAt >= lastRefreshedAt) {
-        try {
-          await refreshCoordinator.run(async () => {
-            await platformSession.refresh();
-            lastRefreshedAt = Date.now();
-          });
-        } catch (refreshError: unknown) {
-          cleanup();
-          const status =
-            refreshError instanceof ApiError
-              ? refreshError.status
-              : ((refreshError as { status?: number; statusCode?: number })?.status ??
-                (refreshError as { status?: number; statusCode?: number })?.statusCode);
-          if (status === 401 || status === 403) {
-            platformSession.expire("refresh-failed");
-          }
-          throw refreshError;
-        }
-      }
-
-      let retryResponse: Response;
-      try {
-        const freshConfig = await buildRequestInit(clientConfig, { ...options, signal });
-        retryResponse = await fetch(fullUrl, freshConfig);
-      } catch (retryFetchError: unknown) {
-        cleanup();
-        if (isTimeout()) {
-          throw new TimeoutError(timeoutMs);
-        }
-        if (options.signal?.aborted) {
-          throw new AbortError("Request was aborted by caller");
-        }
-        throw retryFetchError;
-      }
-      cleanup();
-      if (retryResponse.status === 401) {
-        platformSession.expire("unauthorized");
-      }
-      return readResponse<T>(retryResponse);
+    if (response.status === 401 && clientConfig.platform) {
+      clientConfig.platform.session.expire("unauthorized");
     }
 
     cleanup();

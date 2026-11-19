@@ -24,6 +24,8 @@ RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
 
 COPY --from=pruner /app/out/full/ .
 COPY --from=pruner /app/tsconfig.base.json ./tsconfig.base.json
+# turbo prune does not include root-level shared Vite config files.
+COPY tools/vite ./tools/vite
 # For shell image build: copy pre-generated MF declarations (gitignored on host)
 COPY apps/grab-seller/@mf-types /app/apps/grab-seller/@mf-types
 

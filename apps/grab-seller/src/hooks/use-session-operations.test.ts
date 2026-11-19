@@ -57,13 +57,13 @@ describe("useSessionOperations", () => {
 
     mockIdentityService = {
       getProfile: vi.fn().mockResolvedValue(sampleProfile),
-      refreshToken: vi.fn().mockResolvedValue(undefined),
+      login: vi.fn().mockResolvedValue(undefined),
       logout: vi.fn().mockResolvedValue(undefined),
     };
   });
 
   describe("refresh", () => {
-    it("calls refreshToken then getProfile and emits auth:session-refreshed:v1", async () => {
+    it("revalidates the OIDC session by reading the profile", async () => {
       const { result } = renderHook(() =>
         useSessionOperations({
           authService: mockIdentityService,
@@ -78,7 +78,6 @@ describe("useSessionOperations", () => {
         await result.current.refresh();
       });
 
-      expect(mockIdentityService.refreshToken).toHaveBeenCalledTimes(1);
       expect(mockIdentityService.getProfile).toHaveBeenCalledTimes(1);
       expect(publishSnapshot).toHaveBeenCalledWith(
         expect.objectContaining({ status: "authenticated" }),
@@ -101,12 +100,11 @@ describe("useSessionOperations", () => {
         await Promise.all([result.current.refresh(), result.current.refresh()]);
       });
 
-      expect(mockIdentityService.refreshToken).toHaveBeenCalledTimes(1);
       expect(mockIdentityService.getProfile).toHaveBeenCalledTimes(1);
     });
 
-    it("expires the session when refresh rejects with 401", async () => {
-      vi.mocked(mockIdentityService.refreshToken).mockRejectedValueOnce({ status: 401 });
+    it("expires the session when profile revalidation rejects with 401", async () => {
+      vi.mocked(mockIdentityService.getProfile).mockRejectedValueOnce({ status: 401 });
 
       const { result } = renderHook(() =>
         useSessionOperations({
@@ -123,13 +121,30 @@ describe("useSessionOperations", () => {
       expect(publishSnapshot).toHaveBeenCalledWith({ status: "anonymous" });
       expect(onSessionCleared).toHaveBeenCalled();
       expect(mockEvents.emit).toHaveBeenCalledWith("auth:session-expired:v1", {
-        reason: "refresh-failed",
+        reason: "unauthorized",
       });
+    });
+
+    it("preserves the session when profile revalidation returns 403", async () => {
+      vi.mocked(mockIdentityService.getProfile).mockRejectedValueOnce({ status: 403 });
+      const { result } = renderHook(() =>
+        useSessionOperations({
+          authService: mockIdentityService,
+          publishSnapshot,
+          snapshotRef,
+          onSessionCleared,
+          events: mockEvents,
+        }),
+      );
+
+      await expect(result.current.refresh()).rejects.toMatchObject({ status: 403 });
+      expect(publishSnapshot).not.toHaveBeenCalledWith({ status: "anonymous" });
+      expect(onSessionCleared).not.toHaveBeenCalled();
     });
 
     it("does not expire session when refresh rejects with a network error", async () => {
       const netError = new TypeError("Failed to fetch");
-      vi.mocked(mockIdentityService.refreshToken).mockRejectedValueOnce(netError);
+      vi.mocked(mockIdentityService.getProfile).mockRejectedValueOnce(netError);
 
       const { result } = renderHook(() =>
         useSessionOperations({
@@ -152,8 +167,42 @@ describe("useSessionOperations", () => {
     });
   });
 
+  describe("login", () => {
+    it("starts the browser login flow via authService", async () => {
+      const { result } = renderHook(() =>
+        useSessionOperations({
+          authService: mockIdentityService,
+          publishSnapshot,
+          snapshotRef,
+          onSessionCleared,
+          events: mockEvents,
+        }),
+      );
+
+      await act(async () => {
+        await result.current.login();
+      });
+
+      expect(mockIdentityService.login).toHaveBeenCalledTimes(1);
+    });
+
+    it("throws if authService is not available", async () => {
+      const { result } = renderHook(() =>
+        useSessionOperations({
+          authService: null,
+          publishSnapshot,
+          snapshotRef,
+          onSessionCleared,
+          events: mockEvents,
+        }),
+      );
+
+      await expect(result.current.login()).rejects.toThrow("Identity module link is not available");
+    });
+  });
+
   describe("logout", () => {
-    it("calls authService.logout, publishes anonymous, emits event, and navigates", async () => {
+    it("starts the browser logout flow", async () => {
       const { result } = renderHook(() =>
         useSessionOperations({
           authService: mockIdentityService,
@@ -169,10 +218,9 @@ describe("useSessionOperations", () => {
       });
 
       expect(mockIdentityService.logout).toHaveBeenCalledTimes(1);
-      expect(publishSnapshot).toHaveBeenCalledWith({ status: "anonymous" });
-      expect(onSessionCleared).toHaveBeenCalled();
-      expect(mockEvents.emit).toHaveBeenCalledWith("auth:logout:v1", {});
-      expect(mockNavigate).toHaveBeenCalledWith("/login", { replace: true });
+      expect(publishSnapshot).not.toHaveBeenCalled();
+      expect(onSessionCleared).not.toHaveBeenCalled();
+      expect(mockEvents.emit).not.toHaveBeenCalledWith("auth:logout:v1", {});
     });
   });
 

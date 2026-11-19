@@ -6,7 +6,7 @@ Accepted (implemented; domain mapping is ADR_005)
 
 **Does not supersede:** [ADR_003](./ADR_003-HostMediatedSessionDurableEventBus.md). ADR_003 still owns the **in-page** bus (`platform.events`, last-value cache). Same-tree slot hydrate/validate is [ADR_006](./ADR_006-SlotBridgeCapabilityRegistry.md). This ADR adds a complementary **backend → browser** transport. SSE is still the wrong tool for extension-slot UI sync.
 
-**Does not supersede:** [ADR_002](./ADR_002-AuthStateSharingForMFEs.md). `SellerPlatform` remains the single integration surface. Credentials stay in `HttpOnly` cookies. The 401 refresh mutex in the HAL client remains the session refresh path.
+**Does not supersede:** [ADR_002](./ADR_002-AuthStateSharingForMFEs.md). `SellerPlatform` remains the single integration surface. The browser sends the BFF's `HttpOnly` session cookie; session revalidation reads the BFF profile and does not expose or refresh tokens in frontend code.
 
 **Related (backend):** `grab` ADR_008 — Seller UI event stream (`docs/system/ADR_008-Seller_ui_event_stream.md`). One `SseHub`, cookie-authenticated `GET /api/v1/events/stream`, Spring MVC `SseEmitter`.
 
@@ -15,7 +15,7 @@ Accepted (implemented; domain mapping is ADR_005)
 ## 1. The Problem
 
 **What's not working?**  
-The seller shell has no authenticated long-lived channel from the store API. MFEs can only learn that a backend workflow finished by polling REST. Native `EventSource` cannot participate in the existing 401 refresh mutex in `seller-api` (`client.ts`), so a naive SSE client would either fail after cookie expiry or rotate cookies outside the host coordinator.
+The seller shell has no authenticated long-lived channel from the store API. MFEs can only learn that a backend workflow finished by polling REST. Native `EventSource` cannot participate in the stream's explicit session revalidation and bounded retry behavior, so a naive SSE client would either fail after cookie expiry or reconnect without coordinating with the host session state.
 
 **What's at stake?**  
 If remotes open their own streams, we multiply cookie-authenticated connections, leak transport into MFE code, and bypass host session ownership. If we reuse SSE for extension-slot hydrate (the case ADR_003 already rejected), we mix page-session UI coordination with backend push.
@@ -29,7 +29,7 @@ The **host owns the socket**. One `fetch` + `ReadableStream` connection (credent
 
 **Key changes:**
 
-- **Do not use native `EventSource`.** Use `fetch` + `ReadableStream` with `credentials: "include"`, `Accept: text/event-stream`, and the same `platform.session.refresh()` retry as the HAL client.
+- **Do not use native `EventSource`.** Use `fetch` + `ReadableStream` with `credentials: "include"`, `Accept: text/event-stream`, and one bounded retry after `platform.session.refresh()` revalidates the BFF profile.
 - **`seller-api`:** `createBackendEventStream()` — parse SSE frames (`id` / `event` / `data` / comments), abort via `AbortController`, exponential backoff reconnect, pass `Last-Event-ID` on retry (plumbing only; no server replay yet).
 - **`seller-contracts`:** add signal topics only:
   - `stream:ready:v1`
@@ -141,7 +141,7 @@ Heartbeat comments are dropped in the parser. Domain envelopes (workflow complet
 ## 3. Why This Approach
 
 1. **Host session ownership:** The stream starts and stops with `SessionSnapshot`, same as the rest of cookie-auth UI (ADR_002).
-2. **Refresh mutex:** `fetch` can retry through `platform.session.refresh()`; `EventSource` cannot.
+2. **Session revalidation:** `fetch` can revalidate the BFF session before one retry; `EventSource` cannot.
 3. **One USB port:** Remotes keep a single integration surface. Transport stays an implementation detail of the shell.
 4. **Complementary, not competing, with ADR_003:** In-page last-value cache still solves mount-order races. Backend push still solves “the server finished after the POST returned.”
 5. **Discovery over hard-coded paths:** HAL `event-stream` matches how the rest of the seller API is consumed; fallback keeps local demos working before the link exists.
@@ -154,7 +154,7 @@ Heartbeat comments are dropped in the parser. Domain envelopes (workflow complet
 | Pros                                                          | Cons                                                                        |
 | ------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | One connection shared by all remotes                          | Host must stay mounted; standalone remotes without the shell have no stream |
-| `fetch` + refresh mutex matches HAL client                    | Custom SSE parser instead of `EventSource`                                  |
+| `fetch` + bounded revalidation retry matches BFF session flow | Custom SSE parser instead of `EventSource`                                  |
 | Lifecycle topics are signals — no accidental last-value cache | MFEs that miss `stream:ready:v1` must not require it for correctness        |
 | `Last-Event-ID` plumbing is ready for later replay            | No replay yet; gaps require REST refetch                                    |
 | Dedicated nginx location is explicit                          | Every `/api/` proxy (host + standalone remotes) must copy the location      |
@@ -195,7 +195,7 @@ Heartbeat comments are dropped in the parser. Domain envelopes (workflow complet
 ## 6. Related Documents
 
 - [ADR_001 — MFE State Sharing and Communication](./ADR_001-StateSharing&Communication.md)
-- [ADR_002 — Auth State Sharing for MFEs](./ADR_002-AuthStateSharingForMFEs.md) — session snapshot, refresh mutex, cookie credentials
+- [ADR_002 — Auth State Sharing for MFEs](./ADR_002-AuthStateSharingForMFEs.md) — session snapshot, BFF profile revalidation, cookie credentials, CSRF
 - [ADR_003 — Host-Mediated Session-Durable Event Bus](./ADR_003-HostMediatedSessionDurableEventBus.md) — in-page bus; not superseded
 - Backend ADR_008 — Seller UI event stream (`grab` repo: `docs/system/ADR_008-Seller_ui_event_stream.md`)
 - Backend ADR_009 — Workflow terminal UI notifications (`grab` repo: `docs/system/ADR_009-Workflow_terminal_ui_notifications.md`)
@@ -208,7 +208,7 @@ Heartbeat comments are dropped in the parser. Domain envelopes (workflow complet
 ## 7. Alternative Methods Considered & Rejected
 
 **Rejected: Native `EventSource`**  
-Cannot send custom headers beyond `Last-Event-ID`, cannot share the HAL 401 refresh mutex, and reconnects on its own schedule without abort-on-logout.
+Cannot send custom headers beyond `Last-Event-ID`, cannot run the host's bounded session revalidation retry, and reconnects on its own schedule without abort-on-logout.
 
 **Rejected: Per-MFE connections**  
 Duplicates sockets, leaks transport into remotes, and fights host session ownership.

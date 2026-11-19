@@ -54,6 +54,7 @@ export function ShellPlatformProvider({
       subscribe: (listener) => sessionBridge.current?.subscribe(listener) ?? (() => {}),
       refresh: () => (sessionBridge.current ? sessionBridge.current.refresh() : Promise.resolve()),
       expire: (reason) => sessionBridge.current?.expire(reason),
+      login: () => (sessionBridge.current?.login ? sessionBridge.current.login() : Promise.resolve()),
       logout: () => (sessionBridge.current ? sessionBridge.current.logout() : Promise.resolve()),
     }),
     [],
@@ -65,7 +66,6 @@ export function ShellPlatformProvider({
         baseUrl: runtimeConfig.apiBaseUrl,
         platform: {
           session: {
-            refresh: () => session.refresh(),
             expire: (reason) => session.expire(reason),
           },
         },

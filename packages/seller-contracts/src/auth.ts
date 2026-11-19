@@ -27,8 +27,6 @@ export type User = SessionUser & {
   createdAt?: string;
 };
 
-export type LoginCredentials = { email: string; password: string };
-
 export type SessionSnapshot =
   | { status: "loading" }
   | { status: "anonymous" }
@@ -46,6 +44,7 @@ export interface SessionApi {
   subscribe(listener: (snapshot: SessionSnapshot) => void): () => void;
   refresh(): Promise<void>;
   expire(reason?: SessionExpiredReason): void;
+  login?(): Promise<void>;
   logout(): Promise<void>;
 }
 

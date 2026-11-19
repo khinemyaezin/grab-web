@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createIdentityService } from "./identity-service.js";
 import { identityLinkDiscovery } from "./link-discovery.js";
+import { ApiError } from "../client.js";
 import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { HateoasLink } from "../hateoas.js";
 import type { IdentityLinks, RawIdentityProfile } from "./types.js";
@@ -19,8 +20,9 @@ describe("createIdentityService", () => {
   const mockEntryLink: HateoasLink = { href: "/api/identity" };
   const mockIdentityRoot: IdentityLinks = {
     getProfile: { href: "/api/profile" },
+    login: { href: "http://localhost:9000/oauth2/authorize?client_id=seller-bff" },
     logout: { href: "/api/logout" },
-    refreshToken: { href: "/api/refresh" },
+    csrfToken: { href: "/api/csrf" },
   };
 
   const sampleRawProfile: RawIdentityProfile = {
@@ -87,21 +89,14 @@ describe("createIdentityService", () => {
   });
 
   describe("getProfile", () => {
-    it("fetches profile with retryOnUnauthorized: false and maps fields correctly", async () => {
+    it("fetches the BFF session profile and maps fields correctly", async () => {
       vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
       vi.mocked(mockApi.followLink).mockResolvedValueOnce(sampleRawProfile);
 
       const service = createIdentityService(mockApi, mockEntryLink);
       const profile = await service.getProfile();
 
-      expect(mockApi.followLink).toHaveBeenCalledWith(
-        mockIdentityRoot.getProfile,
-        "GET",
-        undefined,
-        undefined,
-        undefined,
-        { retryOnUnauthorized: false },
-      );
+      expect(mockApi.followLink).toHaveBeenCalledWith(mockIdentityRoot.getProfile, "GET");
 
       expect(profile).toEqual({
         id: "user-1",
@@ -141,22 +136,202 @@ describe("createIdentityService", () => {
     });
   });
 
-  describe("logout", () => {
-    it("calls root.logout with retryOnUnauthorized: false", async () => {
+  describe("login", () => {
+    it("navigates to discovered login URL via window.location.assign", async () => {
       vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
-      vi.mocked(mockApi.followLink).mockResolvedValueOnce(undefined);
+      const assignMock = vi.fn();
+      vi.stubGlobal("window", { location: { assign: assignMock, href: "http://localhost/" } });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.login();
+
+      expect(assignMock).toHaveBeenCalledWith(
+        "http://localhost:9000/oauth2/authorize?client_id=seller-bff",
+      );
+      vi.unstubAllGlobals();
+    });
+
+    it("falls back to window.location.href when window.location.assign is not available", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      const windowLocation = { href: "http://localhost/" };
+      vi.stubGlobal("window", { location: windowLocation });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.login();
+
+      expect(windowLocation.href).toBe(
+        "http://localhost:9000/oauth2/authorize?client_id=seller-bff",
+      );
+      vi.unstubAllGlobals();
+    });
+
+    it("throws if identity root does not expose a login link", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce({});
+      const service = createIdentityService(mockApi, mockEntryLink);
+
+      await expect(service.login()).rejects.toThrow("Identity root does not expose a 'login' link");
+    });
+
+    it("throws if window is undefined", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      vi.stubGlobal("window", undefined);
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await expect(service.login()).rejects.toThrow("OIDC login requires a browser window");
+      vi.unstubAllGlobals();
+    });
+  });
+
+  describe("logout", () => {
+    it("calls POST root.logout and navigates to the returned logoutUrl", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      const targetLogoutUrl =
+        "http://localhost:9000/connect/logout?id_token_hint=xyz&post_logout_redirect_uri=http://localhost:3000/";
+      vi.mocked(mockApi.followLink).mockResolvedValueOnce({ logoutUrl: targetLogoutUrl });
+
+      const assignMock = vi.fn();
+      vi.stubGlobal("window", { location: { assign: assignMock, href: "http://localhost/" } });
 
       const service = createIdentityService(mockApi, mockEntryLink);
       await service.logout();
 
-      expect(mockApi.followLink).toHaveBeenCalledWith(
-        mockIdentityRoot.logout,
-        "POST",
-        undefined,
-        undefined,
-        undefined,
-        { retryOnUnauthorized: false },
-      );
+      expect(mockApi.followLink).toHaveBeenCalledWith(mockIdentityRoot.logout, "POST");
+      expect(assignMock).toHaveBeenCalledWith(targetLogoutUrl);
+      vi.unstubAllGlobals();
+    });
+
+    it("supports url property if logoutUrl is omitted", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      const targetLogoutUrl = "http://localhost:9000/connect/logout?id_token_hint=xyz";
+      vi.mocked(mockApi.followLink).mockResolvedValueOnce({ url: targetLogoutUrl });
+
+      const assignMock = vi.fn();
+      vi.stubGlobal("window", { location: { assign: assignMock } });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.logout();
+
+      expect(mockApi.followLink).toHaveBeenCalledWith(mockIdentityRoot.logout, "POST");
+      expect(assignMock).toHaveBeenCalledWith(targetLogoutUrl);
+      vi.unstubAllGlobals();
+    });
+
+    it("falls back to window.location.href when window.location.assign is not available", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      const targetLogoutUrl = "http://localhost:9000/connect/logout?id_token_hint=xyz";
+      vi.mocked(mockApi.followLink).mockResolvedValueOnce({ logoutUrl: targetLogoutUrl });
+
+      const windowLocation = { href: "http://localhost/" };
+      vi.stubGlobal("window", { location: windowLocation });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.logout();
+
+      expect(windowLocation.href).toBe(targetLogoutUrl);
+      vi.unstubAllGlobals();
+    });
+
+    it("gracefully falls back to '/' when response does not contain logoutUrl", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      vi.mocked(mockApi.followLink).mockResolvedValueOnce({});
+
+      const assignMock = vi.fn();
+      vi.stubGlobal("window", { location: { assign: assignMock } });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.logout();
+
+      expect(assignMock).toHaveBeenCalledWith("/");
+      vi.unstubAllGlobals();
+    });
+
+    it("extracts logoutUrl from ApiError body when backend responds with 303 See Other", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      const targetLogoutUrl =
+        "http://localhost:9000/connect/logout?id_token_hint=xyz&post_logout_redirect_uri=http://localhost:3000/";
+      const apiError = new ApiError(303, "See Other", { logoutUrl: targetLogoutUrl });
+      vi.mocked(mockApi.followLink).mockRejectedValueOnce(apiError);
+
+      const assignMock = vi.fn();
+      vi.stubGlobal("window", { location: { assign: assignMock } });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.logout();
+
+      expect(mockApi.followLink).toHaveBeenCalledWith(mockIdentityRoot.logout, "POST");
+      expect(assignMock).toHaveBeenCalledWith(targetLogoutUrl);
+      vi.unstubAllGlobals();
+    });
+
+    it("falls back to '/' when backend responds with 303 ApiError without logoutUrl body", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      const apiError = new ApiError(303, "See Other", null);
+      vi.mocked(mockApi.followLink).mockRejectedValueOnce(apiError);
+
+      const assignMock = vi.fn();
+      vi.stubGlobal("window", { location: { assign: assignMock } });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.logout();
+
+      expect(assignMock).toHaveBeenCalledWith("/");
+      vi.unstubAllGlobals();
+    });
+
+    it("falls back to top-level HTML form submission when fetch fails with network error", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      vi.mocked(mockApi.followLink)
+        .mockRejectedValueOnce(new TypeError("Failed to fetch"))
+        .mockResolvedValueOnce({ parameterName: "_csrf", token: "test-token" });
+
+      const form = {
+        method: "",
+        action: "",
+        hidden: false,
+        append: vi.fn(),
+        submit: vi.fn(),
+      };
+      const input = { type: "", name: "", value: "" };
+      const documentMock = {
+        createElement: vi.fn((tag: string) => (tag === "form" ? form : input)),
+        body: { append: vi.fn() },
+      };
+      vi.stubGlobal("document", documentMock);
+      vi.stubGlobal("window", { location: { href: "http://localhost:3000/" } });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.logout();
+
+      expect(form.submit).toHaveBeenCalledOnce();
+      expect(form.method).toBe("POST");
+      expect(form.action).toBe("http://localhost:3000/api/logout");
+      expect(input).toEqual({ type: "hidden", name: "_csrf", value: "test-token" });
+      expect(documentMock.body.append).toHaveBeenCalledWith(form);
+      vi.unstubAllGlobals();
+    });
+
+    it("falls back to window.location.assign('/') when document is not defined and fetch fails", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      vi.mocked(mockApi.followLink).mockRejectedValueOnce(new TypeError("Failed to fetch"));
+
+      const assignMock = vi.fn();
+      vi.stubGlobal("document", undefined);
+      vi.stubGlobal("window", { location: { assign: assignMock, href: "http://localhost:3000/" } });
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await service.logout();
+
+      expect(assignMock).toHaveBeenCalledWith("/");
+      vi.unstubAllGlobals();
+    });
+
+    it("throws if window is undefined", async () => {
+      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
+      vi.stubGlobal("window", undefined);
+
+      const service = createIdentityService(mockApi, mockEntryLink);
+      await expect(service.logout()).rejects.toThrow("OIDC logout requires a browser window");
+      vi.unstubAllGlobals();
     });
 
     it("throws if identity root does not expose logout", async () => {
@@ -165,34 +340,6 @@ describe("createIdentityService", () => {
 
       await expect(service.logout()).rejects.toThrow(
         "Identity root does not expose a 'logout' link",
-      );
-    });
-  });
-
-  describe("refreshToken", () => {
-    it("calls root.refreshToken with retryOnUnauthorized: false", async () => {
-      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce(mockIdentityRoot);
-      vi.mocked(mockApi.followLink).mockResolvedValueOnce(undefined);
-
-      const service = createIdentityService(mockApi, mockEntryLink);
-      await service.refreshToken();
-
-      expect(mockApi.followLink).toHaveBeenCalledWith(
-        mockIdentityRoot.refreshToken,
-        "POST",
-        undefined,
-        undefined,
-        undefined,
-        { retryOnUnauthorized: false },
-      );
-    });
-
-    it("throws if identity root does not expose refresh", async () => {
-      vi.mocked(identityLinkDiscovery.root).mockResolvedValueOnce({});
-      const service = createIdentityService(mockApi, mockEntryLink);
-
-      await expect(service.refreshToken()).rejects.toThrow(
-        "Identity root does not expose a 'refresh' link",
       );
     });
   });

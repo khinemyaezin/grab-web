@@ -11,17 +11,13 @@ export const convertToIdentityLinks = (resp: { _links: HalLinks }): IdentityLink
     login: resolveLink(resp._links, SellerApiLinks.auth.login),
     register: resolveLink(resp._links, SellerApiLinks.auth.register),
     logout: resolveLink(resp._links, SellerApiLinks.auth.logout),
-    refreshToken: resolveLink(resp._links, SellerApiLinks.auth.refresh),
+    csrfToken: resolveLink(resp._links, SellerApiLinks.auth.csrf),
     listAccessContext: resolveLink(resp._links, SellerApiLinks.session.listAccessContexts),
   };
 };
 
 export const identityLinkDiscovery = {
   root: async (api: PlatformApiClient, link: HateoasLink): Promise<IdentityLinks> => {
-    return api
-      .followLink<{ _links: HalLinks }>(link, "GET", undefined, undefined, undefined, {
-        retryOnUnauthorized: false,
-      })
-      .then(convertToIdentityLinks);
+    return api.followLink<{ _links: HalLinks }>(link, "GET").then(convertToIdentityLinks);
   },
 };

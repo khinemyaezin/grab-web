@@ -34,7 +34,8 @@ function relationValues(): string[] {
 
 describe("SellerApiLinks", () => {
   it("defines canonical renamed relations", () => {
-    expect(SellerApiLinks.auth.refresh).toBe("refresh");
+    expect(SellerApiLinks.auth.csrf).toBe("get-csrf-token");
+    expect(SellerApiLinks.auth.login).toBe("login");
     expect(SellerApiLinks.facility.getLocation).toBe("get-location");
     expect(SellerApiLinks.inventory.getInventoryItem).toBe("get-inventory-item");
     expect(SellerApiLinks.reorderSuggestion.listSuggestions).toBe("list-reorder-suggestions");
@@ -61,7 +62,7 @@ describe("SellerApiLinks", () => {
     expect(pending).toContain("event-stream");
     expect(pending).toContain("list-variant-price-links");
     expect(pending.some((rel) => canonical.has(rel))).toBe(false);
-    expect(SellerAuthApiLinks.refresh).not.toBe("refresh-token");
+    expect(SellerAuthApiLinks.csrf).not.toBe("csrf-token");
     expect(SellerMerchantApiLinks.getMerchant).not.toBe("get-current-merchant");
     expect(SellerSessionApiLinks.selectContext).not.toBe("select-access-context");
   });

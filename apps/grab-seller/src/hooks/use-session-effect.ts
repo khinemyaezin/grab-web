@@ -80,13 +80,6 @@ export function useSessionEffects({
         if (!location.pathname.startsWith("/onboarding")) {
           navigate("/onboarding", { replace: true });
         }
-      } else if (
-        !snapshot.user.currentAccessContext ||
-        snapshot.user.currentAccessContext.scopeId === GLOBAL_SCOPE_KEY
-      ) {
-        if (location.pathname !== `/${routes.contextSelection}`) {
-          navigate(`/${routes.contextSelection}`, { replace: true });
-        }
       } else if (isAuthPath(location.pathname)) {
         navigate("", { replace: true });
       }
@@ -102,24 +95,11 @@ export function useSessionEffects({
 
         if (nonGlobalContexts.length === 0) {
           navigate("/onboarding", { replace: true });
-        } else if (
-          !next.user.currentAccessContext ||
-          next.user.currentAccessContext.scopeId === GLOBAL_SCOPE_KEY
-        ) {
-          navigate(`/${routes.contextSelection}`, { replace: true });
         } else {
           navigate("", { replace: true });
         }
       }
     };
-
-    const unsubLogin = events.subscribe("auth:login-success:v1", () => {
-      void loadSession().then(handleAuthRedirect);
-    });
-
-    const unsubRegister = events.subscribe("auth:registration-success:v1", () => {
-      navigate(`/${routes.login}`, { replace: true });
-    });
 
     const unsubAccessContextOnSelect = events.subscribe("auth:context-selected:v1", () => {
       onSessionCleared?.();
@@ -128,8 +108,6 @@ export function useSessionEffects({
     });
 
     return () => {
-      unsubLogin();
-      unsubRegister();
       unsubAccessContextOnSelect();
     };
   }, [events, loadSession, navigate, onSessionCleared]);
