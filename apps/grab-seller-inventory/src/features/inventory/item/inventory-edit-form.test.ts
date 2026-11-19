@@ -72,9 +72,7 @@ describe("inventory-edit-form", () => {
     const payload = toEditPayload({ sku: "SKU-1", variantId: "var-1", items: selected });
     expect(selected.map((row) => row.locationId)).toEqual(["st-1"]);
     expect(selected[0]?.op).toBe("CREATE");
-    expect(payload.ops).toEqual([
-      expect.objectContaining({ op: "CREATE", locationId: "st-1" }),
-    ]);
+    expect(payload.ops).toEqual([expect.objectContaining({ op: "CREATE", locationId: "st-1" })]);
   });
 
   it("reconcile keeps local CREATE ops when the catalog refetches", () => {

@@ -3,10 +3,7 @@ import {
   type PricingCreateContext,
   type PricingPayload,
 } from "@khinemyaezin/seller-contracts";
-import {
-  PRICING_DOMAIN,
-  ProductExtensionSlot,
-} from "../product-extension-slot";
+import { PRICING_DOMAIN, ProductExtensionSlot } from "../product-extension-slot";
 
 export type PricingLineSlotProps = {
   groupId: string;

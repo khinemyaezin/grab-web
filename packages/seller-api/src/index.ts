@@ -7,3 +7,5 @@ export * from "./module-discovery.js";
 export * from "./storage.js";
 export * from "./media-staging.js";
 export * from "./standalone.js";
+export * from "./identity/index.js";
+export * from "./merchant/index.js";

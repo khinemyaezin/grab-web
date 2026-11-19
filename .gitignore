@@ -7,6 +7,12 @@ dist/
 dist-ssr/
 *.local
 .turbo/
+coverage/
+
+# Generated Module Federation declarations (run `pnpm mf:types`)
+apps/*/@mf-types/
+apps/*/@mf-types.zip
+apps/*/@mf-types.d.ts
 
 # Logs
 npm-debug.log*

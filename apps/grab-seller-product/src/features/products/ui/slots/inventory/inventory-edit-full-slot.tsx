@@ -3,10 +3,7 @@ import {
   InventoryEditPayload,
   PRODUCT_EXTENSION_SLOTS,
 } from "@khinemyaezin/seller-contracts";
-import {
-  INVENTORY_EDIT_DOMAIN,
-  ProductExtensionSlot,
-} from "../product-extension-slot";
+import { INVENTORY_EDIT_DOMAIN, ProductExtensionSlot } from "../product-extension-slot";
 
 export type InventoryLineEditFullSlotProps = {
   groupId: string;

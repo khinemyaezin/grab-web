@@ -35,9 +35,8 @@ export function useStorefronts(link?: HateoasLink) {
 
 export function useStorefront(link?: HateoasLink, storefrontId?: string) {
   const api = useApi();
-  const expanded = link && storefrontId
-    ? resolveUrlTemplate({ id: storefrontId }, link)
-    : undefined;
+  const expanded =
+    link && storefrontId ? resolveUrlTemplate({ id: storefrontId }, link) : undefined;
 
   return useQuery<StorefrontResponse>({
     queryKey: ["storefront", storefrontId],
@@ -49,7 +48,11 @@ export function useStorefront(link?: HateoasLink, storefrontId?: string) {
 export function useCreateStorefrontMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<StorefrontResponse, Error, { link: HateoasLink; request: CreateStorefrontRequest }>({
+  return useMutation<
+    StorefrontResponse,
+    Error,
+    { link: HateoasLink; request: CreateStorefrontRequest }
+  >({
     mutationFn: ({ link, request }) => storefrontService.create(api, link, request),
     onSuccess: () => {
       void invalidateStorefrontsQueries(queryClient);
@@ -60,7 +63,11 @@ export function useCreateStorefrontMutation() {
 export function useUpdateStorefrontMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<StorefrontResponse, Error, { link: HateoasLink; request: UpdateStorefrontProfileRequest }>({
+  return useMutation<
+    StorefrontResponse,
+    Error,
+    { link: HateoasLink; request: UpdateStorefrontProfileRequest }
+  >({
     mutationFn: ({ link, request }) => storefrontService.update(api, link, request),
     onSuccess: (data) => {
       void invalidateStorefrontQueries(queryClient, data.storefrontId);
@@ -93,7 +100,11 @@ export function useReactivateStorefrontMutation() {
 export function useSuspendStorefrontMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<StorefrontResponse, Error, { link: HateoasLink; request: StorefrontLifecycleRequest }>({
+  return useMutation<
+    StorefrontResponse,
+    Error,
+    { link: HateoasLink; request: StorefrontLifecycleRequest }
+  >({
     mutationFn: ({ link, request }) => storefrontService.suspend(api, link, request),
     onSuccess: (data) => {
       void invalidateStorefrontQueries(queryClient, data.storefrontId);
@@ -104,7 +115,11 @@ export function useSuspendStorefrontMutation() {
 export function useCloseStorefrontMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<StorefrontResponse, Error, { link: HateoasLink; request: StorefrontLifecycleRequest }>({
+  return useMutation<
+    StorefrontResponse,
+    Error,
+    { link: HateoasLink; request: StorefrontLifecycleRequest }
+  >({
     mutationFn: ({ link, request }) => storefrontService.close(api, link, request),
     onSuccess: (data) => {
       void invalidateStorefrontQueries(queryClient, data.storefrontId);

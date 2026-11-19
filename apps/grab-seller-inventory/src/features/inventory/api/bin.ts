@@ -1,20 +1,36 @@
 import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { HateoasLink, Pageable } from "@khinemyaezin/seller-api";
-import type { BinsFilterForm, CreateBinRequest, UpdateBinRequest } from "@/features/inventory/types";
+import type {
+  BinsFilterForm,
+  CreateBinRequest,
+  UpdateBinRequest,
+} from "@/features/inventory/types";
 import type { BinResponse, ListBinResponse } from "@/features/inventory/types/inventory.response";
 
 export const binService = {
-  searchBins: (api: PlatformApiClient, link: HateoasLink, filters?: BinsFilterForm & Pageable, headers?: Record<string, string>) =>
-    api.followLink<ListBinResponse>(link, "POST", filters, undefined, headers),
+  searchBins: (
+    api: PlatformApiClient,
+    link: HateoasLink,
+    filters?: BinsFilterForm & Pageable,
+    headers?: Record<string, string>,
+  ) => api.followLink<ListBinResponse>(link, "POST", filters, undefined, headers),
 
   getBin: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<BinResponse>(link, "GET", undefined, undefined, headers),
 
-  createBin: (api: PlatformApiClient, link: HateoasLink, request: CreateBinRequest, headers?: Record<string, string>) =>
-    api.followLink<BinResponse>(link, "POST", request, undefined, headers),
+  createBin: (
+    api: PlatformApiClient,
+    link: HateoasLink,
+    request: CreateBinRequest,
+    headers?: Record<string, string>,
+  ) => api.followLink<BinResponse>(link, "POST", request, undefined, headers),
 
-  updateBin: (api: PlatformApiClient, link: HateoasLink, request: UpdateBinRequest, headers?: Record<string, string>) =>
-    api.followLink<BinResponse>(link, "PATCH", request, undefined, headers),
+  updateBin: (
+    api: PlatformApiClient,
+    link: HateoasLink,
+    request: UpdateBinRequest,
+    headers?: Record<string, string>,
+  ) => api.followLink<BinResponse>(link, "PATCH", request, undefined, headers),
 
   activate: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<BinResponse>(link, "PATCH", undefined, undefined, headers),

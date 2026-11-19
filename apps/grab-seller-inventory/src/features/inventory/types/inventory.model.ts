@@ -4,7 +4,14 @@ export type LocationType = "WAREHOUSE" | "STORE";
 
 export type ZoneType = "PICKING" | "STORAGE" | "STAGING" | "RETURNS" | "DAMAGED" | "RECEIVING";
 
-export const ZONE_TYPES: ZoneType[] = ["PICKING", "STORAGE", "STAGING", "RETURNS", "DAMAGED", "RECEIVING"];
+export const ZONE_TYPES: ZoneType[] = [
+  "PICKING",
+  "STORAGE",
+  "STAGING",
+  "RETURNS",
+  "DAMAGED",
+  "RECEIVING",
+];
 
 export interface InventoryRoot {
   self?: HateoasLink;
@@ -30,10 +37,7 @@ export const INVENTORY_STATUSES: InventoryStatus[] = [
 ];
 
 export type ReceiveStockMovementType =
-  | "PURCHASE_ORDER_RECEIPT"
-  | "CUSTOMER_RETURN"
-  | "TRANSFER_IN"
-  | "INITIAL_STOCK";
+  "PURCHASE_ORDER_RECEIPT" | "CUSTOMER_RETURN" | "TRANSFER_IN" | "INITIAL_STOCK";
 
 export const RECEIVE_STOCK_TYPES: ReceiveStockMovementType[] = [
   "PURCHASE_ORDER_RECEIPT",
@@ -43,13 +47,7 @@ export const RECEIVE_STOCK_TYPES: ReceiveStockMovementType[] = [
 ];
 
 export type AdjustmentReason =
-  | "CYCLE_COUNT"
-  | "DAMAGED"
-  | "EXPIRED"
-  | "LOST"
-  | "FOUND"
-  | "THEFT"
-  | "CORRECTION";
+  "CYCLE_COUNT" | "DAMAGED" | "EXPIRED" | "LOST" | "FOUND" | "THEFT" | "CORRECTION";
 
 export const ADJUSTMENT_REASONS: AdjustmentReason[] = [
   "CYCLE_COUNT",
@@ -60,8 +58,6 @@ export const ADJUSTMENT_REASONS: AdjustmentReason[] = [
   "THEFT",
   "CORRECTION",
 ];
-
-
 
 export interface LocationAddress {
   line1: string;
@@ -80,7 +76,6 @@ export interface Bin {
   active: boolean;
 }
 
-
 export interface Zone {
   id: string;
   code: string;
@@ -89,9 +84,8 @@ export interface Zone {
   active: boolean;
 }
 
-
 export type LocationLifecycleEvent =
-  | { type: "titleResolved", title: string }
+  | { type: "titleResolved"; title: string }
   | { type: "created" }
   | { type: "createFailed" }
   | { type: "updated" }
@@ -104,7 +98,7 @@ export type LocationLifecycleEvent =
   | { type: "deleteFailed" };
 
 export type ZoneLifecycleEvent =
-  | { type: "titleResolved", title: string }
+  | { type: "titleResolved"; title: string }
   | { type: "created" }
   | { type: "createFailed" }
   | { type: "updated" }
@@ -117,7 +111,7 @@ export type ZoneLifecycleEvent =
   | { type: "deleteFailed" };
 
 export type BinLifecycleEvent =
-  | { type: "titleResolved", title: string }
+  | { type: "titleResolved"; title: string }
   | { type: "created" }
   | { type: "createFailed" }
   | { type: "updated" }
@@ -162,11 +156,7 @@ export type ItemLifecycleEvent =
 /** Gap kinds surfaced on the stock coverage page. */
 export type CoverageGapKind = "UNSTOCKED" | "ZERO_AVAILABLE" | "LOW_STOCK";
 
-export const COVERAGE_GAP_KINDS: CoverageGapKind[] = [
-  "UNSTOCKED",
-  "ZERO_AVAILABLE",
-  "LOW_STOCK",
-];
+export const COVERAGE_GAP_KINDS: CoverageGapKind[] = ["UNSTOCKED", "ZERO_AVAILABLE", "LOW_STOCK"];
 
 export interface CoverageRow {
   key: string;

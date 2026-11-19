@@ -24,13 +24,7 @@ export type NavItem = {
   }[];
 };
 
-export function NavMain({
-  items,
-  label,
-}: {
-  items: NavItem[];
-  label?: string;
-}) {
+export function NavMain({ items, label }: { items: NavItem[]; label?: string }) {
   const location = useLocation();
 
   return (
@@ -40,7 +34,7 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => {
             const isActive = item.isActive || location.pathname.startsWith(item.url);
-            
+
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild tooltip={item.title}>
@@ -53,10 +47,7 @@ export function NavMain({
                   <SidebarMenuSub>
                     {item.items.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton
-                          asChild
-                          isActive={location.pathname === subItem.url}
-                        >
+                        <SidebarMenuSubButton asChild isActive={location.pathname === subItem.url}>
                           <Link to={subItem.url}>
                             <span>{subItem.title}</span>
                           </Link>

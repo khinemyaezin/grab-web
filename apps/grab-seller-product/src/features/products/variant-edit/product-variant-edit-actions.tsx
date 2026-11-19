@@ -1,5 +1,8 @@
 import { HateoasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
-import { useProductVariantDeleteMutation, useProductVariantRestoreMutation } from "@/features/products/api/use-products";
+import {
+  useProductVariantDeleteMutation,
+  useProductVariantRestoreMutation,
+} from "@/features/products/api/use-products";
 import { ProductLifecycleEvent } from "@/features/products/types";
 import { Ellipsis, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@khinemyaezin/seller-ui/components/index";
@@ -12,7 +15,7 @@ import {
 } from "@khinemyaezin/seller-ui/components/dropdown-menu";
 
 export type ProductVariantActionsMenuProps = {
-  productId: string,
+  productId: string;
   links?: Record<string, HateoasLink>;
   onLifecycleEvent?: (event: ProductLifecycleEvent) => void;
 };
@@ -74,10 +77,7 @@ export default function ProductVariantActionsMenu({
       <DropdownMenuContent>
         <DropdownMenuGroup>
           {variantRestoreLink && (
-            <DropdownMenuItem
-              disabled={restoreVariantMutation.isPending}
-              onClick={handleOnRestore}
-            >
+            <DropdownMenuItem disabled={restoreVariantMutation.isPending} onClick={handleOnRestore}>
               <RotateCcw />
               Restore
             </DropdownMenuItem>

@@ -8,7 +8,11 @@ let mockIsPending = false;
 let mockIsSuccess = false;
 
 vi.mock("./use-storefront-create-submit", () => ({
-  useStorefrontCreateSubmit: ({ onLifecycleEvent }: { onLifecycleEvent?: (event: unknown) => void }) => ({
+  useStorefrontCreateSubmit: ({
+    onLifecycleEvent,
+  }: {
+    onLifecycleEvent?: (event: unknown) => void;
+  }) => ({
     submit: async () => {
       mockSubmit();
       onLifecycleEvent?.({ type: "created", storefrontId: "sf-123" });

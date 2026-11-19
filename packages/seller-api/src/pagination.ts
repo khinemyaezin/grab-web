@@ -6,8 +6,8 @@ export interface PageInfo {
 }
 
 export interface Pageable {
-  page: number,
-  size: number
+  page: number;
+  size: number;
 }
 
 export function toPageParams(pageable?: Pageable): Record<string, string> | undefined {

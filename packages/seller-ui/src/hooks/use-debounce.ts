@@ -1,20 +1,32 @@
-import { debounce } from "lodash"
-import { useCallback, useEffect, useRef } from "react"
+import { debounce } from "lodash";
+import { useCallback, useEffect, useRef } from "react";
 
 export function useDebounce<T extends (...args: Parameters<T>) => void>(
   callback: T,
-  delay: number
+  delay: number,
 ) {
-  const callbackRef = useRef(callback)
+  const callbackRef = useRef(callback);
 
   useEffect(() => {
-    callbackRef.current = callback
-  }, [callback])
+    callbackRef.current = callback;
+  }, [callback]);
 
   const debounceFn = useCallback(
     debounce((...args: Parameters<T>) => {
-        callbackRef.current(...args)
-    }, delay), []);
+      callbackRef.current(...args);
+    }, delay),
+    [delay],
+  );
 
-  return { debounceFn } as const
+  useEffect(() => {
+    return () => {
+      debounceFn.cancel();
+    };
+  }, [debounceFn]);
+
+  return {
+    debounceFn,
+    cancel: debounceFn.cancel,
+    flush: debounceFn.flush,
+  } as const;
 }

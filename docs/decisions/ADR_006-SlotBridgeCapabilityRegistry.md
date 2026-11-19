@@ -46,11 +46,11 @@ Same-DOM product form slots use a **Slot Bridge**: context and drafts travel as 
 
 ### Event bus that remains
 
-| Keep | Drop |
-|------|------|
-| `auth:*`, `shell:toast:v1`, `shell:breadcrumb:v1` | `extension:validate:v1`, `extension:validated:v1` |
+| Keep                                                                | Drop                                                        |
+| ------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `auth:*`, `shell:toast:v1`, `shell:breadcrumb:v1`                   | `extension:validate:v1`, `extension:validated:v1`           |
 | `form:dirty:v1`, `form:save:v1`, `form:discard:v1`, `form:saved:v1` | `extension:{pricing\|inventory}:{new\|edit}:hydrate:v1` (4) |
-| `stream:*`, `workflow:updated:v1` | `extension:{pricing\|inventory}:{new\|edit}:updated:v1` (4) |
+| `stream:*`, `workflow:updated:v1`                                   | `extension:{pricing\|inventory}:{new\|edit}:updated:v1` (4) |
 
 ---
 
@@ -111,13 +111,13 @@ export type SlotWidgetHandle<TValue> = {
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|------|------|
-| Deterministic validate; fail-closed immediately if the remote has not registered | Host must thread `context` / `initialValue` / `onChange` |
-| Host store is the only draft SoT; unmount unregisters | A forgotten `onChange` silently drops drafts (the bus used to deliver anyway) |
-| Remotes are unit-testable; no producerId echo filters | Federated `Suspense` can mean no handle until the remote loads |
-| Contracts, UI, host, and remotes cut over together (no dual-run) | Out-of-tree observers of uncommitted drafts would need a new past-tense signal (none exist today) |
-| | iframe / non-React remotes would not work (not the architecture today) |
+| Pros                                                                             | Cons                                                                                              |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Deterministic validate; fail-closed immediately if the remote has not registered | Host must thread `context` / `initialValue` / `onChange`                                          |
+| Host store is the only draft SoT; unmount unregisters                            | A forgotten `onChange` silently drops drafts (the bus used to deliver anyway)                     |
+| Remotes are unit-testable; no producerId echo filters                            | Federated `Suspense` can mean no handle until the remote loads                                    |
+| Contracts, UI, host, and remotes cut over together (no dual-run)                 | Out-of-tree observers of uncommitted drafts would need a new past-tense signal (none exist today) |
+|                                                                                  | iframe / non-React remotes would not work (not the architecture today)                            |
 
 Keep the bus path only if you need late-mounted, out-of-tree observers of uncommitted slot drafts, or you cannot cut over contracts + remotes + host together. Neither applies here.
 

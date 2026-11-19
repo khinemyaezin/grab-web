@@ -1,7 +1,8 @@
 export type PlatformHttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export type PlatformRequestBehavior = {
-  retryOnUnauthorized?: boolean;
+  timeoutMs?: number;
+  signal?: AbortSignal;
 };
 
 export interface PlatformLink {

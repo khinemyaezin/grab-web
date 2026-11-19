@@ -1,4 +1,3 @@
-
 import { catalogService } from ".";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 import type { VariationMatrixRequest, VariationMatrixResponse } from "@/features/products/types";

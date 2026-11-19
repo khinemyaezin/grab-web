@@ -72,7 +72,11 @@ export function ItemLocationFieldSet({ onSelected }: ItemStepFieldSetProps = {})
                     locations.map((location) => {
                       const isSelected = field.value === location.id;
                       return (
-                        <Item asChild variant={isSelected ? "outline" : "default"} key={location.id}>
+                        <Item
+                          asChild
+                          variant={isSelected ? "outline" : "default"}
+                          key={location.id}
+                        >
                           <FieldLabel
                             className="cursor-pointer hover:bg-muted/50 hover:border-border transition-colors"
                             onClick={() => {
@@ -100,7 +104,11 @@ export function ItemLocationFieldSet({ onSelected }: ItemStepFieldSetProps = {})
                             <ItemActions>
                               <ChevronRightIcon className="size-4" />
                             </ItemActions>
-                            <RadioGroupItem value={location.id} id={`location-${location.id}`} hidden />
+                            <RadioGroupItem
+                              value={location.id}
+                              id={`location-${location.id}`}
+                              hidden
+                            />
                           </FieldLabel>
                         </Item>
                       );
@@ -119,7 +127,11 @@ export function ItemLocationFieldSet({ onSelected }: ItemStepFieldSetProps = {})
   );
 }
 
-export function ItemProductVariantFieldSet({ onSelected }: { onSelected: (inventoryId?: string) => void }) {
+export function ItemProductVariantFieldSet({
+  onSelected,
+}: {
+  onSelected: (inventoryId?: string) => void;
+}) {
   const {
     control,
     setValue,
@@ -136,8 +148,7 @@ export function ItemProductVariantFieldSet({ onSelected }: { onSelected: (invent
           control={control}
           name="product"
           rules={{
-            validate: (value) =>
-              value?.sku?.trim() ? true : "Product variant is required",
+            validate: (value) => (value?.sku?.trim() ? true : "Product variant is required"),
           }}
           render={({ field }) => (
             <>
@@ -149,7 +160,7 @@ export function ItemProductVariantFieldSet({ onSelected }: { onSelected: (invent
                     onSelected(event.inventory.id);
                     return;
                   }
-                  
+
                   if (event.product.sku !== field.value.sku) {
                     field.onChange({
                       sku: event.product.sku,

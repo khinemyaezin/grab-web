@@ -1,5 +1,9 @@
 import { useParams } from "react-router";
-import { SlotProvider, useShellBreadcrumb, useShellBreadcrumbSegment } from "@khinemyaezin/seller-ui";
+import {
+  SlotProvider,
+  useShellBreadcrumb,
+  useShellBreadcrumbSegment,
+} from "@khinemyaezin/seller-ui";
 import { useProductVariantEditEvents } from "./use-product-variant-edit-events";
 import ProductVariantEditView from "./product-variant-edit-view";
 

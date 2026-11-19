@@ -71,12 +71,12 @@ sequenceDiagram
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|------|------|
-| Fail-closed on missing, crashing, or suspending remotes | Parent no longer re-validates remote payloads against JSON Schema |
-| New domain op ships without a product deploy | Unknown-slice check is shape-only; backend remains the content authority |
-| Onboarding a domain is widget + `project()` + one registry row + allowlist key | React-only; iframe / non-React remotes still out of scope |
-| Timeout replaces unbounded `Promise.all` | Widgets must ignore or honor `AbortSignal` themselves |
+| Pros                                                                           | Cons                                                                     |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| Fail-closed on missing, crashing, or suspending remotes                        | Parent no longer re-validates remote payloads against JSON Schema        |
+| New domain op ships without a product deploy                                   | Unknown-slice check is shape-only; backend remains the content authority |
+| Onboarding a domain is widget + `project()` + one registry row + allowlist key | React-only; iframe / non-React remotes still out of scope                |
+| Timeout replaces unbounded `Promise.all`                                       | Widgets must ignore or honor `AbortSignal` themselves                    |
 
 The trust-boundary move is acceptable: remotes are first-party, same-origin, version-locked federation singletons. `ExtensionSlotContract.payloadSchema` remains available if generic schema validation is needed later.
 

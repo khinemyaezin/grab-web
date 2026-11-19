@@ -13,7 +13,8 @@ vi.mock("@/features/merchant/api/use-root", () => ({
     isLoading: mockIsLoading,
     isError: mockIsError,
   }),
-  useMerchantLink: (rel: string) => (rel === "createStorefront" && mockLinkAvailable ? mockCreateLink : undefined),
+  useMerchantLink: (rel: string) =>
+    rel === "createStorefront" && mockLinkAvailable ? mockCreateLink : undefined,
 }));
 
 vi.mock("@khinemyaezin/seller-ui", () => ({
@@ -63,8 +64,6 @@ describe("StorefrontNewPage", () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByText("Storefront creation is not available."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Storefront creation is not available.")).toBeInTheDocument();
   });
 });

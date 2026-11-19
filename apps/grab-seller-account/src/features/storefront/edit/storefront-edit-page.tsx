@@ -25,9 +25,7 @@ export default function StorefrontEditPage() {
         ) : (
           <Card>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                This storefront cannot be opened.
-              </p>
+              <p className="text-sm text-muted-foreground">This storefront cannot be opened.</p>
             </CardContent>
           </Card>
         )}

@@ -23,6 +23,7 @@ You are a senior software architect. I need to write an Architectural Decision R
 [A single, clear sentence summarizing the overall decision.]
 
 **Key changes:**
+
 - [Change 1]
 - [Change 2]
 - [Change 3]
@@ -34,9 +35,10 @@ You are a senior software architect. I need to write an Architectural Decision R
 
 ## 2.1. Visual Overview
 
-> *Diagrams to understand the architecture at a glance.*
+> _Diagrams to understand the architecture at a glance._
 
 ### High-Level Flow / Components
+
 ```
 [Insert Mermaid flowchart, sequence, or component diagram here]
 ```
@@ -46,6 +48,7 @@ You are a senior software architect. I need to write an Architectural Decision R
 ## 3. Why This Approach
 
 **Primary reasons:**
+
 1. [Reason 1]
 2. [Reason 2]
 3. [Reason 3]
@@ -54,8 +57,8 @@ You are a senior software architect. I need to write an Architectural Decision R
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|-------|-------|
+| Pros        | Cons         |
+| ----------- | ------------ |
 | [Benefit 1] | [Drawback 1] |
 | [Benefit 2] | [Drawback 2] |
 | [Benefit 3] | [Drawback 3] |
@@ -65,12 +68,15 @@ You are a senior software architect. I need to write an Architectural Decision R
 ## 5. What Needs to Change
 
 **New components/modules to build:**
+
 - [List new code, services, or infrastructure needed.]
 
 **Changes to existing systems:**
+
 - [List updates, deprecations, or migrations required for current systems.]
 
 **Team impact:**
+
 - [How does this affect the developers, workflows, or API consumers?]
 
 ---

@@ -24,11 +24,7 @@ export class SlotValidateTimeoutError extends Error {
   }
 }
 
-function withTimeout<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  signal?: AbortSignal,
-): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, signal?: AbortSignal): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     if (signal?.aborted) {
       reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
@@ -85,11 +81,7 @@ export async function requestValidate(
   }
 
   try {
-    const result = await withTimeout(
-      handle.validate(options?.signal),
-      timeoutMs,
-      options?.signal,
-    );
+    const result = await withTimeout(handle.validate(options?.signal), timeoutMs, options?.signal);
     return {
       groupId: declaration.groupId,
       slotId: declaration.slotId,
@@ -109,9 +101,7 @@ export async function requestValidate(
   }
 }
 
-export function collectSlotFieldErrors(
-  results: SlotValidateResult[],
-): SlotValidationErrors {
+export function collectSlotFieldErrors(results: SlotValidateResult[]): SlotValidationErrors {
   const map: SlotValidationErrors = {};
   for (const result of results) {
     if (result.valid) continue;
@@ -122,16 +112,13 @@ export function collectSlotFieldErrors(
   return map;
 }
 
-export function useValidateAllSlots(options?: {
-  timeoutMs?: number;
-}): {
+export function useValidateAllSlots(options?: { timeoutMs?: number }): {
   validate: (signal?: AbortSignal) => Promise<SlotValidateResult[]>;
   isValidating: boolean;
   results: SlotValidateResult[];
   errors: SlotValidationErrors;
 } {
-  const { listDeclarations, getHandle, setResults: publishResults, getResults } =
-    useSlotProvider();
+  const { listDeclarations, getHandle, setResults: publishResults, getResults } = useSlotProvider();
   const [isValidating, setIsValidating] = useState(false);
   const [results, setResults] = useState<SlotValidateResult[]>(() => getResults());
   const inFlightRef = useRef<Promise<SlotValidateResult[]> | null>(null);
@@ -155,11 +142,10 @@ export function useValidateAllSlots(options?: {
           const declarations = listDeclarations();
           const next = await Promise.all(
             declarations.map((declaration) =>
-              requestValidate(
-                declaration,
-                getHandle(declaration.groupId, declaration.slotId),
-                { timeoutMs, signal },
-              ),
+              requestValidate(declaration, getHandle(declaration.groupId, declaration.slotId), {
+                timeoutMs,
+                signal,
+              }),
             ),
           );
           if (mountedRef.current) {

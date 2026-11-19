@@ -1,7 +1,4 @@
-import type {
-  InventoryEditOp,
-  InventoryEditPayload,
-} from "@khinemyaezin/seller-contracts";
+import type { InventoryEditOp, InventoryEditPayload } from "@khinemyaezin/seller-contracts";
 import type {
   CreateInventoryItemValues,
   InventoryItemEditForm,
@@ -36,9 +33,7 @@ function createOpFromValues(
       reorderPoint: values.reorderPoint,
       reorderQuantity: values.reorderQuantity,
       maxStock:
-        values.maxStock === "" || values.maxStock == null
-          ? undefined
-          : Number(values.maxStock),
+        values.maxStock === "" || values.maxStock == null ? undefined : Number(values.maxStock),
     },
   };
 }
@@ -174,9 +169,7 @@ function catalogRow(
   prev?: InventoryItemEditRow,
   commitCreate = false,
 ): InventoryItemEditRow {
-  return inventory
-    ? adjustRow(location, inventory, prev)
-    : createRow(location, prev, commitCreate);
+  return inventory ? adjustRow(location, inventory, prev) : createRow(location, prev, commitCreate);
 }
 
 export function toEditPayload(
@@ -249,11 +242,6 @@ export function rowsFromSelection(args: {
   return locations
     .filter((location) => selectedIds.includes(location.id))
     .map((location) =>
-      catalogRow(
-        location,
-        itemByLocation.get(location.id),
-        prevById.get(location.id),
-        true,
-      ),
+      catalogRow(location, itemByLocation.get(location.id), prevById.get(location.id), true),
     );
 }

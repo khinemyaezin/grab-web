@@ -8,10 +8,7 @@ import {
   type ErrorInfo,
 } from "react";
 import { useExtension } from "./extension-registry";
-import {
-  type SlotHandle,
-  type SlotPresentationVariant,
-} from "@khinemyaezin/seller-contracts";
+import { type SlotHandle, type SlotPresentationVariant } from "@khinemyaezin/seller-contracts";
 import { useSlotProvider } from "./slot-provider";
 
 export type ExtensionSlotProps = {
@@ -26,16 +23,16 @@ class ExtensionErrorBoundary extends Component<
   { fallback?: ReactNode; children: ReactNode },
   { hasError: boolean }
 > {
-  state = { hasError: false };
+  override state = { hasError: false };
 
   static getDerivedStateFromError() {
     return { hasError: true };
   }
-  componentDidCatch(error: Error, info: ErrorInfo) {
+  override componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("ExtensionSlot failed to render:", error, info.componentStack);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return <>{this.props.fallback}</>;
     }
@@ -43,13 +40,7 @@ class ExtensionErrorBoundary extends Component<
   }
 }
 
-export function ExtensionSlot({
-  name,
-  optional,
-  variant,
-  props,
-  fallback,
-}: ExtensionSlotProps) {
+export function ExtensionSlot({ name, optional, variant, props, fallback }: ExtensionSlotProps) {
   const ExtensionComponent = useExtension(name) as ComponentType<any> | undefined;
   const { declare, register } = useSlotProvider();
   const groupId = props?.groupId as string | undefined;

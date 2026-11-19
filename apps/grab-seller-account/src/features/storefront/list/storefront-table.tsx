@@ -20,9 +20,16 @@ import { Ellipsis } from "lucide-react";
 import { Button } from "@khinemyaezin/seller-ui/components/index";
 import { QueryState } from "@khinemyaezin/seller-ui/components/query-state";
 import { useStorefronts } from "@/features/storefront/api/use-storefronts";
-import type { StorefrontLifecycleEvent, StorefrontResponse, StorefrontStatus } from "@/features/storefront/types";
+import type {
+  StorefrontLifecycleEvent,
+  StorefrontResponse,
+  StorefrontStatus,
+} from "@/features/storefront/types";
 
-const STATUS_VARIANT: Record<StorefrontStatus, "default" | "secondary" | "destructive" | "outline"> = {
+const STATUS_VARIANT: Record<
+  StorefrontStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   DRAFT: "outline",
   ACTIVE: "default",
   SUSPENDED: "destructive",
@@ -37,16 +44,10 @@ export type StorefrontTableProps = {
 export function StorefrontTable({ link, onLifecycleEvent }: StorefrontTableProps) {
   const { data, isLoading, isError } = useStorefronts(link);
   const storefronts =
-    data?._embedded?.storefrontResponseList
-    ?? data?._embedded?.storefrontResponses
-    ?? [];
+    data?._embedded?.storefrontResponseList ?? data?._embedded?.storefrontResponses ?? [];
 
   return (
-    <QueryState
-      isLoading={isLoading}
-      isError={isError}
-      errorMessage="Failed to load storefronts."
-    >
+    <QueryState isLoading={isLoading} isError={isError} errorMessage="Failed to load storefronts.">
       {storefronts.length === 0 ? (
         <NoStorefronts />
       ) : (
@@ -80,7 +81,9 @@ type StorefrontTableRowProps = {
 };
 
 function StorefrontTableRow({ storefront }: StorefrontTableRowProps) {
-  const canOpen = hasLink(storefront._links, SellerApiLinks.discovery.self) || hasLink(storefront._links, SellerApiLinks.storefront.updateStorefront);
+  const canOpen =
+    hasLink(storefront._links, SellerApiLinks.discovery.self) ||
+    hasLink(storefront._links, SellerApiLinks.storefront.updateStorefront);
 
   return (
     <TableRow>
@@ -124,7 +127,8 @@ function NoStorefronts() {
     <div className="flex flex-col items-center justify-center gap-1 py-8 text-center">
       <p className="text-base font-semibold text-foreground">No storefronts yet</p>
       <p className="text-sm text-muted-foreground">
-        Create a storefront to brand this merchant’s website channel. It is not the Grab marketplace.
+        Create a storefront to brand this merchant’s website channel. It is not the Grab
+        marketplace.
       </p>
     </div>
   );

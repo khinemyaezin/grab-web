@@ -44,7 +44,9 @@ export function LocationPickerDialog({
   const toggleDraftLocation = (locationId: string, checked: boolean) => {
     setDraftIds((prev) =>
       checked
-        ? prev.includes(locationId) ? prev : [...prev, locationId]
+        ? prev.includes(locationId)
+          ? prev
+          : [...prev, locationId]
         : prev.filter((id) => id !== locationId),
     );
   };
@@ -82,18 +84,10 @@ export function LocationPickerDialog({
           </Table>
         </Card>
         <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            type="button"
-            disabled={draftIds.length === 0}
-            onClick={() => onApply(draftIds)}
-          >
+          <Button type="button" disabled={draftIds.length === 0} onClick={() => onApply(draftIds)}>
             Apply
           </Button>
         </div>

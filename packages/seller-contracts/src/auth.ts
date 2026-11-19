@@ -1,6 +1,5 @@
 import { PlatformApiClient } from "./api.js";
-import type {
-} from "./events/core.js";
+import type {} from "./events/core.js";
 import { PlatformEvents } from "./events/index.js";
 import type { SellerRuntimeConfig } from "./runtime.js";
 
@@ -20,30 +19,32 @@ export type SessionUser = {
   email: string;
   name: string;
   avatar?: string;
-  accessContexts: AccessContext[],
-  currentAccessContext?: AccessContext
+  accessContexts: AccessContext[];
+  currentAccessContext?: AccessContext;
 };
 
 export type User = SessionUser & {
   createdAt?: string;
 };
 
-export type LoginCredentials = { email: string; password: string };
-
 export type SessionSnapshot =
   | { status: "loading" }
   | { status: "anonymous" }
   | {
-    status: "authenticated";
-    user: SessionUser;
-    roles: readonly string[];
-    permissions: readonly string[];
-  };
+      status: "authenticated";
+      user: SessionUser;
+      roles: readonly string[];
+      permissions: readonly string[];
+    };
+
+export type SessionExpiredReason = "refresh-failed" | "unauthorized" | "logout" | "manual";
 
 export interface SessionApi {
   getSnapshot(): SessionSnapshot;
   subscribe(listener: (snapshot: SessionSnapshot) => void): () => void;
   refresh(): Promise<void>;
+  expire(reason?: SessionExpiredReason): void;
+  login?(): Promise<void>;
   logout(): Promise<void>;
 }
 

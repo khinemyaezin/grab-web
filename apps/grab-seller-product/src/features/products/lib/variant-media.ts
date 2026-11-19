@@ -1,4 +1,7 @@
-import { toMediaGalleryItems, type MediaGalleryItem } from "@khinemyaezin/seller-ui/components/media-gallery";
+import {
+  toMediaGalleryItems,
+  type MediaGalleryItem,
+} from "@khinemyaezin/seller-ui/components/media-gallery";
 import type { ProductMedia } from "@/features/products/types";
 
 export function orderVariantMediaIds(

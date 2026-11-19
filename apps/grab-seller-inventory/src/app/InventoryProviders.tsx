@@ -20,9 +20,7 @@ export default function InventoryProviders({
     <div className="seller-inventory-mfe">
       <PlatformProvider platform={platform}>
         <EntryLinkProvider link={link}>
-          <SalesChannelLinkProvider link={salesChannelLink}>
-            {children}
-          </SalesChannelLinkProvider>
+          <SalesChannelLinkProvider link={salesChannelLink}>{children}</SalesChannelLinkProvider>
         </EntryLinkProvider>
       </PlatformProvider>
     </div>

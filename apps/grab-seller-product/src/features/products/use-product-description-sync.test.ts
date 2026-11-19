@@ -33,7 +33,9 @@ const replaceLink = { href: "/catalog/products/{productId}/descriptions", templa
 describe("useProductDescriptionSync", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetValues.mockImplementation((name?: string) => (name === "descriptions" ? items : undefined));
+    mockGetValues.mockImplementation((name?: string) =>
+      name === "descriptions" ? items : undefined,
+    );
     mockUseCatalogLink.mockImplementation((rel: string) => {
       if (rel === "replaceProductDescriptions") return replaceLink;
       return undefined;

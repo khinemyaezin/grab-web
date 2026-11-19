@@ -147,7 +147,7 @@ export interface ReorderSuggestionResponse {
   inventoryItemId: string;
   sku: string;
   productVariantId: string | null;
-  productName: string,
+  productName: string;
   locationId: string;
   currentAvailable: number;
   reorderPoint: number;
@@ -177,13 +177,9 @@ export interface LocationResponse {
   _links: Record<string, HateoasLink>;
 }
 
-export interface ActivateZoneResponse extends ZoneResponse{
+export interface ActivateZoneResponse extends ZoneResponse {}
 
-}
-
-export interface DeactivateZoneResponse extends ZoneResponse{
-
-}
+export interface DeactivateZoneResponse extends ZoneResponse {}
 
 export interface InventoryCountPercent {
   count: number;

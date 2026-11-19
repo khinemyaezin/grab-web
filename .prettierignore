@@ -1,0 +1,8 @@
+dist
+coverage
+node_modules
+@mf-types
+.turbo
+pnpm-lock.yaml
+apps/*/dist
+packages/*/dist

@@ -1,10 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@khinemyaezin/seller-ui";
 import { catalogService } from ".";
-import type {
-  ProductVariantSearchResponse,
-  SearchCatalogProductsRequest,
-} from "@/types";
+import type { ProductVariantSearchResponse, SearchCatalogProductsRequest } from "@/types";
 import { useInventoryLink } from "./use-root";
 
 const CATALOG_STALE_TIME = 5 * 60 * 1000;

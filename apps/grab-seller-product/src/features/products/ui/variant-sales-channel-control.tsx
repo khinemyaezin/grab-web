@@ -19,13 +19,19 @@ import {
 } from "@khinemyaezin/seller-ui/components/field";
 import { useSalesChannelLink } from "@/features/products/api/sales-channel-link";
 import { useSalesChannels } from "@/features/products/api/use-sales-channels";
-import { isSellerFacingChannel, salesChannelLabel } from "@/features/products/lib/sales-channel-label";
+import {
+  isSellerFacingChannel,
+  salesChannelLabel,
+} from "@/features/products/lib/sales-channel-label";
 import {
   channelPublishedOnAllSkus,
   togglePublicationChannelForSkus,
   unionChannelIds,
 } from "@/features/products/lib/publication-lines";
-import type { ProductFormValue, UpdateSellableProductPublicationLine } from "@/features/products/types";
+import type {
+  ProductFormValue,
+  UpdateSellableProductPublicationLine,
+} from "@/features/products/types";
 
 export type VariantSalesChannelControlProps = {
   sku?: string;
@@ -71,8 +77,9 @@ export function VariantSalesChannelControl({
   const publishedIds = new Set(unionChannelIds(publicationLines, targetSkus));
   const count = rows.filter((channel) => publishedIds.has(channel.salesChannelId)).length;
   const canToggle = !disabled && targetSkus.length > 0;
-  const dialogDescription = description
-    ?? (targetSkus.length > 1
+  const dialogDescription =
+    description ??
+    (targetSkus.length > 1
       ? "Publish these variants to your channels."
       : "Publish this variant to your channels.");
 

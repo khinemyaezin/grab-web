@@ -27,7 +27,7 @@ The host maps named SSE event `workflow` onto `workflow:updated:v1`. The envelop
 - `stream:ready:v1` / `stream:disconnected:v1` — transport (ADR_004)
 - `workflow:updated:v1` — `{ producerId, workflowId, workflowName, status, idempotencyKey?, errorMessage? }`
 
-**Correlation:** the client generates `idempotencyKey` (`crypto.randomUUID()`) inside `awaitWorkflow` *before* POST, sends it on the start request, and matches `workflowName` + `idempotencyKey`. Do not subscribe by `workflowId` after 202. Do not use `productId` as a fake correlation key.
+**Correlation:** the client generates `idempotencyKey` (`crypto.randomUUID()`) inside `awaitWorkflow` _before_ POST, sends it on the start request, and matches `workflowName` + `idempotencyKey`. Do not subscribe by `workflowId` after 202. Do not use `productId` as a fake correlation key.
 
 **Product MFE:** create and update share one subscribe-before wrap:
 
@@ -42,11 +42,11 @@ await awaitWorkflow((idempotencyKey) =>
 
 `useWorkflowAwaiter` subscribes to `workflow:updated:v1` with `{ replay: false }` before the trigger runs, and buffers one matching terminal frame that arrives during the POST.
 
-| Status | UI |
-|--------|----|
-| `COMPLETED` | success toast; invalidate product queries |
-| `FAILED` / `COMPENSATED` | error toast (`errorMessage` or generic copy) |
-| timeout | info/error toast that the workflow is still running |
+| Status                   | UI                                                  |
+| ------------------------ | --------------------------------------------------- |
+| `COMPLETED`              | success toast; invalidate product queries           |
+| `FAILED` / `COMPENSATED` | error toast (`errorMessage` or generic copy)        |
+| timeout                  | info/error toast that the workflow is still running |
 
 Remotes never import `readBackendEventStream`. Heartbeat comments stay off the bus. No `Last-Event-ID` replay; reconnect gaps are accepted until REST refetch.
 

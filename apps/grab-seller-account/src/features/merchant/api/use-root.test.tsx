@@ -9,60 +9,58 @@ import React from "react";
 import { fetchMerchantRoot } from "./discovery";
 
 vi.mock("@khinemyaezin/seller-ui", () => ({
-    useEntryLink: vi.fn(),
-    useApi: vi.fn(),
+  useEntryLink: vi.fn(),
+  useApi: vi.fn(),
 }));
 
 vi.mock("./discovery", () => ({
-    fetchMerchantRoot: vi.fn(),
+  fetchMerchantRoot: vi.fn(),
 }));
 
 const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false } },
 });
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-        {children}
-    </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
 describe("useRoot", () => {
-    const mockApi = {
-        request: vi.fn(),
-        followLink: vi.fn(),
-        withConfig: vi.fn(),
-    };
+  const mockApi = {
+    request: vi.fn(),
+    followLink: vi.fn(),
+    withConfig: vi.fn(),
+  };
 
-    beforeEach(() => {
-        queryClient.clear();
-        vi.clearAllMocks();
-        vi.mocked(sellerUi.useApi).mockReturnValue(mockApi as any);
+  beforeEach(() => {
+    queryClient.clear();
+    vi.clearAllMocks();
+    vi.mocked(sellerUi.useApi).mockReturnValue(mockApi as any);
+  });
+
+  it("should not fetch if entryLink is missing", () => {
+    vi.mocked(sellerUi.useEntryLink).mockReturnValue(undefined as any);
+
+    const { result } = renderHook(() => useRoot(), { wrapper });
+
+    expect(result.current.isPending).toBe(true);
+    expect(fetchMerchantRoot).not.toHaveBeenCalled();
+  });
+
+  it("should fetch root data when entryLink is present", async () => {
+    const mockLink = { href: "/api/root", rel: "self" };
+    const mockData = { id: "root1", listMerchants: { href: "/api/merchants", rel: "list" } };
+
+    vi.mocked(sellerUi.useEntryLink).mockReturnValue(mockLink);
+    vi.mocked(fetchMerchantRoot).mockResolvedValue(mockData as any);
+
+    const { result } = renderHook(() => useRoot(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
     });
 
-    it("should not fetch if entryLink is missing", () => {
-        vi.mocked(sellerUi.useEntryLink).mockReturnValue(undefined as any);
-
-        const { result } = renderHook(() => useRoot(), { wrapper });
-
-        expect(result.current.isPending).toBe(true);
-        expect(fetchMerchantRoot).not.toHaveBeenCalled();
-    });
-
-    it("should fetch root data when entryLink is present", async () => {
-        const mockLink = { href: "/api/root", rel: "self" };
-        const mockData = { id: "root1", listMerchants: { href: "/api/merchants", rel: "list" } };
-
-        vi.mocked(sellerUi.useEntryLink).mockReturnValue(mockLink);
-        vi.mocked(fetchMerchantRoot).mockResolvedValue(mockData as any);
-
-        const { result } = renderHook(() => useRoot(), { wrapper });
-
-        await waitFor(() => {
-            expect(result.current.isSuccess).toBe(true);
-        });
-
-        expect(fetchMerchantRoot).toHaveBeenCalledWith(mockApi, mockLink);
-        expect(result.current.data).toEqual(mockData);
-    });
+    expect(fetchMerchantRoot).toHaveBeenCalledWith(mockApi, mockLink);
+    expect(result.current.data).toEqual(mockData);
+  });
 });

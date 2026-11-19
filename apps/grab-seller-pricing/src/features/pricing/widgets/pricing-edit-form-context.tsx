@@ -35,11 +35,7 @@ export function PricingEditFormContext({
   }
 
   if (isLoading) {
-    return (
-      loadingFallback ?? (
-        <p className="text-sm text-muted-foreground">Loading price…</p>
-      )
-    );
+    return loadingFallback ?? <p className="text-sm text-muted-foreground">Loading price…</p>;
   }
 
   return (

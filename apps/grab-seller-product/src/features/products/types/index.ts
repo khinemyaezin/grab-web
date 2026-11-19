@@ -10,7 +10,7 @@ export type {
   VariationType,
   MatrixVariantVariation,
   CategoryLeaf,
-  ProductLifecycleEvent
+  ProductLifecycleEvent,
 } from "./catalog.model";
 
 // Request DTOs
@@ -82,4 +82,3 @@ export type {
   ProductFilterFormValue,
   ProductVariantForm,
 } from "./catalog.form";
-

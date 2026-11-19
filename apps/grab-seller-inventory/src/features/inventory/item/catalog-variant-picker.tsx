@@ -29,14 +29,14 @@ export type CatalogVariantPickerProps = {
 type VariantAvailability = InventoryExistenceItem | undefined;
 export type CatalogVariantPickerEvent = {
   product: {
-    id: string,
-    sku: string,
-    name: string
-  }
+    id: string;
+    sku: string;
+    name: string;
+  };
   inventory?: {
-    id: string
-  }
-}
+    id: string;
+  };
+};
 
 export default function CatalogVariantPicker({
   locationId,
@@ -46,18 +46,20 @@ export default function CatalogVariantPicker({
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
 
-  const productSearch = useProductSearch(locationId ? {
-    query: query.trim() || undefined,
-    variantStatus: "ACTIVE",
-    page,
-    size: PAGE_SIZE,
-  } : undefined);
+  const productSearch = useProductSearch(
+    locationId
+      ? {
+          query: query.trim() || undefined,
+          variantStatus: "ACTIVE",
+          page,
+          size: PAGE_SIZE,
+        }
+      : undefined,
+  );
 
   const variants = productSearch.data?._embedded?.productVariantSearchResponseList ?? [];
 
-  const skus = useMemo(() =>
-    variants.map((variant) => variant.sku),
-    [variants]);
+  const skus = useMemo(() => variants.map((variant) => variant.sku), [variants]);
   const existence = useInventoryExistence(locationId, skus);
 
   const existenceBySku = useMemo(() => {
@@ -81,12 +83,12 @@ export default function CatalogVariantPicker({
       product: {
         id: product.variantId,
         sku: product.sku,
-        name: product.productName
+        name: product.productName,
       },
-      ...(inventory?.exists && { inventory: { id: inventory.inventoryItemId } })
+      ...(inventory?.exists && { inventory: { id: inventory.inventoryItemId } }),
     };
-    onSelect?.(event)
-  }
+    onSelect?.(event);
+  };
 
   return (
     <div className="grid gap-4">
@@ -141,11 +143,7 @@ export default function CatalogVariantPicker({
                 {productSearch.data.page.number * productSearch.data.page.size + variants.length} of{" "}
                 {productSearch.data.page.totalElements} variants
               </span>
-              <Pager
-                className="justify-end"
-                onPageChange={setPage}
-                {...productSearch.data.page}
-              />
+              <Pager className="justify-end" onPageChange={setPage} {...productSearch.data.page} />
             </div>
           )}
         </ItemGroup>
@@ -158,7 +156,7 @@ function CatalogVariantRow({
   variant,
   availability,
   selected,
-  onSelect
+  onSelect,
 }: {
   variant: VariantResponse;
   availability: VariantAvailability;
@@ -179,9 +177,7 @@ function CatalogVariantRow({
         </ItemMedia>
         <ItemContent>
           <ItemTitle>{variant.sku}</ItemTitle>
-          <ItemDescription>
-            {variant.productName}
-          </ItemDescription>
+          <ItemDescription>{variant.productName}</ItemDescription>
         </ItemContent>
         {alreadyTracked && <Badge variant="secondary">Already tracked</Badge>}
         <ItemActions>
@@ -191,7 +187,10 @@ function CatalogVariantRow({
             disabled={alreadyTracked}
             hidden
           />
-          {alreadyTracked ? (<ExternalLink className="size-4" />) : (<ChevronRightIcon className="size-4" />
+          {alreadyTracked ? (
+            <ExternalLink className="size-4" />
+          ) : (
+            <ChevronRightIcon className="size-4" />
           )}
         </ItemActions>
       </FieldLabel>

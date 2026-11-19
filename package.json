@@ -6,16 +6,33 @@
   "scripts": {
     "dev": "turbo dev",
     "dev:apps": "turbo dev --filter=./apps/*",
-    "build": "turbo build",
+    "build": "MF_DTS=0 turbo build",
     "typecheck": "turbo typecheck",
+    "typecheck:strict": "turbo typecheck:strict",
     "test": "turbo test",
+    "lint": "turbo lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "check:hateoas": "node scripts/check-hateoas-relations.mjs",
-    "verify": "turbo typecheck test build",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "check:mf-types": "node scripts/check-mf-types.mjs",
+    "mf:types": "node scripts/mf-types.mjs",
+    "docker:smoke": "bash scripts/docker-smoke.sh",
+    "verify": "pnpm mf:types && MF_DTS=0 turbo lint typecheck test build && pnpm format:check && pnpm check:hateoas && pnpm check:boundaries && pnpm check:mf-types",
+    "verify:fast": "pnpm check:mf-types && MF_DTS=0 turbo lint typecheck test build && pnpm format:check && pnpm check:hateoas && pnpm check:boundaries",
     "clean": "turbo clean && rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@module-federation/dts-plugin": "2.5.1",
+    "eslint": "^10.15.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
     "turbo": "^2.9.18",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.2"
   },
   "engines": {
     "node": ">=20.19.0"

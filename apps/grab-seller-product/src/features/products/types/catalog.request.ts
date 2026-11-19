@@ -50,13 +50,13 @@ export type CreateProductRequest = {
 };
 
 export type CreateSellableProductRequest = CreateProductRequest & {
-  pricingLines: CreateSellableProductPricingLine[],
-  inventoryLines?: CreateSellableProductInventoryLine[],
-  publicationLines?: UpdateSellableProductPublicationLine[],
+  pricingLines: CreateSellableProductPricingLine[];
+  inventoryLines?: CreateSellableProductInventoryLine[];
+  publicationLines?: UpdateSellableProductPublicationLine[];
   medias?: ReplaceProductMediaRequest["medias"];
   descriptions?: ReplaceProductDescriptionsRequest["descriptions"];
   idempotencyKey?: string;
-}
+};
 
 export type CreateSellableProductPricingLine = {
   sku: string;
@@ -80,7 +80,12 @@ export type ProductContributions = Partial<
 export type UpdateProductContributions = Partial<
   Pick<
     UpdateSellableProductRequest,
-    "pricingLines" | "inventoryLines" | "publicationLines" | "unpublishLines" | "medias" | "descriptions"
+    | "pricingLines"
+    | "inventoryLines"
+    | "publicationLines"
+    | "unpublishLines"
+    | "medias"
+    | "descriptions"
   >
 >;
 
@@ -93,7 +98,6 @@ export type CreateSellableProductInventoryLine = {
   reorderQuantity?: number;
   maxStock?: number;
 };
-
 
 export type UPDATE_INTENT = "LEAVE_AS_IS" | "FULL_SYNC" | "COLLAPSE_TO_STANDALONE";
 
@@ -200,10 +204,10 @@ export type UpdateProductVariantRequest = {
 };
 
 export interface ProductSearchRequest {
-  query?: string,
-  variantStatus?: string,
-  categoryId?: string,
-  productStatus?: string
+  query?: string;
+  variantStatus?: string;
+  categoryId?: string;
+  productStatus?: string;
   page: number;
   size: number;
 }

@@ -39,7 +39,7 @@ graph TD
 
     %% Nodes
     HostShell["Host Shell App\n(Routing, Auth, Layout)"]:::shell
-    
+
     subgraph MFEs ["Micro-Frontends (MFEs)"]
         ProductMFE["grab_seller_product\n(Product Management)"]:::mfe
         InventoryMFE["seller_inventory\n(Inventory Management)"]:::mfe
@@ -49,33 +49,37 @@ graph TD
         UI["@khinemyaezin/seller-ui\n(UI Components)"]:::shared
         API["@khinemyaezin/seller-api\n(HTTP Client)"]:::shared
     end
-    
+
     BackendServer[("Backend API Services")]:::backend
 
     %% Relationships
     HostShell -- "lazy loads via Vite Fed" --> ProductMFE
     HostShell -- "lazy loads via Vite Fed" --> InventoryMFE
-    
+
     HostShell -- "renders" --> UI
     ProductMFE -- "consumes components" --> UI
     InventoryMFE -- "consumes components" --> UI
-    
+
     ProductMFE -- "fetches data" --> API
     InventoryMFE -- "fetches data" --> API
-    
+
     API -- "HTTP Requests" --> BackendServer
 ```
 
 ## 🚀 Development
 
 ### Running Locally
+
 To run the Shell application locally:
+
 ```bash
 npm run dev
 ```
+
 Development expects `grab-seller-product` on port `3001`, `grab-seller-inventory` on port `3002`, and the backend API on port `8080`.
 
 ### Testing & Building
+
 - **Run Tests**: `npm run test` (powered by Vitest)
 - **Typecheck**: `npm run typecheck`
 - **Build**: `npm run build` (outputs assets to `dist/`)

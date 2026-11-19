@@ -16,6 +16,7 @@ Without a standardized, decoupled communication strategy, MFEs become tightly co
 We decided on a **Framework-Agnostic Singleton (Custom EventBus)** approach for cross-MFE messaging, enforcing decentralized state and local data ownership.
 
 **Key changes:**
+
 - **Event Bus (Messaging):** Apps (MFEs) communicate by sending messages (events) through a shared Event Bus, instead of calling each other directly.
 - **Standardized Contracts:** All message formats are defined in one central place and versioned (e.g., `domain:action:v1`) to prevent breaking older apps.
 - **Keep Global State Small:** We only share the bare minimum across apps (like Theme, Language, and User Login info).
@@ -27,9 +28,10 @@ Individual MFEs maintain their autonomy in local state management (e.g., fetchin
 
 ## 2.1. Visual Overview
 
-> *Diagrams to understand the architecture at a glance.*
+> _Diagrams to understand the architecture at a glance._
 
 ### High-Level Flow / Components
+
 ```mermaid
 flowchart TD
     %% Styles
@@ -45,7 +47,7 @@ flowchart TD
 
     EventBus{{"Shared Event Bus Module"}}:::shared
     WebStorage[("Namespaced Web Storage (localStorage)")]:::storage
-    
+
     Shell -->|"Injects context"| MFE_A
     Shell -->|"Injects context"| MFE_B
 
@@ -60,6 +62,7 @@ flowchart TD
 ## 3. Why This Approach
 
 **Primary reasons:**
+
 1. **Autonomy & Fault Tolerance:** MFEs maintain complete autonomy. If one app crashes while reading a message, it won't crash the rest of the page.
 2. **Type-Safety:** Full TypeScript type-safety is maintained across MFE boundaries by standardizing contracts.
 3. **Decoupling:** Eliminates tight coupling between MFEs, abstracting event listener boilerplate while preventing a distributed monolith.
@@ -68,25 +71,28 @@ flowchart TD
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|-------|-------|
-| MFEs maintain complete autonomy; no cascading failures. | Developers must be disciplined about not over-using the Event Bus. |
-| Full TypeScript type-safety is maintained across MFE boundaries. | Payload serialization is required. |
-| Highly decoupled; abstracts the event listener boilerplate. | State isn't strictly reactive across different frameworks out-of-the-box. |
+| Pros                                                             | Cons                                                                      |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| MFEs maintain complete autonomy; no cascading failures.          | Developers must be disciplined about not over-using the Event Bus.        |
+| Full TypeScript type-safety is maintained across MFE boundaries. | Payload serialization is required.                                        |
+| Highly decoupled; abstracts the event listener boilerplate.      | State isn't strictly reactive across different frameworks out-of-the-box. |
 
 ---
 
 ## 5. What Needs to Change
 
 **New components/modules to build:**
+
 - Shared Event Bus Module (`CustomEvent` based Singleton).
 - Shared Contracts module for centralized, versioned event payloads.
 
 **Changes to existing systems:**
+
 - Existing direct MFE-to-MFE function invocations must be refactored to use the Event Bus.
 - App Shell needs to be restricted to only inject minimal context (Theme, Locale, User Identity).
 
 **Team impact:**
+
 - Teams must adopt the standardized event contract structure.
 - Developers need to rely on local data fetching (e.g., TanStack Query refetching) instead of expecting real-time reactive global state updates.
 
@@ -101,19 +107,22 @@ flowchart TD
 ## 7. Alternative Methods Considered & Rejected
 
 **Rejected: 1. Custom Events & Web APIs (Pub/Sub)**
-- *Best for maintaining high isolation between autonomous MFEs. Micro-frontends do not share libraries; instead, they communicate by publishing and listening to native browser events on the window object.*
+
+- _Best for maintaining high isolation between autonomous MFEs. Micro-frontends do not share libraries; instead, they communicate by publishing and listening to native browser events on the window object._
 - **Use case:** Global notifications, user logins, or theme changes.
 - **Pros:** Complete technological independence; no shared state libraries.
 - **Cons:** Payload serialization is required; harder to track state mutations over time.
 
 **Accepted: 2. Framework-Agnostic Singletons (Custom EventBus)**
-- *(This was selected as our primary approach)* A singleton class or Pub/Sub object is exposed via a host application or a shared module. Individual MFEs import this bus to emit changes or subscribe to state updates.
+
+- _(This was selected as our primary approach)_ A singleton class or Pub/Sub object is exposed via a host application or a shared module. Individual MFEs import this bus to emit changes or subscribe to state updates.
 - **Use case:** Managing shared state like user sessions or shopping carts without forcing a specific framework.
 - **Pros:** Highly decoupled; abstracts the event listener boilerplate.
 - **Cons:** State isn't strictly reactive across different frameworks out-of-the-box.
 
 **Rejected: 3. Shared Global Store (e.g., Redux or Zustand)**
-- *Best for MFEs built on the same framework (e.g., all React). A central store is typically initialized in the host application or packaged as a shared module via Module Federation.*
+
+- _Best for MFEs built on the same framework (e.g., all React). A central store is typically initialized in the host application or packaged as a shared module via Module Federation._
 - **Use case:** Deeply interconnected applications that require a predictable, central source of truth.
 - **Pros:** Familiar developer experience; allows cross-MFE state travel and debugging.
 - **Cons:** Can create a "distributed monolith"; teams lose complete autonomy and must version-lock the state library.

@@ -12,9 +12,15 @@ export function useSlotChangeEmitter<TValue>(
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
-  const { debounceFn } = useDebounce(() => {
+  const { debounceFn, cancel } = useDebounce(() => {
     onChangeRef.current?.(sourceRef.current.getValues());
   }, debounceMs);
+
+  useEffect(() => {
+    return () => {
+      cancel();
+    };
+  }, [cancel]);
 
   useEffect(() => {
     return source.subscribe((name) => {

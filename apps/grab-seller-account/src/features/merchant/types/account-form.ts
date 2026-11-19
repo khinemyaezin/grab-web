@@ -1,25 +1,24 @@
 export type AccountBasicFormValues = {
-    displayName: string;
-    primaryMarketCountryCode: string;
+  displayName: string;
+  primaryMarketCountryCode: string;
 };
 
 export type AccountProfileFormValues = {
-    legalName: string;
-    displayName: string;
-    contactEmail: string;
-    contactPhone: string;
+  legalName: string;
+  displayName: string;
+  contactEmail: string;
+  contactPhone: string;
 };
 
 export type AccountBusinessRegistrationFormValues = {
-    countryCode: string,
-    registrationNumber: string
-}
+  countryCode: string;
+  registrationNumber: string;
+};
 
-export interface RetailerProfileFormValues extends AccountProfileFormValues, AccountBusinessRegistrationFormValues {
-
-}
+export interface RetailerProfileFormValues
+  extends AccountProfileFormValues, AccountBusinessRegistrationFormValues {}
 
 export type StorefrontFormValues = {
-    name: string;
-    slug: string;
+  name: string;
+  slug: string;
 };

@@ -70,6 +70,7 @@ export type SlotWidgetProps<TContext, TPayload> = {
 ```
 
 ### Core Rules:
+
 - **Stable `groupId`**: Identifies one logical entity instance (e.g., variant row, pricing tier). A new entity must receive a new `groupId`.
 - **Variants**: Use `variant?: "full" | "inline"` for layout styling; never create separate slot names just for layout variations.
 - **Props Down, Handles Up**: Context flows down via props. Draft values flow up via `onChange`. Capabilities (validation, reset, projection) flow up via `registerHandle`.

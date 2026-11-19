@@ -1,4 +1,1 @@
-export {
-  collapseRequiredHeaders,
-  putPresignedObject,
-} from "@khinemyaezin/seller-api";
+export { collapseRequiredHeaders, putPresignedObject } from "@khinemyaezin/seller-api";

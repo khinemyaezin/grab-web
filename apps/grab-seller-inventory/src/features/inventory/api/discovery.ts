@@ -3,8 +3,11 @@ import type { PlatformApiClient } from "@khinemyaezin/seller-contracts";
 import type { InventoryRoot } from "@/features/inventory/types";
 import { InventoryRootResponse } from "@/features/inventory/types/inventory.response";
 
-export async function fetchInventoryRoot(api: PlatformApiClient, link: HateoasLink): Promise<InventoryRoot> {
-  const response = await api.followLink<InventoryRootResponse>(link)
+export async function fetchInventoryRoot(
+  api: PlatformApiClient,
+  link: HateoasLink,
+): Promise<InventoryRoot> {
+  const response = await api.followLink<InventoryRootResponse>(link);
 
   return {
     self: resolveLink(response._links, SellerApiLinks.discovery.self),
@@ -14,9 +17,18 @@ export async function fetchInventoryRoot(api: PlatformApiClient, link: HateoasLi
     searchInventoryItems: resolveLink(response._links, SellerApiLinks.pending.searchInventoryItems),
     createInventoryItem: resolveLink(response._links, SellerApiLinks.inventory.createInventoryItem),
     inventoryItem: resolveLink(response._links, SellerApiLinks.inventory.getInventoryItem),
-    checkInventoryExistence: resolveLink(response._links, SellerApiLinks.pending.checkInventoryItemsExistence),
+    checkInventoryExistence: resolveLink(
+      response._links,
+      SellerApiLinks.pending.checkInventoryItemsExistence,
+    ),
     inventorySummary: resolveLink(response._links, SellerApiLinks.pending.inventorySummary),
-    searchProductVariants: resolveLink(response._links, SellerApiLinks.pending.searchProductVariants),
-    reorderSuggestions: resolveLink(response._links, SellerApiLinks.reorderSuggestion.listSuggestions),
+    searchProductVariants: resolveLink(
+      response._links,
+      SellerApiLinks.pending.searchProductVariants,
+    ),
+    reorderSuggestions: resolveLink(
+      response._links,
+      SellerApiLinks.reorderSuggestion.listSuggestions,
+    ),
   };
 }

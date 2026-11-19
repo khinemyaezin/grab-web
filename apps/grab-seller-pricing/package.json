@@ -10,7 +10,8 @@
     "build:production": "tsc -b && vite build --mode production",
     "preview": "vite preview --port 3005",
     "typecheck": "tsc -b",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

@@ -88,8 +88,10 @@ export function isDescriptionsDirty(
   items: ProductDescription[] | undefined,
   seed: ProductDescription[] | undefined = [],
 ): boolean {
-  return JSON.stringify(toReplaceDescriptionsPayload(items))
-    !== JSON.stringify(toReplaceDescriptionsPayload(seed));
+  return (
+    JSON.stringify(toReplaceDescriptionsPayload(items)) !==
+    JSON.stringify(toReplaceDescriptionsPayload(seed))
+  );
 }
 
 export async function attachProductDescriptions({

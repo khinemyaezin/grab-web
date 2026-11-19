@@ -4,9 +4,7 @@ import type { HateoasLink } from "@khinemyaezin/seller-api";
 import { isVariantMediaDirty } from "@/features/products/lib/variant-media";
 
 export type VariantMediaSyncResult =
-  | { status: "skipped" }
-  | { status: "synced" }
-  | { status: "failed"; error: Error };
+  { status: "skipped" } | { status: "synced" } | { status: "failed"; error: Error };
 
 export type AttachVariantMediaOptions = {
   api: PlatformApiClient;
@@ -29,10 +27,12 @@ export async function attachVariantMedia({
   seedMediaIds = [],
   seedThumbnailMediaId = null,
 }: AttachVariantMediaOptions): Promise<VariantMediaSyncResult> {
-  if (!isVariantMediaDirty(
-    { mediaIds, thumbnailMediaId },
-    { mediaIds: seedMediaIds, thumbnailMediaId: seedThumbnailMediaId },
-  )) {
+  if (
+    !isVariantMediaDirty(
+      { mediaIds, thumbnailMediaId },
+      { mediaIds: seedMediaIds, thumbnailMediaId: seedThumbnailMediaId },
+    )
+  ) {
     return { status: "skipped" };
   }
 

@@ -12,28 +12,53 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function resolveTheme(theme: Theme): "light" | "dark" {
   if (theme !== "system") return theme;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return "light";
 }
 
-export function ThemeProvider({ children, defaultTheme = "system" }: { children: ReactNode; defaultTheme?: Theme }) {
+export function ThemeProvider({
+  children,
+  defaultTheme = "system",
+}: {
+  children: ReactNode;
+  defaultTheme?: Theme;
+}) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem("seller-theme") as Theme | null;
-    return stored ?? defaultTheme;
+    try {
+      if (typeof localStorage !== "undefined") {
+        const stored = localStorage?.getItem?.("seller-theme") as Theme | null;
+        return stored ?? defaultTheme;
+      }
+    } catch {
+      // ignore
+    }
+    return defaultTheme;
   });
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(() => resolveTheme(theme));
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    if (typeof window === "undefined") return;
     const apply = () => {
       const resolved = resolveTheme(theme);
       setResolvedTheme(resolved);
       document.documentElement.classList.toggle("dark", resolved === "dark");
       document.documentElement.style.colorScheme = resolved;
-      localStorage.setItem("seller-theme", theme);
+      try {
+        if (typeof localStorage !== "undefined") {
+          localStorage?.setItem?.("seller-theme", theme);
+        }
+      } catch {
+        // ignore
+      }
     };
     apply();
-    media.addEventListener("change", apply);
-    return () => media.removeEventListener("change", apply);
+    if (typeof window.matchMedia === "function") {
+      const media = window.matchMedia("(prefers-color-scheme: dark)");
+      media?.addEventListener?.("change", apply);
+      return () => media?.removeEventListener?.("change", apply);
+    }
   }, [theme]);
 
   const value = useMemo(() => ({ theme, resolvedTheme, setTheme }), [theme, resolvedTheme]);

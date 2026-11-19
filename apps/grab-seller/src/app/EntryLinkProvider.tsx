@@ -29,9 +29,5 @@ export function EntryLinkProvider({
     }, {});
   }, [data?._links]);
 
-  return (
-    <EntryLinkContext.Provider value={moduleLinks}>
-      {children}
-    </EntryLinkContext.Provider>
-  );
+  return <EntryLinkContext.Provider value={moduleLinks}>{children}</EntryLinkContext.Provider>;
 }

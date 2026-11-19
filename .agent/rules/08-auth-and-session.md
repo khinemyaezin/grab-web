@@ -22,10 +22,10 @@ Remotes access session state via `usePlatform()` or `useAuth()` (provided by `@k
 
 ```ts
 interface SessionApi {
-  getSnapshot(): SessionSnapshot;    // Synchronous state reader
+  getSnapshot(): SessionSnapshot; // Synchronous state reader
   subscribe(listener: () => void): () => void; // State subscription
-  refresh(): Promise<void>;          // Coordinated token refresh
-  logout(): Promise<void>;           // Session sign-out
+  refresh(): Promise<void>; // Coordinated token refresh
+  logout(): Promise<void>; // Session sign-out
 }
 ```
 

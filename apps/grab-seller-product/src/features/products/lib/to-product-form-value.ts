@@ -11,10 +11,12 @@ function getVariantName(
   variant: { variations: { optionId: string }[] },
   nameMap: Record<string, string>,
 ): string {
-  return variant.variations
-    .map((variation) => nameMap[variation.optionId] ?? "")
-    .filter(Boolean)
-    .join(" / ") || "";
+  return (
+    variant.variations
+      .map((variation) => nameMap[variation.optionId] ?? "")
+      .filter(Boolean)
+      .join(" / ") || ""
+  );
 }
 
 export function toProductMediaFormItems(
@@ -31,8 +33,8 @@ export function transformProductToFormValue(apiData: GetFullProductResponse): Pr
   );
 
   const standaloneVariant =
-    apiData.variantTypes.length == 0
-    && apiData.variants.find((variant) => variant.variations.length === 0);
+    apiData.variantTypes.length == 0 &&
+    apiData.variants.find((variant) => variant.variations.length === 0);
 
   return {
     product: {

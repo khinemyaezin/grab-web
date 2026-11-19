@@ -51,9 +51,7 @@ export function ProductExtensionSlot<TContext, TPayload>({
           onChange,
         }}
       />
-      {message ? (
-        <p className="text-sm text-destructive">{message}</p>
-      ) : null}
+      {message ? <p className="text-sm text-destructive">{message}</p> : null}
     </div>
   );
 }

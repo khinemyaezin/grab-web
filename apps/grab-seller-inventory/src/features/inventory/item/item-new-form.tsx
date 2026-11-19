@@ -1,18 +1,37 @@
-import {
-  ApiError,
-  CreateInventoryRequest,
-  ItemFormValues,
-  ItemLifecycleEvent,
-} from "@/types";
+import { ApiError, CreateInventoryRequest, ItemFormValues, ItemLifecycleEvent } from "@/types";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useCreateItemMutation } from "@/features/inventory/api/use-items";
 import { useInventoryLink } from "@/features/inventory/api/use-root";
 import { useLocations } from "@/features/inventory/api/use-locations";
 import { useSearchParams } from "react-router";
-import { Button, ButtonGroup, ButtonStatus, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, FieldDescription, FieldLegend, FieldSet, Item, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle, WizardStep } from "@khinemyaezin/seller-ui/components/index";
+import {
+  Button,
+  ButtonGroup,
+  ButtonStatus,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  FieldDescription,
+  FieldLegend,
+  FieldSet,
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+  WizardStep,
+} from "@khinemyaezin/seller-ui/components/index";
 import Wizard from "@khinemyaezin/seller-ui/components/wizard";
-import { ItemLocationFieldSet, ItemProductVariantFieldSet, ItemStockSettingsFieldSet } from "./item-fieldset";
+import {
+  ItemLocationFieldSet,
+  ItemProductVariantFieldSet,
+  ItemStockSettingsFieldSet,
+} from "./item-fieldset";
 import { ArrowLeftIcon, ArrowRightIcon, MapPin, Package, PencilIcon } from "lucide-react";
 
 export type ItemNewFormProps = {
@@ -47,14 +66,19 @@ export default function ItemNewForm({ onLifecycleEvent }: ItemNewFormProps) {
     mode: "onSubmit",
   });
 
-  const { handleSubmit, reset, watch, formState: { isDirty } } = form;
+  const {
+    handleSubmit,
+    reset,
+    watch,
+    formState: { isDirty },
+  } = form;
   const locationId = watch("locationId");
   const product = watch("product");
   const productSku = product?.sku?.trim() ?? "";
 
   const { data: locationsData } = useLocations(searchLocationLink, {
     page: 0,
-    size: 100
+    size: 100,
   });
   const selectedLocation = locationsData?._embedded?.locationResponseList?.find(
     (location) => location.id === locationId,
@@ -127,9 +151,11 @@ export default function ItemNewForm({ onLifecycleEvent }: ItemNewFormProps) {
       description: "Choose where this SKU will be stocked",
       content: (
         <div className="p-6 pt-0">
-          <ItemLocationFieldSet onSelected={async () => {
-            handlePickerNext();
-          }} />
+          <ItemLocationFieldSet
+            onSelected={async () => {
+              handlePickerNext();
+            }}
+          />
         </div>
       ),
     },
@@ -139,15 +165,18 @@ export default function ItemNewForm({ onLifecycleEvent }: ItemNewFormProps) {
       description: "Pick an available catalog variant for this location.",
       content: (
         <div className="p-6 pt-0">
-          <ItemProductVariantFieldSet onSelected={async (inventoryItemId) => {
-            if (inventoryItemId) {
-              onLifecycleEvent?.({ type: "navigation", itemId: inventoryItemId });
-              return;
-            }
-            handlePickerNext();
-          }} />
+          <ItemProductVariantFieldSet
+            onSelected={async (inventoryItemId) => {
+              if (inventoryItemId) {
+                onLifecycleEvent?.({ type: "navigation", itemId: inventoryItemId });
+                return;
+              }
+              handlePickerNext();
+            }}
+          />
           {buttons}
-        </div>),
+        </div>
+      ),
     },
   ];
 
@@ -157,8 +186,7 @@ export default function ItemNewForm({ onLifecycleEvent }: ItemNewFormProps) {
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         {phase === "picker" ? (
-          <Wizard steps={pickerSteps} activeStepId={pickerStepId}>
-          </Wizard>
+          <Wizard steps={pickerSteps} activeStepId={pickerStepId}></Wizard>
         ) : (
           <>
             <Card>
@@ -183,11 +211,8 @@ export default function ItemNewForm({ onLifecycleEvent }: ItemNewFormProps) {
                     </ItemMedia>
                     <ItemContent>
                       <ItemTitle>{productSku}</ItemTitle>
-                      <ItemDescription>
-                        {product.productName}
-                      </ItemDescription>
+                      <ItemDescription>{product.productName}</ItemDescription>
                     </ItemContent>
-
                   </Item>
                 </ItemGroup>
                 <Button type="button" variant="ghost" size="sm" onClick={openPickerToEdit}>
@@ -199,7 +224,9 @@ export default function ItemNewForm({ onLifecycleEvent }: ItemNewFormProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Stock settings</CardTitle>
-                <CardDescription>Set the opening quantity and optional replenishment thresholds.</CardDescription>
+                <CardDescription>
+                  Set the opening quantity and optional replenishment thresholds.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ItemStockSettingsFieldSet />

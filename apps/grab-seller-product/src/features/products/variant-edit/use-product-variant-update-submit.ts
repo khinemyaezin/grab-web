@@ -12,10 +12,7 @@ import { resolveLink, SellerApiLinks, type HateoasLink } from "@khinemyaezin/sel
 import { invalidateProductQueries } from "@/features/products/api/use-products";
 import { attachVariantMedia } from "@/features/products/api/variant-media";
 import { buildUpdateProductVariantRequest } from "@/features/products/lib/update-product-variant-request";
-import {
-  runWorkflowChain,
-  toWorkflowStepResult,
-} from "@/features/products/lib/run-workflow-chain";
+import { runWorkflowChain, toWorkflowStepResult } from "@/features/products/lib/run-workflow-chain";
 import type {
   ProductLifecycleEvent,
   ProductVariantForm,
@@ -73,12 +70,7 @@ export function useProductVariantUpdateSubmit({
 
     const values = getValues();
     const contributions = mergeContributions(results, PRODUCT_SLICES) as UpdateProductContributions;
-    const payload = buildUpdateProductVariantRequest(
-      productId,
-      variantId,
-      values,
-      contributions,
-    );
+    const payload = buildUpdateProductVariantRequest(productId, variantId, values, contributions);
     const batchLink = resolveLink(actions, SellerApiLinks.pending.batchVariantImages);
 
     const chain = await runWorkflowChain<VariantUpdateChainCtx>(
@@ -93,15 +85,18 @@ export function useProductVariantUpdateSubmit({
         },
         {
           id: "attachVariantMedia",
-          run: async () => toWorkflowStepResult(await attachVariantMedia({
-            api,
-            link: batchLink,
-            mediaIds: values.mediaIds ?? [],
-            thumbnailMediaId: values.thumbnailMediaId,
-            seedMediaIds: seed.mediaIds ?? [],
-            seedThumbnailMediaId: seed.thumbnailMediaId,
-          })),
-          onFailure: (ctx) => ctx.entityUpdated ? "stop" : "abort",
+          run: async () =>
+            toWorkflowStepResult(
+              await attachVariantMedia({
+                api,
+                link: batchLink,
+                mediaIds: values.mediaIds ?? [],
+                thumbnailMediaId: values.thumbnailMediaId,
+                seedMediaIds: seed.mediaIds ?? [],
+                seedThumbnailMediaId: seed.thumbnailMediaId,
+              }),
+            ),
+          onFailure: (ctx) => (ctx.entityUpdated ? "stop" : "abort"),
         },
       ],
       { entityUpdated: false },

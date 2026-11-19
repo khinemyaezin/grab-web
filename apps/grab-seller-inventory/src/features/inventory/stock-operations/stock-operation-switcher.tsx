@@ -13,7 +13,7 @@ type CreateProps = {
   op: "CREATE";
   formRef: Ref<StockOperationFormHandle>;
   value?: CreateInventoryItemValues;
-  location: LocationValues
+  location: LocationValues;
 };
 
 export type StockOperationSwitcherProps = AdjustProps | CreateProps;
@@ -23,19 +23,13 @@ const FORM_FACTORIES = {
     <AdjustStockForm key="adjust" ref={props.formRef} value={props.value} />
   ),
   CREATE: (props: CreateProps) => (
-    <CreateStockForm
-      ref={props.formRef}
-      locations={props.location}
-      value={props.value}
-    />
+    <CreateStockForm ref={props.formRef} locations={props.location} value={props.value} />
   ),
-} satisfies { [K in StockOperationOp]: (props: Extract<StockOperationSwitcherProps, { op: K }>) => ReactNode };
+} satisfies {
+  [K in StockOperationOp]: (props: Extract<StockOperationSwitcherProps, { op: K }>) => ReactNode;
+};
 export default function StockOperationSwitcher(props: StockOperationSwitcherProps) {
   const renderForm = FORM_FACTORIES[props.op] as (p: StockOperationSwitcherProps) => ReactNode;
 
-  return (
-    <div className="grid gap-3">
-      {renderForm?.(props)}
-    </div>
-  );
+  return <div className="grid gap-3">{renderForm?.(props)}</div>;
 }

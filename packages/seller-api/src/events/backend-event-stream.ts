@@ -3,17 +3,22 @@ import { consumeSseBuffer, type SseFrame } from "./sse-parser.js";
 export type { SseFrame };
 
 export type BackendEventStreamDisconnectReason = "error";
+export type BackendEventStreamState = "connecting" | "open" | "reconnecting";
 
 export type CreateBackendEventStreamOptions = {
   url: string;
   signal: AbortSignal;
   refresh: () => Promise<void>;
+  expire?: (reason?: "refresh-failed" | "unauthorized") => void;
   onFrame: (frame: SseFrame) => void;
   onDisconnected?: (reason: BackendEventStreamDisconnectReason) => void;
+  onStateChange?: (state: BackendEventStreamState) => void;
   fetchImpl?: typeof fetch;
   delay?: (ms: number, signal: AbortSignal) => Promise<void>;
   initialBackoffMs?: number;
   maxBackoffMs?: number;
+  storageKey?: string;
+  storage?: Storage | null;
 };
 
 export async function createBackendEventStream(
@@ -23,19 +28,38 @@ export async function createBackendEventStream(
     url,
     signal,
     refresh,
+    expire,
     onFrame,
     onDisconnected,
+    onStateChange,
     fetchImpl = fetch,
     delay = delayRespectingAbort,
     initialBackoffMs = 1_000,
     maxBackoffMs = 30_000,
+    storageKey,
+    storage = typeof window !== "undefined" && window.sessionStorage ? window.sessionStorage : null,
   } = options;
 
   let lastEventId: string | undefined;
+  if (storage && storageKey) {
+    try {
+      const stored = storage.getItem(storageKey);
+      if (stored) {
+        lastEventId = stored;
+      }
+    } catch {
+      // Ignore storage access errors
+    }
+  }
+
   let backoffMs = initialBackoffMs;
   let refreshed = false;
+  let attempt = 0;
 
   while (!signal.aborted) {
+    onStateChange?.(attempt === 0 ? "connecting" : "reconnecting");
+    attempt += 1;
+
     try {
       const headers: Record<string, string> = {
         Accept: "text/event-stream",
@@ -52,31 +76,62 @@ export async function createBackendEventStream(
         signal,
       });
 
-      if (response.status === 401 && !refreshed) {
-        await refresh();
-        refreshed = true;
-        continue;
-      }
+      if (response.status === 401) {
+        if (!refreshed) {
+          try {
+            await refresh();
+            refreshed = true;
+            continue;
+          } catch (refreshErr: unknown) {
+            const isAuthError =
+              (refreshErr &&
+                typeof refreshErr === "object" &&
+                "status" in refreshErr &&
+                ((refreshErr as { status: number }).status === 401 ||
+                  (refreshErr as { status: number }).status === 403)) ||
+              (refreshErr instanceof Error &&
+                (refreshErr.message.includes("401") ||
+                  refreshErr.message.includes("403") ||
+                  refreshErr.message.toLowerCase().includes("unauthorized")));
 
-      if (!response.ok || !response.body) {
-        throw new Error(`Event stream failed: ${response.status} ${response.statusText}`);
-      }
+            if (isAuthError) {
+              expire?.("refresh-failed");
+              return;
+            }
 
-      refreshed = false;
-      backoffMs = initialBackoffMs;
-
-      await readSseStream(response.body, signal, (frame) => {
-        if (frame.id) {
-          lastEventId = frame.id;
+            onDisconnected?.("error");
+          }
+        } else {
+          expire?.("unauthorized");
+          return;
         }
-        onFrame(frame);
-      });
+      } else if (!response.ok || !response.body) {
+        throw new Error(`Event stream failed: ${response.status} ${response.statusText}`);
+      } else {
+        refreshed = false;
+        backoffMs = initialBackoffMs;
+        onStateChange?.("open");
 
-      if (signal.aborted) {
-        return;
+        await readSseStream(response.body, signal, (frame) => {
+          if (frame.id) {
+            lastEventId = frame.id;
+            if (storage && storageKey) {
+              try {
+                storage.setItem(storageKey, frame.id);
+              } catch {
+                // Ignore storage access errors
+              }
+            }
+          }
+          onFrame(frame);
+        });
+
+        if (signal.aborted) {
+          return;
+        }
+
+        onDisconnected?.("error");
       }
-
-      onDisconnected?.("error");
     } catch {
       if (signal.aborted) {
         return;
@@ -84,7 +139,12 @@ export async function createBackendEventStream(
       onDisconnected?.("error");
     }
 
-    await delay(backoffMs, signal);
+    if (signal.aborted) {
+      return;
+    }
+
+    const jitter = 0.8 + Math.random() * 0.4;
+    await delay(Math.round(backoffMs * jitter), signal);
     backoffMs = Math.min(backoffMs * 2, maxBackoffMs);
   }
 }
@@ -122,20 +182,24 @@ async function readSseStream(
   }
 }
 
-function delayRespectingAbort(ms: number, signal: AbortSignal): Promise<void> {
+export function delayRespectingAbort(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve) => {
     if (signal.aborted) {
       resolve();
       return;
     }
-    const timer = setTimeout(resolve, ms);
-    signal.addEventListener(
-      "abort",
-      () => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const onAbort = () => {
+      if (timer !== undefined) {
         clearTimeout(timer);
-        resolve();
-      },
-      { once: true },
-    );
+        timer = undefined;
+      }
+      resolve();
+    };
+    timer = setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    signal.addEventListener("abort", onAbort, { once: true });
   });
 }

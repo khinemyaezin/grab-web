@@ -9,7 +9,5 @@ export function rewritePublicationLineSku(
   if (!fromSku || fromSku === toSku) {
     return current;
   }
-  return current.map((line) =>
-    line.sku === fromSku ? { ...line, sku: toSku } : line,
-  );
+  return current.map((line) => (line.sku === fromSku ? { ...line, sku: toSku } : line));
 }

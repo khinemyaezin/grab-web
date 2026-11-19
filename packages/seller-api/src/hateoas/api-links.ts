@@ -13,9 +13,9 @@ export const SellerDiscoveryApiLinks = {
 } as const;
 
 export const SellerAuthApiLinks = {
+  csrf: relation("get-csrf-token"),
   login: relation("login"),
   logout: relation("logout"),
-  refresh: relation("refresh"),
   register: relation("register"),
 } as const;
 

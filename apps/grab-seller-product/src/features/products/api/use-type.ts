@@ -7,7 +7,7 @@ import { resolveUrlTemplate } from "@khinemyaezin/seller-api";
 
 export function useVariationType(variantTypesLink: HateoasLink | undefined, name: string) {
   const api = useApi();
-  const expendLink = variantTypesLink && resolveUrlTemplate({ "name": name }, variantTypesLink);
+  const expendLink = variantTypesLink && resolveUrlTemplate({ name: name }, variantTypesLink);
 
   return useQuery<GetVariationTypeResult>({
     queryKey: ["types", variantTypesLink?.href, name],

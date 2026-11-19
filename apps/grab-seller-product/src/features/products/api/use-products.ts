@@ -75,7 +75,11 @@ export function useUpdateProductVariantMutation() {
 export function useProductUpdateMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<UpdateProductResponse, Error, { link: HateoasLink; request: UpdateProductRequest }>({
+  return useMutation<
+    UpdateProductResponse,
+    Error,
+    { link: HateoasLink; request: UpdateProductRequest }
+  >({
     mutationFn: ({ link, request }) => catalogService.updateProduct(api, link, request),
     onSuccess: () => {
       invalidateProductsQueries(queryClient);
@@ -166,10 +170,7 @@ export function useProductVariantGet(
   const api = useApi();
   const extendedLink =
     variantLink &&
-    resolveUrlTemplate(
-      { productId: request.productId, variantId: request.variantId },
-      variantLink,
-    );
+    resolveUrlTemplate({ productId: request.productId, variantId: request.variantId }, variantLink);
   return useQuery<GetVariantResponse, Error>({
     queryKey: ["product", request.productId, "variant", request.variantId],
     queryFn: async () => catalogService.getVariant(api, extendedLink!),
@@ -201,5 +202,3 @@ export function useProductSuspendMutation() {
     },
   });
 }
-
-

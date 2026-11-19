@@ -1,4 +1,7 @@
-import type { StorefrontFormValues, UpdateStorefrontProfileRequest } from "@/features/storefront/types";
+import type {
+  StorefrontFormValues,
+  UpdateStorefrontProfileRequest,
+} from "@/features/storefront/types";
 
 export function buildUpdateStorefrontProfileRequest(
   values: StorefrontFormValues,

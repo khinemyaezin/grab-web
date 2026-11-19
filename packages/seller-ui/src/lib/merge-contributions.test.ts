@@ -13,23 +13,17 @@ describe("mergeContributions", () => {
         groupId: "a",
         slotId: FIXTURE_SLOT,
         valid: true,
-        contributions: [
-          { slice: SLICE_A, append: [{ sku: "A" }] },
-        ],
+        contributions: [{ slice: SLICE_A, append: [{ sku: "A" }] }],
       },
       {
         groupId: "b",
         slotId: FIXTURE_SLOT,
         valid: true,
-        contributions: [
-          { slice: SLICE_A, append: [{ sku: "B" }] },
-        ],
+        contributions: [{ slice: SLICE_A, append: [{ sku: "B" }] }],
       },
     ];
 
-    expect(
-      mergeContributions(results, [SLICE_A, SLICE_B]),
-    ).toEqual({
+    expect(mergeContributions(results, [SLICE_A, SLICE_B])).toEqual({
       [SLICE_A]: [{ sku: "A" }, { sku: "B" }],
       [SLICE_B]: [],
     });
@@ -45,8 +39,6 @@ describe("mergeContributions", () => {
       },
     ];
 
-    expect(() =>
-      mergeContributions(results, [SLICE_A]),
-    ).toThrow(UnknownSlotSliceError);
+    expect(() => mergeContributions(results, [SLICE_A])).toThrow(UnknownSlotSliceError);
   });
 });

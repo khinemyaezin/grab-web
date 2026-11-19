@@ -1,25 +1,29 @@
-import { useState, useRef, useCallback } from "react";
-import { SessionSnapshot, User } from "@khinemyaezin/seller-contracts";
-import { UserProfile } from "grab_seller_auth/compiled-types/features/auth/types";
+import { useRef, useCallback } from "react";
+import type { IdentityProfile, SessionSnapshot, SessionUser } from "@khinemyaezin/seller-contracts";
 
-export const profileToSnapshot = (profile: UserProfile): SessionSnapshot => {
-  const { createdAt, ...user } = profile;
+export const profileToSnapshot = (profile: IdentityProfile): SessionSnapshot => {
+  const user: SessionUser = {
+    id: profile.id,
+    email: profile.email,
+    name: profile.name || "",
+    avatar: profile.avatar,
+    accessContexts: profile.accessContexts,
+    currentAccessContext: profile.currentAccessContext,
+  };
   return {
     status: "authenticated",
     user,
-    roles: [],
-    permissions: [],
+    roles: profile.roles || [],
+    permissions: profile.permissions || [],
   };
 };
 
 export function useSessionState() {
   const listenersRef = useRef(new Set<(snapshot: SessionSnapshot) => void>());
-  const [snapshot, setSnapshot] = useState<SessionSnapshot>({ status: "loading" });
-  const snapshotRef = useRef<SessionSnapshot>(snapshot);
+  const snapshotRef = useRef<SessionSnapshot>({ status: "loading" });
 
   const publishSnapshot = useCallback((next: SessionSnapshot) => {
     snapshotRef.current = next;
-    setSnapshot(next);
     for (const listener of listenersRef.current) {
       try {
         listener(next);
@@ -37,7 +41,6 @@ export function useSessionState() {
   }, []);
 
   return {
-    snapshot,
     snapshotRef,
     publishSnapshot,
     subscribe,

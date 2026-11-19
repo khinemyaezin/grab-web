@@ -12,18 +12,22 @@ import {
   MediaGalleryErrors,
   MediaGalleryList,
 } from "@khinemyaezin/seller-ui/components/media-gallery";
-import { PRODUCT_MEDIA_ACCEPT, PRODUCT_MEDIA_MAX_BYTES } from "@/features/products/lib/product-media";
+import {
+  PRODUCT_MEDIA_ACCEPT,
+  PRODUCT_MEDIA_MAX_BYTES,
+} from "@/features/products/lib/product-media";
 import type { ProductFormValue } from "@/features/products/types";
 
 export default function ProductMediaFieldSet() {
-  const { control, formState: { isSubmitting } } = useFormContext<ProductFormValue>();
+  const {
+    control,
+    formState: { isSubmitting },
+  } = useFormContext<ProductFormValue>();
 
   return (
     <FieldSet>
       <FieldLegend>Media</FieldLegend>
-      <FieldDescription>
-        Optional. First image is the storefront hero.
-      </FieldDescription>
+      <FieldDescription>Optional. First image is the storefront hero.</FieldDescription>
       <Controller
         control={control}
         name="medias"

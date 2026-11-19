@@ -35,8 +35,14 @@ describe("ProductStatus", () => {
 
     expect(screen.getByRole("combobox", { name: "Status" })).toHaveTextContent("Draft");
     openStatusPicker();
-    expect(screen.getByRole("option", { name: /Draft/ })).not.toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByRole("option", { name: /Active/ })).not.toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("option", { name: /Draft/ })).not.toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    expect(screen.getByRole("option", { name: /Active/ })).not.toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
     expect(screen.getByRole("option", { name: /Draft/ })).toHaveTextContent(
       "Not visible on selected sales channels or markets",
     );

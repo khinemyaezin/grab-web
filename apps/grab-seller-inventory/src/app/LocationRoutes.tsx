@@ -32,7 +32,10 @@ export default function LocationRoutes({
         <Route path=":locationId/zones/new" element={<NewZonePage />} />
         <Route path=":locationId/zones/:zoneId" element={<EditZonePage />} />
         <Route path=":locationId/zones/:zoneId/bins/new" element={<NewBinPage />} />
-        <Route path=":locationId/zones/:zoneId/bins" element={<Navigate to="../.." relative="path" />} />
+        <Route
+          path=":locationId/zones/:zoneId/bins"
+          element={<Navigate to="../.." relative="path" />}
+        />
         <Route path=":locationId/zones/:zoneId/bins/:binId" element={<EditBinPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

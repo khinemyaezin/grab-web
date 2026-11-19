@@ -8,7 +8,10 @@ import MerchantSelectionPage from "@/features/merchant/selection/merchant-select
 import AccountProviders from "./AccountProviders";
 import "../styles.css";
 
-export default function AppRoutes({ link, platform }: {
+export default function AppRoutes({
+  link,
+  platform,
+}: {
   link: HateoasLink;
   platform?: SellerPlatform;
 }) {

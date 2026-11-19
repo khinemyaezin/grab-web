@@ -50,11 +50,7 @@ describe("ProductNewForm", () => {
   });
 
   it("renders the sales channel rail beside the main column", () => {
-    render(
-      <ProductNewForm
-        link={{ href: "/workflows/create-sellable-product" }}
-      />,
-    );
+    render(<ProductNewForm link={{ href: "/workflows/create-sellable-product" }} />);
 
     const rail = screen.getByText("sales-channel-rail").closest("aside");
     expect(rail).not.toBeNull();
@@ -62,14 +58,10 @@ describe("ProductNewForm", () => {
   });
 
   it("renders the status select as Draft in the aside", () => {
-    render(
-      <ProductNewForm
-        link={{ href: "/workflows/create-sellable-product" }}
-      />,
-    );
+    render(<ProductNewForm link={{ href: "/workflows/create-sellable-product" }} />);
 
     const status = screen.getByLabelText("Status");
     expect(status.closest("aside")).not.toBeNull();
-    + expect(status).toHaveTextContent("Draft");
+    +expect(status).toHaveTextContent("Draft");
   });
 });

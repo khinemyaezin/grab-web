@@ -13,7 +13,8 @@ vi.mock("@/features/merchant/api/use-root", () => ({
     isLoading: mockIsLoading,
     isError: mockIsError,
   }),
-  useMerchantLink: (rel: string) => (rel === "getStorefront" && mockLinkAvailable ? mockGetLink : undefined),
+  useMerchantLink: (rel: string) =>
+    rel === "getStorefront" && mockLinkAvailable ? mockGetLink : undefined,
 }));
 
 vi.mock("@khinemyaezin/seller-ui", () => ({
@@ -66,8 +67,6 @@ describe("StorefrontEditPage", () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByText("This storefront cannot be opened."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("This storefront cannot be opened.")).toBeInTheDocument();
   });
 });

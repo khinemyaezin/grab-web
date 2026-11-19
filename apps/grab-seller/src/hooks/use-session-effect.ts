@@ -1,10 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
-import {
-  type PlatformEvents,
-  SessionSnapshot,
-  routes,
-} from "@khinemyaezin/seller-contracts";
+import { type PlatformEvents, SessionSnapshot, routes } from "@khinemyaezin/seller-contracts";
 
 const GLOBAL_SCOPE_KEY = "*";
 
@@ -24,20 +20,47 @@ const currentPath = (location: ReturnType<typeof useLocation>) =>
 export function useSessionEffects({
   snapshot,
   loadSession,
+  refresh,
   onSessionCleared,
   events,
 }: {
   snapshot: SessionSnapshot;
-  loadSession: () => Promise<SessionSnapshot>;
+  loadSession: (signal?: AbortSignal) => Promise<SessionSnapshot>;
+  refresh: () => Promise<void>;
   onSessionCleared?: () => void;
   events: PlatformEvents;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const bootstrappedRef = useRef(false);
 
   useEffect(() => {
-    void loadSession();
+    if (bootstrappedRef.current) return;
+    bootstrappedRef.current = true;
+    const controller = new AbortController();
+    void loadSession(controller.signal);
+    return () => {
+      bootstrappedRef.current = false;
+      controller.abort();
+    };
   }, [loadSession]);
+
+  useEffect(() => {
+    let lastVisibilityRefresh = 0;
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible" && snapshot.status === "authenticated") {
+        const now = Date.now();
+        if (now - lastVisibilityRefresh > 30_000) {
+          lastVisibilityRefresh = now;
+          void refresh().catch((err) => {
+            console.warn("[Session] Tab revalidation failed", err);
+          });
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [refresh, snapshot.status]);
 
   useEffect(() => {
     if (snapshot.status === "anonymous" && !isAuthPath(location.pathname)) {
@@ -50,19 +73,12 @@ export function useSessionEffects({
 
     if (snapshot.status === "authenticated") {
       const nonGlobalContexts = snapshot.user.accessContexts.filter(
-        (ctx) => ctx.scopeId !== GLOBAL_SCOPE_KEY
+        (ctx) => ctx.scopeId !== GLOBAL_SCOPE_KEY,
       );
 
       if (nonGlobalContexts.length === 0) {
         if (!location.pathname.startsWith("/onboarding")) {
           navigate("/onboarding", { replace: true });
-        }
-      } else if (
-        !snapshot.user.currentAccessContext ||
-        snapshot.user.currentAccessContext.scopeId === GLOBAL_SCOPE_KEY
-      ) {
-        if (location.pathname !== `/${routes.contextSelection}`) {
-          navigate(`/${routes.contextSelection}`, { replace: true });
         }
       } else if (isAuthPath(location.pathname)) {
         navigate("", { replace: true });
@@ -74,38 +90,24 @@ export function useSessionEffects({
     const handleAuthRedirect = (next: SessionSnapshot) => {
       if (next.status === "authenticated") {
         const nonGlobalContexts = next.user.accessContexts.filter(
-          (ctx) => ctx.scopeId !== GLOBAL_SCOPE_KEY
+          (ctx) => ctx.scopeId !== GLOBAL_SCOPE_KEY,
         );
 
         if (nonGlobalContexts.length === 0) {
           navigate("/onboarding", { replace: true });
-        } else if (
-          !next.user.currentAccessContext ||
-          next.user.currentAccessContext.scopeId === GLOBAL_SCOPE_KEY
-        ) {
-          navigate(`/${routes.contextSelection}`, { replace: true });
         } else {
           navigate("", { replace: true });
         }
       }
     };
 
-    const unsubLogin = events.subscribe("auth:login-success:v1", () => {
-      void loadSession().then(handleAuthRedirect);
-    });
-
-    const unsubRegister = events.subscribe("auth:registration-success:v1", () => {
-      navigate(`/${routes.login}`, { replace: true });
-    });
-
     const unsubAccessContextOnSelect = events.subscribe("auth:context-selected:v1", () => {
       onSessionCleared?.();
+      events.clear();
       void loadSession().then(handleAuthRedirect);
     });
 
     return () => {
-      unsubLogin();
-      unsubRegister();
       unsubAccessContextOnSelect();
     };
   }, [events, loadSession, navigate, onSessionCleared]);

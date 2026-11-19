@@ -65,15 +65,34 @@ describe("useSlotChangeEmitter", () => {
     const source = createFakeSource({ amount: 1 });
     const onChange = vi.fn();
 
-    const { unmount } = renderHook(() =>
-      useSlotChangeEmitter(source, onChange, 300),
-    );
+    const { unmount } = renderHook(() => useSlotChangeEmitter(source, onChange, 300));
 
     unmount();
 
     act(() => {
       source.setValues({ amount: 9 });
       source.emit("amount");
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("prevents late callback execution when unmounted while debounce is pending", () => {
+    const source = createFakeSource({ amount: 1 });
+    const onChange = vi.fn();
+
+    const { unmount } = renderHook(() => useSlotChangeEmitter(source, onChange, 300));
+
+    act(() => {
+      source.setValues({ amount: 5 });
+      source.emit("amount");
+    });
+
+    // Unmount while timer is pending
+    unmount();
+
+    act(() => {
       vi.advanceTimersByTime(300);
     });
 

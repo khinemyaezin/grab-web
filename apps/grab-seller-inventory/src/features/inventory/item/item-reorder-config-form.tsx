@@ -33,7 +33,12 @@ export default function ItemReorderConfigForm({
     defaultValues: { safetyStock, reorderPoint, reorderQuantity, maxStock },
     mode: "onSubmit",
   });
-  const { register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useUpdateReorderConfigMutation();
 
   useEffect(() => {
@@ -114,13 +119,11 @@ export default function ItemReorderConfigForm({
       {isDirty && (
         <ButtonGroup className="pt-7 w-full">
           <Button type="submit" className="w-full" disabled={mutation.isPending}>
-            <ButtonStatus status={
-              mutation.isPending
-                ? "pending"
-                : mutation.isSuccess
-                  ? "success"
-                  : "idle"
-            }>Save reorder config</ButtonStatus>
+            <ButtonStatus
+              status={mutation.isPending ? "pending" : mutation.isSuccess ? "success" : "idle"}
+            >
+              Save reorder config
+            </ButtonStatus>
           </Button>
         </ButtonGroup>
       )}

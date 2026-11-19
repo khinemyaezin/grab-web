@@ -23,7 +23,9 @@ import "@testing-library/jest-dom/vitest";
 Test each architectural layer with targeted, proportional test suites:
 
 ### A. Pure Adapters (`lib/*.test.ts`)
+
 Test data transformations without React or DOM overhead:
+
 ```ts
 describe("buildCreateSellableProductRequest", () => {
   it("transforms form values and merged contributions into valid request DTO", () => {
@@ -34,7 +36,9 @@ describe("buildCreateSellableProductRequest", () => {
 ```
 
 ### B. Commands (`use-*-command.test.ts`)
+
 Test payload execution and workflow correlation independently of form state:
+
 ```ts
 describe("useCreateSellableProductCommand", () => {
   it("executes mutation and awaits workflow completion", async () => {
@@ -47,7 +51,9 @@ describe("useCreateSellableProductCommand", () => {
 ```
 
 ### C. Submit Sagas (`use-*-submit.test.ts`)
+
 Mock the command and test validation, contribution merging, and lifecycle events:
+
 ```ts
 describe("useProductCreateSubmit", () => {
   it("validates slots once and emits created event on success", async () => {
@@ -61,14 +67,16 @@ describe("useProductCreateSubmit", () => {
     // Mock slot validation failure
     // Trigger submit
     expect(onLifecycleEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "validationFailed" })
+      expect.objectContaining({ type: "validationFailed" }),
     );
   });
 });
 ```
 
 ### D. Extension Slots
+
 Verify slot contracts:
+
 1. Required declarations fail validation if no widget registers a handle.
 2. `optional: true` passes when unregistered.
 3. Draft changes update `useSlotDraft`.
@@ -80,7 +88,9 @@ Verify slot contracts:
 ## 3. Mocking Conventions
 
 ### Mocking Platform API Client:
+
 Provide a mock `PlatformApiClient` via `PlatformProvider` or mock `useApi`:
+
 ```ts
 import { PlatformProvider } from "@khinemyaezin/seller-ui";
 import type { PlatformApiClient, SellerPlatform } from "@khinemyaezin/seller-contracts";
@@ -104,6 +114,7 @@ const mockPlatform = {
 ```
 
 ### Mocking Navigation (`react-router`):
+
 ```ts
 const mockNavigate = vi.fn();
 vi.mock("react-router", async () => {
@@ -116,6 +127,7 @@ vi.mock("react-router", async () => {
 ```
 
 ### Rendering Hooks with Providers:
+
 ```ts
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },

@@ -36,7 +36,7 @@ export default function ItemMovementsTable({ link }: ItemMovementsTableProps) {
         {movements.length > 0 ? (
           movements.map((movement) => (
             <TableRow key={movement.id}>
-              <TableCell  className="grid grid-rows-2 gap-1">
+              <TableCell className="grid grid-rows-2 gap-1">
                 <span>{formatLabel(movement.type)}</span>
                 <span className="text-muted-foreground"> {formatDate(movement.createdAt)}</span>
               </TableCell>
@@ -44,9 +44,7 @@ export default function ItemMovementsTable({ link }: ItemMovementsTableProps) {
               <TableCell>
                 {movement.onHandBefore} → {movement.onHandAfter}
               </TableCell>
-              <TableCell className="text-muted-foreground">
-                {movement.referenceId ?? "—"}
-              </TableCell>
+              <TableCell className="text-muted-foreground">{movement.referenceId ?? "—"}</TableCell>
             </TableRow>
           ))
         ) : (

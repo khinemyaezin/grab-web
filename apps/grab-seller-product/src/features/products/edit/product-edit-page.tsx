@@ -15,11 +15,7 @@ export default function EditProductPage() {
 
   return (
     <div className="container mx-auto max-w-2xl lg:max-w-5xl p-6">
-      <QueryState
-        isLoading={isLoading}
-        isError={isError}
-        errorMessage="Failed to load catalog."
-      >
+      <QueryState isLoading={isLoading} isError={isError} errorMessage="Failed to load catalog.">
         {canEdit && productId ? (
           <SlotProvider>
             <ProductEditView productId={productId} onLifecycleEvent={handleEvent} />
@@ -27,9 +23,7 @@ export default function EditProductPage() {
         ) : (
           <Card>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                This product cannot be edited.
-              </p>
+              <p className="text-sm text-muted-foreground">This product cannot be edited.</p>
             </CardContent>
           </Card>
         )}

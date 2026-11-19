@@ -1,9 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import {
-  useWorkflowAwaiter,
-  type WorkflowUpdatedV1,
-} from "./use-workflow-awaiter";
+import { useWorkflowAwaiter, type WorkflowUpdatedV1 } from "./use-workflow-awaiter";
 import type { PlatformEvents } from "@khinemyaezin/seller-contracts";
 
 function createMockPlatform(subscribers: Map<string, Set<(payload: any) => void>>) {
@@ -32,9 +29,7 @@ import { usePlatform } from "@khinemyaezin/seller-ui";
 const IDEMPOTENCY_KEY =
   "11111111-1111-4111-8111-111111111111" as `${string}-${string}-${string}-${string}-${string}`;
 
-function terminalEvent(
-  overrides: Partial<WorkflowUpdatedV1> = {},
-): WorkflowUpdatedV1 {
+function terminalEvent(overrides: Partial<WorkflowUpdatedV1> = {}): WorkflowUpdatedV1 {
   return {
     producerId: "backend",
     workflowId: "wf-1",
@@ -102,9 +97,7 @@ describe("useWorkflowAwaiter", () => {
       resolveTrigger = resolve;
     });
 
-    const awaitPromise = result.current.awaitWorkflow(
-      () => triggerPromise as Promise<any>,
-    );
+    const awaitPromise = result.current.awaitWorkflow(() => triggerPromise as Promise<any>);
 
     const handlers = subscribers.get("workflow:updated:v1");
     expect(handlers?.size).toBe(1);
@@ -235,5 +228,69 @@ describe("useWorkflowAwaiter", () => {
     );
 
     await expect(awaitPromise).rejects.toThrow("Catalog write failed");
+  });
+
+  it("times out and cleans up subscriptions when workflow does not complete in time", async () => {
+    vi.useFakeTimers();
+    try {
+      const subscribers = new Map<string, Set<(payload: any) => void>>();
+      const mockPlatform = createMockPlatform(subscribers);
+      vi.mocked(usePlatform).mockReturnValue(mockPlatform as any);
+      vi.spyOn(crypto, "randomUUID").mockReturnValue(IDEMPOTENCY_KEY);
+
+      const { result } = renderHook(() =>
+        useWorkflowAwaiter({
+          workflowName: "update-sellable-product",
+          timeoutMs: 5000,
+        }),
+      );
+
+      const trigger = vi.fn().mockResolvedValue({
+        workflowId: "wf-timeout",
+        status: "WAITING_EXTERNAL",
+      });
+
+      const awaitPromise = result.current.awaitWorkflow(trigger);
+      await Promise.resolve();
+
+      expect(subscribers.get("workflow:updated:v1")?.size).toBe(1);
+
+      // Fast-forward time past timeout
+      vi.advanceTimersByTime(5001);
+
+      await expect(awaitPromise).rejects.toThrow("Workflow timed out");
+      expect(subscribers.get("workflow:updated:v1")?.size).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("cleans up active subscription and rejects if unmounted during wait", async () => {
+    const subscribers = new Map<string, Set<(payload: any) => void>>();
+    const mockPlatform = createMockPlatform(subscribers);
+    vi.mocked(usePlatform).mockReturnValue(mockPlatform as any);
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(IDEMPOTENCY_KEY);
+
+    const { result, unmount } = renderHook(() =>
+      useWorkflowAwaiter({
+        workflowName: "update-sellable-product",
+        timeoutMs: 10_000,
+      }),
+    );
+
+    const trigger = vi.fn().mockResolvedValue({
+      workflowId: "wf-unmount",
+      status: "WAITING_EXTERNAL",
+    });
+
+    const awaitPromise = result.current.awaitWorkflow(trigger);
+    await Promise.resolve();
+
+    expect(subscribers.get("workflow:updated:v1")?.size).toBe(1);
+
+    unmount();
+
+    await expect(awaitPromise).rejects.toThrow("Workflow wait cancelled");
+    expect(subscribers.get("workflow:updated:v1")?.size).toBe(0);
   });
 });

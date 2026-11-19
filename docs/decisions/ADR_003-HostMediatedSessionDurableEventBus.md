@@ -6,7 +6,7 @@ Accepted (implemented)
 
 **Partially superseded by:** [ADR_006](./ADR_006-SlotBridgeCapabilityRegistry.md) — same-tree product form slots no longer use `setState` hydrate or `extension:validate:v1` / `extension:validated:v1` RPC. Bus mediation, last-value `setState` cache, envelopes / `producerId`, and remaining signals (`auth:*`, toast, breadcrumb, shell `form:*`, stream, workflow) remain.
 
-**Supersedes (partially):** [ADR_001](./ADR_001-StateSharing&Communication.md) — specifically the assumption that cross-MFE messaging is *ephemeral peer pub/sub* only (fire-and-forget `CustomEvent` with no mediation, sequencing, or last-value replay). ADR_001’s decisions that remain in force: no shared global Redux/Zustand store, versioned contracts, decentralized domain state ownership, and framework-agnostic messaging.
+**Supersedes (partially):** [ADR_001](./ADR_001-StateSharing&Communication.md) — specifically the assumption that cross-MFE messaging is _ephemeral peer pub/sub_ only (fire-and-forget `CustomEvent` with no mediation, sequencing, or last-value replay). ADR_001’s decisions that remain in force: no shared global Redux/Zustand store, versioned contracts, decentralized domain state ownership, and framework-agnostic messaging.
 
 **Does not supersede:** Backend outbox / module-scoped durability (`grab` repo: `docs/system/ADR_002-Module_scoped_outbox_architecture.md`). The browser bus coordinates UI extensions for a page session only; REST/HATEOAS remains the source of truth for business data.
 
@@ -17,7 +17,7 @@ Accepted (implemented)
 ## 1. The Problem
 
 **What's not working?**  
-Cross-MFE messaging today is a thin singleton over `window` `CustomEvent`: publish fans out immediately, and a subscriber that mounts *after* a hydrate or domain update never sees that value. Extension slots (pricing today; inventory later) therefore race on mount order. There is also no `producerId`, so reflected events can echo back into the producer and recurse.
+Cross-MFE messaging today is a thin singleton over `window` `CustomEvent`: publish fans out immediately, and a subscriber that mounts _after_ a hydrate or domain update never sees that value. Extension slots (pricing today; inventory later) therefore race on mount order. There is also no `producerId`, so reflected events can echo back into the producer and recurse.
 
 **What's at stake?**  
 Without host mediation and a session last-value cache, late-mounted consumers (summaries, secondary extensions, remounted widgets) miss context or require brittle re-publish races. Peer broadcast also encourages remotes to import the shared singleton directly instead of the host-owned `platform.events` surface.
@@ -120,10 +120,10 @@ type EventEnvelope<TPayload> = {
 
 ### emit vs setState (no topic allowlist)
 
-| API | Topics (examples) | Cache + replay |
-|------|-------------------|----------------|
+| API        | Topics (examples)                                                             | Cache + replay                                        |
+| ---------- | ----------------------------------------------------------------------------- | ----------------------------------------------------- |
 | `setState` | `extension:hydrate:v1`, `extension:change:v1`, `extension:pricing:updated:v1` | Yes — key `` `${topic}:${entityKey ?? instanceId}` `` |
-| `emit` | `auth:*`, `shell:toast:v1`, `extension:validate:v1`, `extension:validated:v1` | No |
+| `emit`     | `auth:*`, `shell:toast:v1`, `extension:validate:v1`, `extension:validated:v1` | No                                                    |
 
 Typed as `StateEventPayloads` / `SignalEventPayloads`. Durability is chosen at the call site, not by sniffing topic strings at runtime.
 
@@ -174,11 +174,11 @@ Transport under the host API may still use `window` `CustomEvent`; mediation (se
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|------|------|
-| Fixes mount-order races without a second publish handshake | Cache must be cleared on teardown or keys leak across routes |
-| Typed envelopes + emit/setState prevent accidental auth/toast caching | Producers must set `producerId` and filter echoes |
-| Remotes stay framework-agnostic via `platform.events` | Temporary singleton fallback can hide missing host injection in demos |
+| Pros                                                                      | Cons                                                                  |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Fixes mount-order races without a second publish handshake                | Cache must be cleared on teardown or keys leak across routes          |
+| Typed envelopes + emit/setState prevent accidental auth/toast caching     | Producers must set `producerId` and filter echoes                     |
+| Remotes stay framework-agnostic via `platform.events`                     | Temporary singleton fallback can hide missing host injection in demos |
 | Additive contracts (`pricing:updated:v1`, optional meta on legacy topics) | Brief dual-publish period if `extension:change:v1` is kept for compat |
 
 ---
@@ -219,14 +219,18 @@ Transport under the host API may still use `window` `CustomEvent`; mediation (se
 
 ## 7. Alternative Methods Considered & Rejected
 
-**Rejected: Keep ephemeral peer `CustomEvent` only**  
-- *Does not* solve late mounts or producer echo loops without ad-hoc re-publish races.
+**Rejected: Keep ephemeral peer `CustomEvent` only**
 
-**Rejected: Shared global store (Redux / Zustand) across MFEs**  
+- _Does not_ solve late mounts or producer echo loops without ad-hoc re-publish races.
+
+**Rejected: Shared global store (Redux / Zustand) across MFEs**
+
 - Already rejected by ADR_001; recreates a distributed monolith and version-locks UI state libraries.
 
-**Rejected: Backend outbox → browser push / SSE for extension UI**  
+**Rejected: Backend outbox → browser push / SSE for extension UI**
+
 - Wrong durability domain for form-slot hydrate and pricing draft sync; backend remains source of truth via REST when persistence is required.
 
-**Rejected: Inventory migration in this promotion**  
+**Rejected: Inventory migration in this promotion**
+
 - Bus API is designed for a future `extension:inventory:updated:v1`; inventory stays props-driven until a dedicated phase.

@@ -11,9 +11,7 @@ import type { ProductFormValue, ProductMediaFormItem } from "@/features/products
 import { useCatalogLink } from "@/features/products/api/use-root";
 
 export type ProductMediaSyncResult =
-  | { status: "skipped" }
-  | { status: "synced" }
-  | { status: "failed"; error: Error };
+  { status: "skipped" } | { status: "synced" } | { status: "failed"; error: Error };
 
 export type UseProductMediaSyncOptions = {
   seed?: ProductMediaFormItem[];
@@ -51,36 +49,34 @@ export function useProductMediaSync({
     [getValues, setValue],
   );
 
-  const stage = useCallback(
-    async (): Promise<ProductMediaSyncResult> => {
-      const items = getValues("medias") ?? [];
-      const drafts = items.filter((item) => item.file && !item.storageKey);
-      if (drafts.length === 0) {
-        return { status: "skipped" };
-      }
+  const stage = useCallback(async (): Promise<ProductMediaSyncResult> => {
+    const items = getValues("medias") ?? [];
+    const drafts = items.filter((item) => item.file && !item.storageKey);
+    if (drafts.length === 0) {
+      return { status: "skipped" };
+    }
 
-      if (!rootUploadLink) {
-        return { status: "failed", error: new Error("Missing media links") };
-      }
+    if (!rootUploadLink) {
+      return { status: "failed", error: new Error("Missing media links") };
+    }
 
-      try {
-        await stageProductMedia({
-          api,
-          items,
-          createUploadLink: rootUploadLink,
-          onItemStatus: (id, status, error) => {
-            patchItem(id, { status, error });
-          },
-          onStaged: (id, storageKey) => {
-            patchItem(id, { storageKey, status: "done" });
-          },
-        });
-        return { status: "synced" };
-      } catch (error) {
-        return { status: "failed", error: toError(error) };
-      }
-    }, [api, getValues, patchItem, rootUploadLink]
-  );
+    try {
+      await stageProductMedia({
+        api,
+        items,
+        createUploadLink: rootUploadLink,
+        onItemStatus: (id, status, error) => {
+          patchItem(id, { status, error });
+        },
+        onStaged: (id, storageKey) => {
+          patchItem(id, { storageKey, status: "done" });
+        },
+      });
+      return { status: "synced" };
+    } catch (error) {
+      return { status: "failed", error: toError(error) };
+    }
+  }, [api, getValues, patchItem, rootUploadLink]);
 
   const attach = useCallback(
     async (productId: string): Promise<ProductMediaSyncResult> => {

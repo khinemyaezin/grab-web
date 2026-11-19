@@ -1,8 +1,6 @@
-import { ReactNode, useMemo } from "react";
-import {
-  SellerRuntimeConfig,
-  SessionApi,
-} from "@khinemyaezin/seller-contracts";
+import { ReactNode, useLayoutEffect, useMemo } from "react";
+import type { SessionApi } from "@khinemyaezin/seller-contracts";
+import { useRequiredPlatform, useSessionSnapshot } from "@khinemyaezin/seller-ui";
 
 import { AuthContextValue, AuthContext } from "./AuthContext";
 import { useAuthService, useSessionEffects, useSessionOperations, useSessionState } from "../hooks";
@@ -13,15 +11,19 @@ export function AuthProvider({
   onSessionCleared,
 }: {
   children: ReactNode;
-  runtimeConfig?: Readonly<SellerRuntimeConfig>;
   onSessionCleared?: () => void;
 }) {
-  const { platform, sessionRef, events } = useShellPlatform();
+  const platform = useRequiredPlatform();
+  const { sessionBridge, events } = useShellPlatform();
 
-  const authService = useAuthService(platform.api!);
-  const { snapshot, snapshotRef, publishSnapshot, subscribe } = useSessionState();
+  if (!platform.api) {
+    throw new Error("AuthProvider requires platform.api to be defined");
+  }
 
-  const { loadSession, expireSession, refresh, logout } = useSessionOperations({
+  const authService = useAuthService(platform.api);
+  const { snapshotRef, publishSnapshot, subscribe } = useSessionState();
+
+  const { loadSession, expireSession, refresh, login, logout } = useSessionOperations({
     authService,
     publishSnapshot,
     snapshotRef,
@@ -29,37 +31,47 @@ export function AuthProvider({
     events,
   });
 
-  const session = useMemo<SessionApi>(() => ({
-    getSnapshot: () => snapshotRef.current,
-    subscribe,
-    refresh,
-    logout,
-  }), [logout, refresh, snapshotRef, subscribe]);
+  const session = useMemo<SessionApi>(
+    () => ({
+      getSnapshot: () => snapshotRef.current,
+      subscribe,
+      refresh,
+      expire: expireSession,
+      login,
+      logout,
+    }),
+    [expireSession, login, logout, refresh, snapshotRef, subscribe],
+  );
 
-  sessionRef.current = session;
+  useLayoutEffect(() => {
+    sessionBridge.current = session;
+  }, [session, sessionBridge]);
+
+  const snapshot = useSessionSnapshot();
 
   useSessionEffects({
     snapshot,
     loadSession,
+    refresh,
     onSessionCleared,
     events,
   });
 
-  const value = useMemo<AuthContextValue>(() => ({
-    snapshot,
-    user: snapshot.status === "authenticated" ? snapshot.user : null,
-    roles: snapshot.status === "authenticated" ? snapshot.roles : [],
-    permissions: snapshot.status === "authenticated" ? snapshot.permissions : [],
-    isAuthenticated: snapshot.status === "authenticated",
-    isLoading: snapshot.status === "loading",
-    platform,
-    refresh,
-    logout,
-  }), [logout, platform, refresh, snapshot]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      snapshot,
+      user: snapshot.status === "authenticated" ? snapshot.user : null,
+      roles: snapshot.status === "authenticated" ? snapshot.roles : [],
+      permissions: snapshot.status === "authenticated" ? snapshot.permissions : [],
+      isAuthenticated: snapshot.status === "authenticated",
+      isLoading: snapshot.status === "loading",
+      platform,
+      login,
+      refresh,
+      logout,
+    }),
+    [login, logout, platform, refresh, snapshot],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

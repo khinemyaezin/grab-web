@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@khinemyaezin/seller-ui/components/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@khinemyaezin/seller-ui/components/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@khinemyaezin/seller-ui/components/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@khinemyaezin/seller-ui/components/tabs";
 import {
   PackagePlus,
@@ -53,15 +58,25 @@ export default function ItemDetailView({ itemId, onLifecycleEvent }: ItemDetailV
   const reorderConfigLink = resolveLink(item?._links, SellerApiLinks.pending.updateReorderConfig);
   const suspendLink = resolveLink(item?._links, SellerApiLinks.pending.suspendInventoryItem);
   const activateLink = resolveLink(item?._links, SellerApiLinks.pending.activateInventoryItem);
-  const discontinueLink = resolveLink(item?._links, SellerApiLinks.pending.discontinueInventoryItem);
-  const movementsLink = resolveLink(item?._links, SellerApiLinks.pending.listInventoryItemMovements);
-  const reservationsLink = resolveLink(item?._links, SellerApiLinks.pending.listInventoryItemReservations);
+  const discontinueLink = resolveLink(
+    item?._links,
+    SellerApiLinks.pending.discontinueInventoryItem,
+  );
+  const movementsLink = resolveLink(
+    item?._links,
+    SellerApiLinks.pending.listInventoryItemMovements,
+  );
+  const reservationsLink = resolveLink(
+    item?._links,
+    SellerApiLinks.pending.listInventoryItemReservations,
+  );
 
   const hasInboundActions = !!(receiveLink || announceInTransitLink || receiveInTransitLink);
   const hasCorrectionActions = !!(adjustLink || damageLink || writeOffLink);
   const hasOutboundActions = !!(returnLink || transferLink);
   const hasLifecycleActions = !!(suspendLink || activateLink || discontinueLink);
-  const hasQuickActions = hasInboundActions || hasCorrectionActions || hasOutboundActions || !!reorderConfigLink;
+  const hasQuickActions =
+    hasInboundActions || hasCorrectionActions || hasOutboundActions || !!reorderConfigLink;
 
   useEffect(() => {
     if (item?.sku) {
@@ -91,17 +106,16 @@ export default function ItemDetailView({ itemId, onLifecycleEvent }: ItemDetailV
               <div className="min-w-0 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-lg font-bold">{item.sku}</span>
-                  <Badge className="uppercase text-[10px] px-2 py-0.5">
-                    {item.status}
-                  </Badge>
+                  <Badge className="uppercase text-[10px] px-2 py-0.5">{item.status}</Badge>
                 </div>
                 <p className="truncate text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">{item.productName || item.sku}</span>
+                  <span className="font-medium text-foreground">
+                    {item.productName || item.sku}
+                  </span>
                   {" · "}
                   {item.locationName}
                 </p>
               </div>
-
             </div>
             <div className="flex flex-col gap-3 border-t border-border/50 pt-4 lg:items-end lg:border-t-0 lg:pt-0">
               <div className="flex gap-8">
@@ -147,195 +161,218 @@ export default function ItemDetailView({ itemId, onLifecycleEvent }: ItemDetailV
       </div>
 
       <div className="flex flex-col gap-6">
-
         {hasQuickActions && (
           <div className="flex flex-col shrink-0 w-full xl:w-80">
             <Card>
-            <CardHeader>
-              <CardTitle>Quick actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Accordion type="single" collapsible className="w-full">
-                {hasInboundActions && <ActionSectionLabel>Inbound</ActionSectionLabel>}
-                {receiveLink && (
-                  <AccordionItem value="receive">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<PackagePlus className="w-4 h-4 text-muted-foreground" />}
-                        title="Receive stock"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Adds quantity with PO, transfer, or return reference.</p>
-                        <ItemReceiveForm link={receiveLink} onLifecycleEvent={onLifecycleEvent} />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-                {announceInTransitLink && (
-                  <AccordionItem value="announce-in-transit">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<Truck className="w-4 h-4 text-muted-foreground" />}
-                        title="Announce inbound"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Track purchase-order quantity still in transit.</p>
-                        <ItemAnnounceInTransitForm
-                          link={announceInTransitLink}
-                          onLifecycleEvent={onLifecycleEvent}
+              <CardHeader>
+                <CardTitle>Quick actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                  {hasInboundActions && <ActionSectionLabel>Inbound</ActionSectionLabel>}
+                  {receiveLink && (
+                    <AccordionItem value="receive">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<PackagePlus className="w-4 h-4 text-muted-foreground" />}
+                          title="Receive stock"
                         />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-                {receiveInTransitLink && (
-                  <AccordionItem value="receive-in-transit">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<PackageCheck className="w-4 h-4 text-muted-foreground" />}
-                        title="Receive inbound"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Move in-transit quantity onto on-hand stock.</p>
-                        <ItemReceiveInTransitForm
-                          link={receiveInTransitLink}
-                          maxQuantity={item.inTransit ?? 0}
-                          onLifecycleEvent={onLifecycleEvent}
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Adds quantity with PO, transfer, or return reference.
+                          </p>
+                          <ItemReceiveForm link={receiveLink} onLifecycleEvent={onLifecycleEvent} />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+                  {announceInTransitLink && (
+                    <AccordionItem value="announce-in-transit">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<Truck className="w-4 h-4 text-muted-foreground" />}
+                          title="Announce inbound"
                         />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Track purchase-order quantity still in transit.
+                          </p>
+                          <ItemAnnounceInTransitForm
+                            link={announceInTransitLink}
+                            onLifecycleEvent={onLifecycleEvent}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+                  {receiveInTransitLink && (
+                    <AccordionItem value="receive-in-transit">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<PackageCheck className="w-4 h-4 text-muted-foreground" />}
+                          title="Receive inbound"
+                        />
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Move in-transit quantity onto on-hand stock.
+                          </p>
+                          <ItemReceiveInTransitForm
+                            link={receiveInTransitLink}
+                            maxQuantity={item.inTransit ?? 0}
+                            onLifecycleEvent={onLifecycleEvent}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
 
-                {hasCorrectionActions && <ActionSectionLabel>Corrections</ActionSectionLabel>}
-                {adjustLink && (
-                  <AccordionItem value="adjust">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<SlidersHorizontal className="w-4 h-4 text-muted-foreground" />}
-                        title="Adjust on-hand"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Use for correction, cycle count, or shrinkage.</p>
-                        <ItemAdjustForm
-                          link={adjustLink}
-                          currentOnHand={item.onHand}
-                          onLifecycleEvent={onLifecycleEvent}
+                  {hasCorrectionActions && <ActionSectionLabel>Corrections</ActionSectionLabel>}
+                  {adjustLink && (
+                    <AccordionItem value="adjust">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<SlidersHorizontal className="w-4 h-4 text-muted-foreground" />}
+                          title="Adjust on-hand"
                         />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-                {damageLink && (
-                  <AccordionItem value="damage">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<AlertTriangle className="w-4 h-4 text-muted-foreground" />}
-                        title="Mark damaged"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Moves units from sellable to damaged.</p>
-                        <ItemDamageForm link={damageLink} onLifecycleEvent={onLifecycleEvent} />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-                {writeOffLink && (
-                  <AccordionItem value="write-off">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<Trash2 className="w-4 h-4 text-muted-foreground" />}
-                        title="Write off"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Permanently remove lost or unrecoverable stock.</p>
-                        <ItemWriteOffForm link={writeOffLink} onLifecycleEvent={onLifecycleEvent} />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Use for correction, cycle count, or shrinkage.
+                          </p>
+                          <ItemAdjustForm
+                            link={adjustLink}
+                            currentOnHand={item.onHand}
+                            onLifecycleEvent={onLifecycleEvent}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+                  {damageLink && (
+                    <AccordionItem value="damage">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<AlertTriangle className="w-4 h-4 text-muted-foreground" />}
+                          title="Mark damaged"
+                        />
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Moves units from sellable to damaged.
+                          </p>
+                          <ItemDamageForm link={damageLink} onLifecycleEvent={onLifecycleEvent} />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+                  {writeOffLink && (
+                    <AccordionItem value="write-off">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<Trash2 className="w-4 h-4 text-muted-foreground" />}
+                          title="Write off"
+                        />
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Permanently remove lost or unrecoverable stock.
+                          </p>
+                          <ItemWriteOffForm
+                            link={writeOffLink}
+                            onLifecycleEvent={onLifecycleEvent}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
 
-                {hasOutboundActions && <ActionSectionLabel>Outbound</ActionSectionLabel>}
-                {returnLink && (
-                  <AccordionItem value="return-to-vendor">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<Undo2 className="w-4 h-4 text-muted-foreground" />}
-                        title="Return to vendor"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Ship available stock back to the vendor.</p>
-                        <ItemReturnToVendorForm link={returnLink} onLifecycleEvent={onLifecycleEvent} />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-                {transferLink && (
-                  <AccordionItem value="transfer">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<ArrowRightLeft className="w-4 h-4 text-muted-foreground" />}
-                        title="Transfer location"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Move available stock to another location.</p>
-                        <ItemTransferForm
-                          link={transferLink}
-                          fromLocationId={item.locationId}
-                          maxQuantity={item.available}
-                          onLifecycleEvent={onLifecycleEvent}
+                  {hasOutboundActions && <ActionSectionLabel>Outbound</ActionSectionLabel>}
+                  {returnLink && (
+                    <AccordionItem value="return-to-vendor">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<Undo2 className="w-4 h-4 text-muted-foreground" />}
+                          title="Return to vendor"
                         />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Ship available stock back to the vendor.
+                          </p>
+                          <ItemReturnToVendorForm
+                            link={returnLink}
+                            onLifecycleEvent={onLifecycleEvent}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+                  {transferLink && (
+                    <AccordionItem value="transfer">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<ArrowRightLeft className="w-4 h-4 text-muted-foreground" />}
+                          title="Transfer location"
+                        />
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Move available stock to another location.
+                          </p>
+                          <ItemTransferForm
+                            link={transferLink}
+                            fromLocationId={item.locationId}
+                            maxQuantity={item.available}
+                            onLifecycleEvent={onLifecycleEvent}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
 
-                {reorderConfigLink && <ActionSectionLabel>Settings</ActionSectionLabel>}
-                {reorderConfigLink && (
-                  <AccordionItem value="reorder-config">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <ActionTrigger
-                        icon={<Settings2 className="w-4 h-4 text-muted-foreground" />}
-                        title="Reorder settings"
-                      />
-                    </AccordionTrigger>
-                    <AccordionContent className="!h-auto pt-0 pb-6">
-                      <div className="max-w-xl">
-                        <p className="text-muted-foreground">Edit safety stock, reorder point, quantity, and max.</p>
-                        <ItemReorderConfigForm
-                          link={reorderConfigLink}
-                          safetyStock={item.safetyStock}
-                          reorderPoint={item.reorderPoint}
-                          reorderQuantity={item.reorderQuantity}
-                          maxStock={item.maxStock}
-                          onLifecycleEvent={onLifecycleEvent}
+                  {reorderConfigLink && <ActionSectionLabel>Settings</ActionSectionLabel>}
+                  {reorderConfigLink && (
+                    <AccordionItem value="reorder-config">
+                      <AccordionTrigger className="py-3 hover:no-underline">
+                        <ActionTrigger
+                          icon={<Settings2 className="w-4 h-4 text-muted-foreground" />}
+                          title="Reorder settings"
                         />
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-              </Accordion>
-            </CardContent>
-          </Card>
-        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="!h-auto pt-0 pb-6">
+                        <div className="max-w-xl">
+                          <p className="text-muted-foreground">
+                            Edit safety stock, reorder point, quantity, and max.
+                          </p>
+                          <ItemReorderConfigForm
+                            link={reorderConfigLink}
+                            safetyStock={item.safetyStock}
+                            reorderPoint={item.reorderPoint}
+                            reorderQuantity={item.reorderQuantity}
+                            maxStock={item.maxStock}
+                            onLifecycleEvent={onLifecycleEvent}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+                </Accordion>
+              </CardContent>
+            </Card>
+          </div>
         )}
-       {hasLifecycleActions && (
+        {hasLifecycleActions && (
           <Card className="shrink-0 w-full xl:w-80 border-destructive/20">
             <CardHeader>
               <CardTitle className="text-destructive">Danger area</CardTitle>

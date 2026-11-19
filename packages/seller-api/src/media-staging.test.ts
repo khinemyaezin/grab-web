@@ -90,7 +90,8 @@ describe("stageMediaDrafts", () => {
 
   it("retries failed PUT attempts up to maxAttempts", async () => {
     const file = new File(["data"], "retry.png", { type: "image/png" });
-    const authorizer = vi.fn()
+    const authorizer = vi
+      .fn()
       .mockResolvedValueOnce({
         url: "https://s3/expired",
         storageKey: "expired.png",
@@ -119,7 +120,9 @@ describe("stageMediaDrafts", () => {
       url: "https://s3/fail",
       storageKey: "fail.png",
     });
-    vi.mocked(storage.putPresignedObject).mockRejectedValue(new Error("Storage upload failed (500)"));
+    vi.mocked(storage.putPresignedObject).mockRejectedValue(
+      new Error("Storage upload failed (500)"),
+    );
 
     const onStatus = vi.fn();
 

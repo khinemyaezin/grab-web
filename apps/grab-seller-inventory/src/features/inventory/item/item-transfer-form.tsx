@@ -45,8 +45,17 @@ export default function ItemTransferForm({
     (loc) => loc.id !== fromLocationId && loc.active,
   );
 
-  const form = useForm<TransferInventoryFormValues>({ defaultValues: DEFAULT_VALUES, mode: "onSubmit" });
-  const { control, register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+  const form = useForm<TransferInventoryFormValues>({
+    defaultValues: DEFAULT_VALUES,
+    mode: "onSubmit",
+  });
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useTransferInventoryMutation();
 
   const onSubmit = async (values: TransferInventoryFormValues) => {
@@ -115,7 +124,11 @@ export default function ItemTransferForm({
       </FieldGroup>
       {isDirty && (
         <ButtonGroup className="pt-7 w-full">
-          <Button type="submit" className="w-full" disabled={mutation.isPending || locations.length === 0}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={mutation.isPending || locations.length === 0}
+          >
             <ButtonStatus
               status={mutation.isPending ? "pending" : mutation.isSuccess ? "success" : "idle"}
               pendingLabel="Transferring…"

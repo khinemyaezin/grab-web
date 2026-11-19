@@ -10,7 +10,12 @@ export function useMerchantOnboardingEffect() {
   useEffect(() => {
     const unsubRegSuccess = platform.events.subscribe(
       "seller-merchant:registration-success:v1",
-      () => {
+      async () => {
+        try {
+          await platform.session.refresh();
+        } catch {
+          // Best effort refresh
+        }
         navigate(routes.home, { replace: true });
       },
     );
@@ -18,5 +23,5 @@ export function useMerchantOnboardingEffect() {
     return () => {
       unsubRegSuccess();
     };
-  }, [navigate, platform.events]);
+  }, [navigate, platform]);
 }

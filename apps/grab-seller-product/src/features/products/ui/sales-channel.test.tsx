@@ -19,13 +19,7 @@ vi.mock("@/features/products/api/use-sales-channels", () => ({
   }),
 }));
 
-function Harness({
-  seed,
-  children,
-}: {
-  seed: ProductFormValue;
-  children: ReactNode;
-}) {
+function Harness({ seed, children }: { seed: ProductFormValue; children: ReactNode }) {
   const form = useForm<ProductFormValue>({ defaultValues: seed });
   return (
     <FormProvider {...form}>
@@ -93,7 +87,9 @@ describe("SalesChannel", () => {
       </Harness>,
     );
 
-    expect(screen.getByRole("button", { name: "Manage sales channels, 0 selected" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Manage sales channels, 0 selected" }),
+    ).toBeDisabled();
   });
 
   it("writes publication lines for the standalone sku", () => {

@@ -9,25 +9,25 @@ import { tracksInventory } from "@/features/products/ui/manage-inventory-field";
 import { toReplaceMediaPayload } from "@/features/products/api/product-media";
 import { toReplaceDescriptionsPayload } from "@/features/products/api/product-descriptions";
 
-export function buildCreateProductRequest(
-  values: ProductFormValue,
-): CreateProductRequest {
+export function buildCreateProductRequest(values: ProductFormValue): CreateProductRequest {
   const hasVariations = values.variationTypes.length > 0;
 
   const mappedVariants = hasVariations
     ? values.product.variants.map((variant) => ({
-      sku: variant.sku,
-      variations: variant.variations.map((variation) => ({
-        typeId: variation.typeId,
-        optionId: variation.optionId,
-      })),
-      manageInventory: tracksInventory(variant.manageInventory),
-    }))
-    : [{
-      sku: values.product.standaloneVariant.sku ?? "",
-      variations: [],
-      manageInventory: tracksInventory(values.product.standaloneVariant.manageInventory),
-    }];
+        sku: variant.sku,
+        variations: variant.variations.map((variation) => ({
+          typeId: variation.typeId,
+          optionId: variation.optionId,
+        })),
+        manageInventory: tracksInventory(variant.manageInventory),
+      }))
+    : [
+        {
+          sku: values.product.standaloneVariant.sku ?? "",
+          variations: [],
+          manageInventory: tracksInventory(values.product.standaloneVariant.manageInventory),
+        },
+      ];
 
   return {
     product: {
@@ -48,7 +48,6 @@ export function buildCreateProductRequest(
     })),
   };
 }
-
 
 export function buildCreateSellableProductRequest(
   values: ProductFormValue,

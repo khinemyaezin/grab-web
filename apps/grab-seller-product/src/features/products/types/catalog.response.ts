@@ -3,22 +3,22 @@ import type { CategoryLeaf } from "./catalog.model";
 
 export interface CatalogRoot {
   self?: HateoasLink;
-  searchProducts?: HateoasLink
-  createProduct?: HateoasLink
-  createProductMediaUpload?: HateoasLink
-  createStagedMediaUpload?: HateoasLink
-  replaceProductMedia?: HateoasLink
-  replaceProductDescriptions?: HateoasLink
-  getProduct?: HateoasLink
-  getVariant?: HateoasLink
-  searchCategoryLeaves?: HateoasLink
-  searchVariantTypes?: HateoasLink
-  searchVariantOptions?: HateoasLink
-  generateVariationMatrix?: HateoasLink
-  createSellableProduct?: HateoasLink
-  updateSellableProduct?: HateoasLink
-  updateProductVariant?: HateoasLink
-  batchVariantImages?: HateoasLink
+  searchProducts?: HateoasLink;
+  createProduct?: HateoasLink;
+  createProductMediaUpload?: HateoasLink;
+  createStagedMediaUpload?: HateoasLink;
+  replaceProductMedia?: HateoasLink;
+  replaceProductDescriptions?: HateoasLink;
+  getProduct?: HateoasLink;
+  getVariant?: HateoasLink;
+  searchCategoryLeaves?: HateoasLink;
+  searchVariantTypes?: HateoasLink;
+  searchVariantOptions?: HateoasLink;
+  generateVariationMatrix?: HateoasLink;
+  createSellableProduct?: HateoasLink;
+  updateSellableProduct?: HateoasLink;
+  updateProductVariant?: HateoasLink;
+  batchVariantImages?: HateoasLink;
 }
 
 export type VariationMatrixResponseVariation = {
@@ -43,20 +43,20 @@ export type VariationMatrixResponse = {
 
 export type CreateProductResponse = {};
 
-export interface UpdateProductResponse { }
+export interface UpdateProductResponse {}
 
 export type ProductPublication = {
   salesChannelId: string;
 };
 
 export interface ProductResponse {
-  productId: string,
-  productName: string,
-  status: string,
-  slug: string,
-  categoryName: string,
-  categoryId: string,
-  thumbnail?: ProductMedia | null,
+  productId: string;
+  productName: string;
+  status: string;
+  slug: string;
+  categoryName: string;
+  categoryId: string;
+  thumbnail?: ProductMedia | null;
   publications?: ProductPublication[];
   _links?: Record<string, HateoasLink>;
 }
@@ -173,7 +173,7 @@ export interface GetFullProductResponse {
   sellerType: string;
   condition: string;
   offerEligible: boolean;
-  status: | "DRAFT" | "ACTIVE" | "ARCHIVED" | "SUSPENDED";
+  status: "DRAFT" | "ACTIVE" | "ARCHIVED" | "SUSPENDED";
   slug: string;
   featured: boolean;
   descriptions: ProductDescription[] | null;
@@ -236,9 +236,8 @@ export interface ProductModerationResponse {
 }
 
 export interface DeleteProductResponse {
-  productId: string,
-  deleted: boolean
-
+  productId: string;
+  deleted: boolean;
 }
 
 export interface WorkflowsRoot {

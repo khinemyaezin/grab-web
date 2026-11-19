@@ -9,62 +9,58 @@ import AccountProfileFieldSet from "@/features/merchant/ui/account-profile-field
 import { ButtonStatus } from "@khinemyaezin/seller-ui/components/button-status";
 
 export type AccountProfileFormProps = {
-    link?: HateoasLink,
-    onSuccess?: (links: HalLinks) => void,
-}
+  link?: HateoasLink;
+  onSuccess?: (links: HalLinks) => void;
+};
 
 export default function C2cAccountProfileForm({ link, onSuccess }: AccountProfileFormProps) {
-    const form = useForm<AccountDetailFormValues>();
-    const { handleSubmit } = form;
-    const updateAccount = useUpdateAccount();
+  const form = useForm<AccountDetailFormValues>();
+  const { handleSubmit } = form;
+  const updateAccount = useUpdateAccount();
 
-    function handleOnSubmit(value: AccountDetailFormValues) {
-        if (!link) return;
-        const payload: UpdateBasicMerchantProfileRequest = {
-            legalName: value.legalName,
-            displayName: value.displayName,
-            contactEmail: value.contactEmail,
-            contactPhone: value.contactPhone,
-        }
-        updateAccount.mutate(
-            { link, request: payload },
-            {
-                onSuccess: (response: UpdateSellerAccountResponse) => {
-                    if (onSuccess) {
-                        onSuccess(response._links)
-                    }
-                }
-            },
-        );
-    }
-
-    return (
-        <FormProvider {...form}>
-            <form onSubmit={handleSubmit(handleOnSubmit)}>
-                <AccountProfileFieldSet />
-
-                <Button
-                    type="submit"
-                    variant="default"
-                    size="default"
-                    className="mt-6 w-full"
-                    disabled={updateAccount.isPending || updateAccount.isSuccess}
-                >
-                    <ButtonStatus
-                        status={
-                            updateAccount.isPending
-                                ? "pending"
-                                : updateAccount.isSuccess
-                                    ? "success"
-                                    : "idle"
-                        }
-                        pendingLabel="Saving…"
-                        successLabel="Saved"
-                    >
-                        Save & Continue
-                    </ButtonStatus>
-                </Button>
-            </form>
-        </FormProvider>
+  function handleOnSubmit(value: AccountDetailFormValues) {
+    if (!link) return;
+    const payload: UpdateBasicMerchantProfileRequest = {
+      legalName: value.legalName,
+      displayName: value.displayName,
+      contactEmail: value.contactEmail,
+      contactPhone: value.contactPhone,
+    };
+    updateAccount.mutate(
+      { link, request: payload },
+      {
+        onSuccess: (response: UpdateSellerAccountResponse) => {
+          if (onSuccess) {
+            onSuccess(response._links);
+          }
+        },
+      },
     );
+  }
+
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit(handleOnSubmit)}>
+        <AccountProfileFieldSet />
+
+        <Button
+          type="submit"
+          variant="default"
+          size="default"
+          className="mt-6 w-full"
+          disabled={updateAccount.isPending || updateAccount.isSuccess}
+        >
+          <ButtonStatus
+            status={
+              updateAccount.isPending ? "pending" : updateAccount.isSuccess ? "success" : "idle"
+            }
+            pendingLabel="Saving…"
+            successLabel="Saved"
+          >
+            Save & Continue
+          </ButtonStatus>
+        </Button>
+      </form>
+    </FormProvider>
+  );
 }

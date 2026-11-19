@@ -14,7 +14,8 @@ async function visit(directory) {
       continue;
     }
 
-    if (!/\.(?:ts|tsx)$/.test(entry.name) || /\.(?:test|spec)\.(?:ts|tsx)$/.test(entry.name)) continue;
+    if (!/\.(?:ts|tsx)$/.test(entry.name) || /\.(?:test|spec)\.(?:ts|tsx)$/.test(entry.name))
+      continue;
 
     const file = join(directory, entry.name);
     const contents = await readFile(file, "utf8");

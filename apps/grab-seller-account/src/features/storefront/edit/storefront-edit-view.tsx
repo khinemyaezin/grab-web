@@ -18,10 +18,7 @@ export type StorefrontEditViewProps = {
   onLifecycleEvent?: (event: StorefrontLifecycleEvent) => void;
 };
 
-export function StorefrontEditView({
-  storefrontId,
-  onLifecycleEvent,
-}: StorefrontEditViewProps) {
+export function StorefrontEditView({ storefrontId, onLifecycleEvent }: StorefrontEditViewProps) {
   const getStorefrontLink = useMerchantLink("getStorefront");
   const { data: storefront, isLoading, isError } = useStorefront(getStorefrontLink, storefrontId);
 

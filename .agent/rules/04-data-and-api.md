@@ -42,12 +42,16 @@ export const catalogService = {
   getFullProduct: (api: PlatformApiClient, link: HateoasLink, headers?: Record<string, string>) =>
     api.followLink<GetFullProductResponse>(link, "GET", undefined, undefined, headers),
 
-  createSellableProduct: (api: PlatformApiClient, link: HateoasLink, request: CreateSellableProductRequest) =>
-    api.followLink<CreateSellableProductResponse>(link, "POST", request),
+  createSellableProduct: (
+    api: PlatformApiClient,
+    link: HateoasLink,
+    request: CreateSellableProductRequest,
+  ) => api.followLink<CreateSellableProductResponse>(link, "POST", request),
 };
 ```
 
 ### Rules:
+
 - Services MUST be React-free (no hooks, no JSX).
 - Services MUST accept `api: PlatformApiClient` as first parameter, typed `HateoasLink`, method payload, and optional headers.
 - Services MUST NOT show toasts, trigger navigation, or manipulate React state.
@@ -59,6 +63,7 @@ export const catalogService = {
 Query hooks wrap domain services to manage server state:
 
 ### A. Structured Query Keys & Invalidation
+
 Always define stable, structured query keys and export centralized cache invalidation functions:
 
 ```ts
@@ -80,6 +85,7 @@ export function invalidateProductQueries(queryClient: QueryClient, productId?: s
 ```
 
 ### B. Enabled Guards & API Client Injection
+
 Queries obtain the client instance via `useApi()` from `@khinemyaezin/seller-ui` and guard execution with `enabled`:
 
 ```ts
@@ -94,6 +100,7 @@ export function useProductGet(link?: HateoasLink, productId?: string) {
 ```
 
 ### C. Thin Mutation Wrappers
+
 `useMutation` wrappers in `api/` must stay thin: `mutationFn` plus optional query invalidation. They MUST NOT read React Hook Form, validate extension slots, display toasts, or trigger navigation.
 
 ---
@@ -102,13 +109,13 @@ export function useProductGet(link?: HateoasLink, productId?: string) {
 
 Keep domain and transport types separated into discrete files under `types/`:
 
-| File Pattern | Purpose | Example |
-|:---|:---|:---|
-| **`*.response.ts`** | Backend response schemas and HATEOAS models | `GetFullProductResponse`, `CatalogRoot` |
-| **`*.request.ts`** | Backend request DTOs | `CreateSellableProductRequest`, `ProductSearchRequest` |
-| **`*.model.ts`** | UI/domain presentation models | `Product`, `ProductVariant`, `CategoryLeaf` |
-| **`*.form.ts`** | Editable form state schemas | `ProductFormValue`, `ProductFilterFormValue` |
-| **`lib/*`** | Pure adapters converting between types | `to-product-form-value.ts`, `create-sellable-product-request.ts` |
+| File Pattern        | Purpose                                     | Example                                                          |
+| :------------------ | :------------------------------------------ | :--------------------------------------------------------------- |
+| **`*.response.ts`** | Backend response schemas and HATEOAS models | `GetFullProductResponse`, `CatalogRoot`                          |
+| **`*.request.ts`**  | Backend request DTOs                        | `CreateSellableProductRequest`, `ProductSearchRequest`           |
+| **`*.model.ts`**    | UI/domain presentation models               | `Product`, `ProductVariant`, `CategoryLeaf`                      |
+| **`*.form.ts`**     | Editable form state schemas                 | `ProductFormValue`, `ProductFilterFormValue`                     |
+| **`lib/*`**         | Pure adapters converting between types      | `to-product-form-value.ts`, `create-sellable-product-request.ts` |
 
 > [!TIP]
 > Complex create and edit workflows MUST use pure adapters in `lib/` instead of building nested request DTOs inside JSX or mutation callbacks. Pure adapters must be unit tested.

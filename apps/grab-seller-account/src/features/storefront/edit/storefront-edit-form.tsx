@@ -36,7 +36,11 @@ function StorefrontEditFormContent({
   updateLink,
   onLifecycleEvent,
 }: StorefrontEditFormProps) {
-  const { handleSubmit, reset, formState: { isDirty } } = useFormContext<StorefrontFormValues>();
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useFormContext<StorefrontFormValues>();
   const readOnly = !updateLink;
 
   const { submit } = useStorefrontUpdateSubmit({

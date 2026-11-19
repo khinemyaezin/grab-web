@@ -1,9 +1,6 @@
 import { Controller, useForm } from "react-hook-form";
 import { Field, FieldError } from "@khinemyaezin/seller-ui/components/field";
-import {
-  InputGroup,
-  InputGroupInput,
-} from "@khinemyaezin/seller-ui/components/input-group";
+import { InputGroup, InputGroupInput } from "@khinemyaezin/seller-ui/components/input-group";
 import {
   Select,
   SelectContent,
@@ -74,9 +71,7 @@ export default function AdjustStockForm({ value, ref }: AdjustStockFormProps) {
             })}
           />
         </InputGroup>
-        {errors.newOnHandQuantity ? (
-          <FieldError errors={[errors.newOnHandQuantity]} />
-        ) : null}
+        {errors.newOnHandQuantity ? <FieldError errors={[errors.newOnHandQuantity]} /> : null}
       </Field>
       <Field data-invalid={!!errors.reason} className="gap-1">
         <Controller

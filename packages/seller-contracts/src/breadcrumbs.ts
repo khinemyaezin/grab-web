@@ -21,14 +21,14 @@ export function matchShellBreadcrumbs(
   }
 
   if (segments.length === 0 && crumbs.length > 0) {
-    return [{ label: crumbs[0].label }];
+    const firstCrumb = crumbs[0];
+    return firstCrumb ? [{ label: firstCrumb.label }] : [];
   }
 
   for (const segment of segments) {
     currentPath += `/${segment}`;
     const match =
-      children.find((n) => n.path === segment) ??
-      children.find((n) => n.path.startsWith(":"));
+      children.find((n) => n.path === segment) ?? children.find((n) => n.path.startsWith(":"));
 
     let label = match?.label;
     if (match && replacements && replacements[match.path]) {
@@ -43,8 +43,9 @@ export function matchShellBreadcrumbs(
       children = [];
     }
   }
-  if (crumbs.length > 0) {
-    crumbs[crumbs.length - 1].to = undefined;
+  const lastCrumb = crumbs[crumbs.length - 1];
+  if (lastCrumb) {
+    lastCrumb.to = undefined;
   }
   return crumbs;
 }

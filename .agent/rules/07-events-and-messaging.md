@@ -28,6 +28,7 @@ useEffect(() => {
 ```
 
 ### Event Naming & Payload Rules:
+
 - **Versioned Naming**: All topics MUST follow `domain:fact:v1` (e.g. `auth:login-success:v1`, `shell:toast:v1`, `workflow:updated:v1`).
 - **Contract Enforcement**: All event payloads MUST be defined in `@khinemyaezin/seller-contracts` (`EventPayloads`).
 - **Fact Signals, Not State Sync**: Cross-MFE events represent facts that have occurred. Receivers should invalidate local query caches rather than broadcasting full data dumps over the bus.
@@ -37,17 +38,17 @@ useEffect(() => {
 
 ## 2. Standard Platform Event Topics
 
-| Topic | Publisher | Intended Consumer | Purpose |
-|:---|:---|:---|:---|
-| `auth:login-success:v1` | `grab-seller-auth` | `grab-seller` (Shell) | Triggers session reload upon authentication |
-| `auth:logout:v1` | `grab-seller` | All Remotes | Notifies remotes of session termination |
-| `auth:session-refreshed:v1`| `grab-seller` | All Remotes | Notifies remotes that credentials were rotated |
-| `shell:toast:v1` | Any Remote | `grab-seller` (Shell) | Requests toast display via `sonner` |
-| `shell:breadcrumb:v1` | Any Remote | `grab-seller` (Shell) | Updates shell breadcrumb trail |
-| `form:dirty:v1` | Form via `useContextBar`| `grab-seller` | Notifies shell of unsaved changes |
-| `form:save:v1` | `grab-seller` (`ContextBar`)| Active Form | Shell command requesting form submission |
-| `form:discard:v1` | `grab-seller` (`ContextBar`)| Active Form | Shell command requesting form discard/reset |
-| `workflow:updated:v1` | `grab-seller` (SSE Stream)| Domain Remotes | Propagates backend workflow terminal signals |
+| Topic                       | Publisher                    | Intended Consumer     | Purpose                                        |
+| :-------------------------- | :--------------------------- | :-------------------- | :--------------------------------------------- |
+| `auth:login-success:v1`     | `grab-seller-auth`           | `grab-seller` (Shell) | Triggers session reload upon authentication    |
+| `auth:logout:v1`            | `grab-seller`                | All Remotes           | Notifies remotes of session termination        |
+| `auth:session-refreshed:v1` | `grab-seller`                | All Remotes           | Notifies remotes that credentials were rotated |
+| `shell:toast:v1`            | Any Remote                   | `grab-seller` (Shell) | Requests toast display via `sonner`            |
+| `shell:breadcrumb:v1`       | Any Remote                   | `grab-seller` (Shell) | Updates shell breadcrumb trail                 |
+| `form:dirty:v1`             | Form via `useContextBar`     | `grab-seller`         | Notifies shell of unsaved changes              |
+| `form:save:v1`              | `grab-seller` (`ContextBar`) | Active Form           | Shell command requesting form submission       |
+| `form:discard:v1`           | `grab-seller` (`ContextBar`) | Active Form           | Shell command requesting form discard/reset    |
+| `workflow:updated:v1`       | `grab-seller` (SSE Stream)   | Domain Remotes        | Propagates backend workflow terminal signals   |
 
 ---
 
@@ -82,6 +83,7 @@ sequenceDiagram
 ```
 
 ### Workflow Rules:
+
 1. Generate an `idempotencyKey` **before** the request.
 2. Subscribe to the event bus **before** triggering the POST to prevent losing fast terminal events.
 3. Correlate using `workflowName` + `idempotencyKey`.

@@ -1,8 +1,19 @@
 import { useFormContext } from "react-hook-form";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@khinemyaezin/seller-ui/components/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@khinemyaezin/seller-ui/components/field";
 import type { StorefrontFormValues } from "@/features/storefront/types";
-import { STOREFRONT_SLUG_MAX_LENGTH, STOREFRONT_SLUG_PATTERN } from "@/features/storefront/lib/to-storefront-slug";
+import {
+  STOREFRONT_SLUG_MAX_LENGTH,
+  STOREFRONT_SLUG_PATTERN,
+} from "@/features/storefront/lib/to-storefront-slug";
 
 export type StorefrontFieldsetProps = {
   onNameChange?: (name: string) => void;
@@ -11,8 +22,16 @@ export type StorefrontFieldsetProps = {
   salesChannelId?: string | null;
 };
 
-export function StorefrontFieldset({ onNameChange, onSlugEdit, disabled, salesChannelId }: StorefrontFieldsetProps) {
-  const { register, formState: { errors } } = useFormContext<StorefrontFormValues>();
+export function StorefrontFieldset({
+  onNameChange,
+  onSlugEdit,
+  disabled,
+  salesChannelId,
+}: StorefrontFieldsetProps) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<StorefrontFormValues>();
   const nameRegister = register("name", {
     required: "Name is required",
     maxLength: { value: 255, message: "Name must not exceed 255 characters" },
@@ -23,7 +42,8 @@ export function StorefrontFieldset({ onNameChange, onSlugEdit, disabled, salesCh
     <FieldSet>
       <FieldLegend>Storefront profile</FieldLegend>
       <FieldDescription>
-        This storefront brands your website channel. It is not the Grab marketplace. The slug is unique and used in public URLs.
+        This storefront brands your website channel. It is not the Grab marketplace. The slug is
+        unique and used in public URLs.
       </FieldDescription>
       <FieldGroup>
         <div className="grid grid-cols-2 gap-4">
@@ -64,13 +84,10 @@ export function StorefrontFieldset({ onNameChange, onSlugEdit, disabled, salesCh
         {salesChannelId ? (
           <Field>
             <FieldLabel htmlFor="salesChannelId">Website channel</FieldLabel>
-            <Input
-              id="salesChannelId"
-              value={salesChannelId}
-              disabled
-              readOnly
-            />
-            <FieldDescription>Assigned when this merchant was approved. Used by public browse.</FieldDescription>
+            <Input id="salesChannelId" value={salesChannelId} disabled readOnly />
+            <FieldDescription>
+              Assigned when this merchant was approved. Used by public browse.
+            </FieldDescription>
           </Field>
         ) : null}
       </FieldGroup>

@@ -22,7 +22,7 @@ export type LocationFormValues = {
 };
 
 export type LocationsFilterForm = {
-  query?: string
+  query?: string;
 };
 
 export type ZoneFormValues = {
@@ -30,7 +30,7 @@ export type ZoneFormValues = {
   name: string;
   type: ZoneType;
   active?: boolean;
-}
+};
 
 export type ZonesFilterForm = {
   locationId?: string;
@@ -44,7 +44,7 @@ export type BinFormValues = {
   name: string;
   maxCapacity: number;
   active?: boolean;
-}
+};
 
 export type BinsFilterForm = {
   zoneId?: string;
@@ -54,8 +54,8 @@ export type BinsFilterForm = {
 
 export type ItemFormValues = {
   product: {
-    sku: string,
-    productName: string
+    sku: string;
+    productName: string;
   };
   productVariantId: string;
   locationId: string;

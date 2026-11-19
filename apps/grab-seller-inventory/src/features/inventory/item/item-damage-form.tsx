@@ -4,7 +4,11 @@ import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
 import { Field, FieldGroup, FieldLabel } from "@khinemyaezin/seller-ui/components/field";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
-import type { ItemLifecycleEvent, MarkDamagedFormValues, MarkDamagedRequest } from "@/features/inventory/types";
+import type {
+  ItemLifecycleEvent,
+  MarkDamagedFormValues,
+  MarkDamagedRequest,
+} from "@/features/inventory/types";
 import { useMarkDamagedMutation } from "@/features/inventory/api/use-items";
 
 export type ItemDamageFormProps = {
@@ -16,7 +20,12 @@ const DEFAULT_VALUES: MarkDamagedFormValues = { quantity: 1, notes: "" };
 
 export default function ItemDamageForm({ link, onLifecycleEvent }: ItemDamageFormProps) {
   const form = useForm<MarkDamagedFormValues>({ defaultValues: DEFAULT_VALUES, mode: "onSubmit" });
-  const { register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useMarkDamagedMutation();
 
   const onSubmit = async (values: MarkDamagedFormValues) => {

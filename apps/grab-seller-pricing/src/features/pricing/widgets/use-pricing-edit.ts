@@ -11,15 +11,14 @@ export type UsePricingEditOptions = {
   initialValue?: PricingEditPayload;
 };
 
-export function usePricingEdit({
-  variantId,
-  contextSku,
-  initialValue,
-}: UsePricingEditOptions) {
+export function usePricingEdit({ variantId, contextSku, initialValue }: UsePricingEditOptions) {
   const trimmedVariantId = variantId?.trim();
   const listLink = usePricingLink("listVariantPriceLinks");
   const priceSetByVariantId = useVariantPriceLinkGet(listLink, trimmedVariantId);
-  const getPriceSetLink = resolveLink(priceSetByVariantId.data?._links, SellerApiLinks.pricing.getPriceSet);
+  const getPriceSetLink = resolveLink(
+    priceSetByVariantId.data?._links,
+    SellerApiLinks.pricing.getPriceSet,
+  );
   const priceSetQuery = usePriceSetLinkGet(getPriceSetLink);
 
   const price = priceSetQuery.data?.prices?.[0];

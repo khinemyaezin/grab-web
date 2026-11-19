@@ -18,19 +18,12 @@ export default function ProductVariantFieldSet() {
   return (
     <FieldSet>
       <FieldLegend>Variant Information</FieldLegend>
-      <FieldDescription>
-        Name is derived from its options.
-      </FieldDescription>
+      <FieldDescription>Name is derived from its options.</FieldDescription>
       <FieldGroup>
         <div className="grid grid-rows-1 lg:grid-cols-2 gap-4">
           <Field>
             <FieldLabel htmlFor="variant-info-name">Name</FieldLabel>
-            <Input
-              id="variant-info-name"
-              value={name ?? ""}
-              readOnly
-              aria-readonly="true"
-            />
+            <Input id="variant-info-name" value={name ?? ""} readOnly aria-readonly="true" />
           </Field>
           <Controller
             control={control}
@@ -47,9 +40,7 @@ export default function ProductVariantFieldSet() {
                   aria-invalid={fieldState.invalid}
                   {...field}
                 />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />

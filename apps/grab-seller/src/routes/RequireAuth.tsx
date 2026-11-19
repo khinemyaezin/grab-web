@@ -10,7 +10,9 @@ export function RequireAuth() {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
         <div className="w-full max-w-sm grid gap-6">
-          <div role="status" className="p-8 text-sm text-muted-foreground">Checking session…</div>
+          <div role="status" className="p-8 text-sm text-muted-foreground">
+            Checking session…
+          </div>
         </div>
       </div>
     );

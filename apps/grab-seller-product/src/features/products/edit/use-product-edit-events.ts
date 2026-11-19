@@ -35,22 +35,19 @@ export function useProductEditEvents(messages?: ProductEditEventMessages) {
           toast("success", messages?.updated ?? "Product updated");
           break;
         case "updateMediaFailed":
-          toast(
-            "warning",
-            "Product updated, but images could not be saved.",
-          );
+          toast("warning", "Product updated, but images could not be saved.");
           break;
         case "updateDescriptionFailed":
-          toast(
-            "warning",
-            "Product updated, but the description could not be saved.",
-          );
+          toast("warning", "Product updated, but the description could not be saved.");
           break;
         case "updateFailed":
           toast("error", messages?.updateFailed ?? "Failed to update product");
           break;
         case "updateTimedOut":
-          toast("error", messages?.updateTimedOut ?? "Product update is still running. Check back shortly.");
+          toast(
+            "error",
+            messages?.updateTimedOut ?? "Product update is still running. Check back shortly.",
+          );
           break;
         case "validationFailed": {
           const { message, description } = formatExtensionErrorsForToast(

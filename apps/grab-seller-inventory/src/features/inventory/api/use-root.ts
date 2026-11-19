@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { fetchInventoryRoot } from "./discovery";
 import type { InventoryRoot } from "@/features/inventory/types";
@@ -16,5 +15,5 @@ export function useRoot() {
 }
 
 export function useInventoryLink(rel: keyof InventoryRoot) {
-  return useRoot().data?.[rel]
+  return useRoot().data?.[rel];
 }

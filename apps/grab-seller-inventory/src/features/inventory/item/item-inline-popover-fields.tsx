@@ -31,10 +31,7 @@ export function ItemInlinePopoverFields() {
     <Field data-invalid={!!quantityError} className="gap-1">
       <input type="hidden" {...register("sku")} />
       <input type="hidden" {...register("locations.0.locationId")} />
-      <input
-        type="hidden"
-        {...register("locations.0.safetyStock", { valueAsNumber: true })}
-      />
+      <input type="hidden" {...register("locations.0.safetyStock", { valueAsNumber: true })} />
       <Input
         id="inline-inventory-qty"
         type="number"

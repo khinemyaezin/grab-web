@@ -11,7 +11,10 @@ import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { Link } from "react-router";
 import { useInventoryLink } from "@/features/inventory/api/use-root";
 import { useReorderSuggestions } from "@/features/inventory/api/use-items";
-import type { ReorderSuggestionResponse, ReorderSuggestionsResponse } from "@/features/inventory/types";
+import type {
+  ReorderSuggestionResponse,
+  ReorderSuggestionsResponse,
+} from "@/features/inventory/types";
 import { ImageIcon } from "lucide-react";
 
 function extractSuggestions(data?: ReorderSuggestionsResponse): ReorderSuggestionResponse[] {
@@ -27,7 +30,9 @@ function extractSuggestions(data?: ReorderSuggestionsResponse): ReorderSuggestio
 
 export default function ReorderSuggestionsView({ locationId }: { locationId?: string }) {
   const link = useInventoryLink("reorderSuggestions");
-  const { data, isLoading } = useReorderSuggestions(link, { ...(locationId && { locationId: locationId }) });
+  const { data, isLoading } = useReorderSuggestions(link, {
+    ...(locationId && { locationId: locationId }),
+  });
   const suggestions = extractSuggestions(data);
 
   if (!link) {
@@ -43,7 +48,9 @@ export default function ReorderSuggestionsView({ locationId }: { locationId?: st
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-muted-foreground">Loading suggestions…</CardContent>
+        <CardContent className="py-8 text-center text-muted-foreground">
+          Loading suggestions…
+        </CardContent>
       </Card>
     );
   }
@@ -51,9 +58,7 @@ export default function ReorderSuggestionsView({ locationId }: { locationId?: st
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          Recorder Suggestion
-        </CardTitle>
+        <CardTitle>Recorder Suggestion</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -77,7 +82,11 @@ export default function ReorderSuggestionsView({ locationId }: { locationId?: st
                       </div>
                       <div className="min-w-0 space-y-1">
                         <div className="font-medium leading-tight">
-                          <Link to={`stocks/${row.inventoryItemId}`} relative="path" className="hover:underline">
+                          <Link
+                            to={`stocks/${row.inventoryItemId}`}
+                            relative="path"
+                            className="hover:underline"
+                          >
                             {row.productName}
                           </Link>
                         </div>

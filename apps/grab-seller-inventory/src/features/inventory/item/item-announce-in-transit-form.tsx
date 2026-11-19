@@ -24,7 +24,12 @@ export default function ItemAnnounceInTransitForm({
     defaultValues: { quantity: 1, referenceId: "" },
     mode: "onSubmit",
   });
-  const { register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useAnnounceInTransitMutation();
 
   const onSubmit = async (values: AnnounceInTransitFormValues) => {
@@ -66,13 +71,7 @@ export default function ItemAnnounceInTransitForm({
         <ButtonGroup className="pt-7 w-full">
           <Button type="submit" className="w-full" disabled={mutation.isPending}>
             <ButtonStatus
-              status={
-                mutation.isPending
-                  ? "pending"
-                  : mutation.isSuccess
-                    ? "success"
-                    : "idle"
-              }
+              status={mutation.isPending ? "pending" : mutation.isSuccess ? "success" : "idle"}
               pendingLabel="Saving…"
               successLabel="Saved"
             >

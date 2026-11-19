@@ -1,4 +1,3 @@
-
 import { Button } from "@khinemyaezin/seller-ui/components/button";
 import { Badge } from "@khinemyaezin/seller-ui/components/badge";
 import { BoxesIcon, LayersIcon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
@@ -6,10 +5,27 @@ import { hasLink, resolveLink, SellerApiLinks } from "@khinemyaezin/seller-api";
 import { Link, useSearchParams } from "react-router";
 import { ZoneResponse } from "@/features/inventory/types/inventory.response";
 import { HateoasLink, ZoneLifecycleEvent, BinLifecycleEvent } from "@/types";
-import { useZones, useActivateZoneMutation, useDeactivateZoneMutation, useRemoveZoneMutation } from "@/features/inventory/api/use-zones";
+import {
+  useZones,
+  useActivateZoneMutation,
+  useDeactivateZoneMutation,
+  useRemoveZoneMutation,
+} from "@/features/inventory/api/use-zones";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@khinemyaezin/seller-ui/components/accordion";
-import { DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenu, DropdownMenuSeparator } from "@khinemyaezin/seller-ui/components/dropdown-menu";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@khinemyaezin/seller-ui/components/accordion";
+import {
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenu,
+  DropdownMenuSeparator,
+} from "@khinemyaezin/seller-ui/components/dropdown-menu";
 import { BinTable } from "@/features/inventory/bin/bin-table";
 import BinFilter from "@/features/inventory/bin/bin-filter";
 import { useBinFilter } from "@/features/inventory/bin/use-bin-filter";
@@ -17,8 +33,8 @@ import type { ZoneFilterFormValue } from "./use-zone-filter";
 import { Pager } from "@khinemyaezin/seller-ui/components/pager";
 
 type ZoneTableProps = {
-  locationId: string,
-  link: HateoasLink
+  locationId: string;
+  link: HateoasLink;
   filter: ZoneFilterFormValue;
   onPageChange?: (page: number) => void;
   onLifecycleEvent?: (event: ZoneLifecycleEvent | BinLifecycleEvent) => void;
@@ -29,14 +45,17 @@ export function ZoneTable({
   link,
   filter,
   onPageChange,
-  onLifecycleEvent
+  onLifecycleEvent,
 }: ZoneTableProps) {
   const { data: zones } = useZones(link, locationId, filter);
   const activateMutation = useActivateZoneMutation();
   const deactivateMutation = useDeactivateZoneMutation();
   const deleteMutation = useRemoveZoneMutation();
 
-  const handleActivate = async (link: HateoasLink, messages: { success: string; error: string }) => {
+  const handleActivate = async (
+    link: HateoasLink,
+    messages: { success: string; error: string },
+  ) => {
     try {
       await activateMutation.mutateAsync(link);
       onLifecycleEvent?.({ type: "activated" });
@@ -45,7 +64,10 @@ export function ZoneTable({
     }
   };
 
-  const handleDeactivate = async (link: HateoasLink, messages: { success: string; error: string }) => {
+  const handleDeactivate = async (
+    link: HateoasLink,
+    messages: { success: string; error: string },
+  ) => {
     try {
       await deactivateMutation.mutateAsync(link);
       onLifecycleEvent?.({ type: "deactivated" });
@@ -108,11 +130,7 @@ export function ZoneTable({
         ))}
       </Accordion>
       {zones?.page && zones.page.totalPages > 1 && (
-        <Pager
-          className="justify-end"
-          onPageChange={onPageChange}
-          {...zones.page}
-        />
+        <Pager className="justify-end" onPageChange={onPageChange} {...zones.page} />
       )}
     </div>
   );
@@ -135,7 +153,9 @@ function ZoneAccordionItem({
   onDelete,
   onLifecycleEvent,
 }: ZoneAccordionItemProps) {
-  const pagedBinLink = resolveLink(zone._links, SellerApiLinks.pending.searchBins) ?? resolveLink(zone._links, SellerApiLinks.pending.pagedBin);
+  const pagedBinLink =
+    resolveLink(zone._links, SellerApiLinks.pending.searchBins) ??
+    resolveLink(zone._links, SellerApiLinks.pending.pagedBin);
   const createBinLink = resolveLink(zone._links, SellerApiLinks.pending.createBin);
   const activateLink = resolveLink(zone._links, SellerApiLinks.facility.activateZone);
   const deactivateLink = resolveLink(zone._links, SellerApiLinks.facility.deactivateZone);
@@ -155,9 +175,7 @@ function ZoneAccordionItem({
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-semibold leading-none">{zone.code}</span>
                   <Badge variant="secondary">{zone.type.replace(/_/g, " ")}</Badge>
-                  <Badge >
-                    {zone.active ? "Active" : "Inactive"}
-                  </Badge>
+                  <Badge>{zone.active ? "Active" : "Inactive"}</Badge>
                 </div>
                 <p className="truncate text-sm font-normal text-muted-foreground">{zone.name}</p>
               </div>
@@ -178,30 +196,44 @@ function ZoneAccordionItem({
                 </DropdownMenuItem>
               )}
               {activateLink && (
-                <DropdownMenuItem onClick={() => onActivate(activateLink, {
-                  success: "Successfully activated",
-                  error: `Failed to activate ${zone.name}`
-                })}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    onActivate(activateLink, {
+                      success: "Successfully activated",
+                      error: `Failed to activate ${zone.name}`,
+                    })
+                  }
+                >
                   Activate
                 </DropdownMenuItem>
               )}
               {deactivateLink && (
-                <DropdownMenuItem onClick={() => onDeactivate(deactivateLink, {
-                  success: "Successfully deactivated",
-                  error: `Failed to deactivate ${zone.name}`
-                })}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    onDeactivate(deactivateLink, {
+                      success: "Successfully deactivated",
+                      error: `Failed to deactivate ${zone.name}`,
+                    })
+                  }
+                >
                   Deactivate
                 </DropdownMenuItem>
               )}
               {deleteLink && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => onDelete(deleteLink, {
-                    success: "Successfully deleted",
-                    error: `Failed to delete ${zone.name}`
-                  })} className="text-destructive">
+                  <DropdownMenuItem
+                    onClick={() =>
+                      onDelete(deleteLink, {
+                        success: "Successfully deleted",
+                        error: `Failed to delete ${zone.name}`,
+                      })
+                    }
+                    className="text-destructive"
+                  >
                     Delete
-                  </DropdownMenuItem></>
+                  </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
@@ -216,9 +248,7 @@ function ZoneAccordionItem({
             </div>
             {createBinLink && (
               <Button type="button" variant="outline" asChild>
-                <Link to={`${zone.id}/bins/new`}>
-                  Add Bin
-                </Link>
+                <Link to={`${zone.id}/bins/new`}>Add Bin</Link>
               </Button>
             )}
           </div>

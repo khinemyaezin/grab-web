@@ -16,110 +16,121 @@ import { SalesChannel } from "@/features/products/ui/sales-channel";
 import { useMatrixSync } from "@/features/products/use-matrix-sync";
 
 export type ProductEditFormProps = {
-    productId: string;
-    seed: ProductFormValue;
-    actions?: Record<string, HateoasLink>;
-    onLifecycleEvent?: (event: ProductLifecycleEvent) => void;
+  productId: string;
+  seed: ProductFormValue;
+  actions?: Record<string, HateoasLink>;
+  onLifecycleEvent?: (event: ProductLifecycleEvent) => void;
 };
 
 export default function ProductEditForm({
-    productId,
-    seed,
-    actions,
-    onLifecycleEvent,
+  productId,
+  seed,
+  actions,
+  onLifecycleEvent,
 }: ProductEditFormProps) {
-    const form = useForm<ProductFormValue>({
-        defaultValues: seed,
-        mode: "onSubmit",
-    });
-    const { reset } = form;
+  const form = useForm<ProductFormValue>({
+    defaultValues: seed,
+    mode: "onSubmit",
+  });
+  const { reset } = form;
 
-    useEffect(() => {
-        reset(seed);
-    }, [reset, seed]);
+  useEffect(() => {
+    reset(seed);
+  }, [reset, seed]);
 
-    return (
-        <FormProvider {...form}>
-            <ProductEditFormFields
-                productId={productId}
-                seed={seed}
-                actions={actions}
-                onLifecycleEvent={onLifecycleEvent}
-            />
-        </FormProvider>
-    );
+  return (
+    <FormProvider {...form}>
+      <ProductEditFormFields
+        productId={productId}
+        seed={seed}
+        actions={actions}
+        onLifecycleEvent={onLifecycleEvent}
+      />
+    </FormProvider>
+  );
 }
 
 function ProductEditFormFields({
+  productId,
+  seed,
+  actions,
+  onLifecycleEvent,
+}: ProductEditFormProps) {
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useFormContext<ProductFormValue>();
+
+  const [isExtensionDirty, resetExtensionDirty] = useIsExtensionDirty();
+  const resetAllSlots = useResetAllSlots();
+
+  const { submit } = useProductUpdateSubmit({
     productId,
     seed,
     actions,
-    onLifecycleEvent,
-}: ProductEditFormProps) {
-    const { handleSubmit, reset, formState: { isDirty } } = useFormContext<ProductFormValue>();
+    onLifecycleEvent: (event) => {
+      if (
+        event.type === "updated" ||
+        event.type === "updateMediaFailed" ||
+        event.type === "updateDescriptionFailed"
+      ) {
+        resetExtensionDirty();
+      }
+      onLifecycleEvent?.(event);
+    },
+  });
 
-    const [isExtensionDirty, resetExtensionDirty] = useIsExtensionDirty();
-    const resetAllSlots = useResetAllSlots();
+  useProductNameWatch({ onLifecycleEvent });
 
-    const { submit } = useProductUpdateSubmit({
-        productId,
-        seed,
-        actions,
-        onLifecycleEvent: (event) => {
-            if (event.type === "updated" || event.type === "updateMediaFailed" || event.type === "updateDescriptionFailed") {
-                resetExtensionDirty();
-            }
-            onLifecycleEvent?.(event);
+  useContextBar({
+    dirty: isDirty || isExtensionDirty,
+    onSave: async () => {
+      let valid = false;
+      await handleSubmit(
+        async () => {
+          valid = true;
+          await submit();
         },
-    });
-
-    useProductNameWatch({ onLifecycleEvent });
-
-    useContextBar({
-        dirty: isDirty || isExtensionDirty,
-        onSave: async () => {
-            let valid = false;
-            await handleSubmit(
-                async () => {
-                    valid = true;
-                    await submit();
-                },
-                () => {
-                    valid = false;
-                },
-            )();
-            if (!valid) {
-                throw new Error("Form validation failed");
-            }
+        () => {
+          valid = false;
         },
-        onDiscard: () => {
-            resetAllSlots();
-            reset(seed);
-            resetExtensionDirty();
-        },
-        groupId: "product-edit",
-        label: "Edit Product",
-    });
+      )();
+      if (!valid) {
+        throw new Error("Form validation failed");
+      }
+    },
+    onDiscard: () => {
+      resetAllSlots();
+      reset(seed);
+      resetExtensionDirty();
+    },
+    groupId: "product-edit",
+    label: "Edit Product",
+  });
 
-    useMatrixSync();
+  useMatrixSync();
 
-    return (
-        <form onSubmit={handleSubmit(submit)} className="w-full flex flex-wrap gap-6 items-start justify-center">
-            <div className="w-full max-w-2xl grid gap-6">
-                <Card>
-                    <CardContent className="flex flex-col gap-6">
-                        <ProductBasicFieldSet />
-                        <ProductMediaFieldSet />
-                    </CardContent>
-                </Card>
-                <PricingEditStandalone />
-                <InventoryEditStandalone />
-                <ProductEditVariation />
-            </div>
-            <aside className="flex-1 min-w-70 max-w-2xl grid gap-6">
-                <ProductStatus />
-                <SalesChannel />
-            </aside>
-        </form>
-    );
+  return (
+    <form
+      onSubmit={handleSubmit(submit)}
+      className="w-full flex flex-wrap gap-6 items-start justify-center"
+    >
+      <div className="w-full max-w-2xl grid gap-6">
+        <Card>
+          <CardContent className="flex flex-col gap-6">
+            <ProductBasicFieldSet />
+            <ProductMediaFieldSet />
+          </CardContent>
+        </Card>
+        <PricingEditStandalone />
+        <InventoryEditStandalone />
+        <ProductEditVariation />
+      </div>
+      <aside className="flex-1 min-w-70 max-w-2xl grid gap-6">
+        <ProductStatus />
+        <SalesChannel />
+      </aside>
+    </form>
+  );
 }

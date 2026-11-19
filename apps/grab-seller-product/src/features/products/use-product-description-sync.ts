@@ -10,9 +10,7 @@ import type { ProductDescription, ProductFormValue } from "@/features/products/t
 import { useCatalogLink } from "@/features/products/api/use-root";
 
 export type ProductDescriptionSyncResult =
-  | { status: "skipped" }
-  | { status: "synced" }
-  | { status: "failed"; error: Error };
+  { status: "skipped" } | { status: "synced" } | { status: "failed"; error: Error };
 
 export type UseProductDescriptionSyncOptions = {
   seed?: ProductDescription[];

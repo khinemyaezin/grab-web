@@ -4,7 +4,11 @@ import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
 import { Field, FieldGroup, FieldLabel } from "@khinemyaezin/seller-ui/components/field";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
-import type { ItemLifecycleEvent, ReturnToVendorFormValues, ReturnToVendorRequest } from "@/features/inventory/types";
+import type {
+  ItemLifecycleEvent,
+  ReturnToVendorFormValues,
+  ReturnToVendorRequest,
+} from "@/features/inventory/types";
 import { useReturnToVendorMutation } from "@/features/inventory/api/use-items";
 
 export type ItemReturnToVendorFormProps = {
@@ -14,9 +18,20 @@ export type ItemReturnToVendorFormProps = {
 
 const DEFAULT_VALUES: ReturnToVendorFormValues = { quantity: 1, reason: "", notes: "" };
 
-export default function ItemReturnToVendorForm({ link, onLifecycleEvent }: ItemReturnToVendorFormProps) {
-  const form = useForm<ReturnToVendorFormValues>({ defaultValues: DEFAULT_VALUES, mode: "onSubmit" });
-  const { register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+export default function ItemReturnToVendorForm({
+  link,
+  onLifecycleEvent,
+}: ItemReturnToVendorFormProps) {
+  const form = useForm<ReturnToVendorFormValues>({
+    defaultValues: DEFAULT_VALUES,
+    mode: "onSubmit",
+  });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useReturnToVendorMutation();
 
   const onSubmit = async (values: ReturnToVendorFormValues) => {

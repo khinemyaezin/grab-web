@@ -1,4 +1,3 @@
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "@khinemyaezin/seller-ui";
 import { locationService } from "./location";
@@ -13,7 +12,10 @@ import type {
 } from "@/features/inventory/types";
 import type { Pageable } from "@khinemyaezin/seller-api";
 
-export function useLocations(locationsLink?: HateoasLink, filters?: LocationsFilterForm & Pageable) {
+export function useLocations(
+  locationsLink?: HateoasLink,
+  filters?: LocationsFilterForm & Pageable,
+) {
   const api = useApi();
   return useQuery<LocationsResponse>({
     queryKey: ["locations", locationsLink?.href, filters],
@@ -25,7 +27,7 @@ export function useLocations(locationsLink?: HateoasLink, filters?: LocationsFil
 
 export function useLocation(link?: HateoasLink, locationId?: string) {
   const api = useApi();
-  const expendLink = resolveUrlTemplate({ "locationId": locationId! }, link!)
+  const expendLink = resolveUrlTemplate({ locationId: locationId! }, link!);
   return useQuery<LocationResponse>({
     queryKey: ["location", locationId],
     queryFn: () => locationService.getLocation(api, expendLink),
@@ -36,8 +38,13 @@ export function useLocation(link?: HateoasLink, locationId?: string) {
 export function useCreateLocationMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<LocationResponse, Error, { link: HateoasLink, request: CreateLocationRequest }>({
-    mutationFn: ({ link: locationsLink, request }) => locationService.createLocation(api, locationsLink, request),
+  return useMutation<
+    LocationResponse,
+    Error,
+    { link: HateoasLink; request: CreateLocationRequest }
+  >({
+    mutationFn: ({ link: locationsLink, request }) =>
+      locationService.createLocation(api, locationsLink, request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
     },
@@ -47,7 +54,11 @@ export function useCreateLocationMutation() {
 export function useUpdateLocationMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
-  return useMutation<LocationResponse, Error, { link: HateoasLink; request: UpdateLocationRequest }>({
+  return useMutation<
+    LocationResponse,
+    Error,
+    { link: HateoasLink; request: UpdateLocationRequest }
+  >({
     mutationFn: ({ link, request }) => locationService.update(api, link, request),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
@@ -84,7 +95,8 @@ export function useLinkLocationToChannelMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<LocationResponse, Error, { link: HateoasLink; salesChannelId: string }>({
-    mutationFn: ({ link, salesChannelId }) => locationService.linkToChannel(api, link, { salesChannelId }),
+    mutationFn: ({ link, salesChannelId }) =>
+      locationService.linkToChannel(api, link, { salesChannelId }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
       queryClient.invalidateQueries({ queryKey: ["location", data.id] });
@@ -96,7 +108,8 @@ export function useUnlinkLocationFromChannelMutation() {
   const api = useApi();
   const queryClient = useQueryClient();
   return useMutation<LocationResponse, Error, { link: HateoasLink; salesChannelId: string }>({
-    mutationFn: ({ link, salesChannelId }) => locationService.unlinkFromChannel(api, link, { salesChannelId }),
+    mutationFn: ({ link, salesChannelId }) =>
+      locationService.unlinkFromChannel(api, link, { salesChannelId }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
       queryClient.invalidateQueries({ queryKey: ["location", data.id] });

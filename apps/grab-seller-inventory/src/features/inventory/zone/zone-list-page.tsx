@@ -19,21 +19,30 @@ export default function ZonesPage() {
 
   const handleEvent = (event: ZoneLifecycleEvent | BinLifecycleEvent) => {
     switch (event.type) {
-      case "activated": toast("success", "Successfully activated"); break;
-      case "activateFailed": toast("error", "Failed to activate"); break;
-      case "deactivated": toast("success", "Successfully deactivated"); break;
-      case "deactivateFailed": toast("error", "Failed to deactivate"); break;
-      case "deleted": toast("success", "Successfully deleted"); break;
-      case "deleteFailed": toast("error", "Failed to delete"); break;
+      case "activated":
+        toast("success", "Successfully activated");
+        break;
+      case "activateFailed":
+        toast("error", "Failed to activate");
+        break;
+      case "deactivated":
+        toast("success", "Successfully deactivated");
+        break;
+      case "deactivateFailed":
+        toast("error", "Failed to deactivate");
+        break;
+      case "deleted":
+        toast("success", "Successfully deleted");
+        break;
+      case "deleteFailed":
+        toast("error", "Failed to delete");
+        break;
     }
   };
 
   return (
     <div className="container mx-auto max-w-3xl p-6 space-y-6">
-      <Header
-        title="Zones"
-        description="Manage zones and bins for this location."
-      >
+      <Header title="Zones" description="Manage zones and bins for this location.">
         <Button variant="secondary" asChild>
           <Link to="../.." relative="path" className="flex gap-2 items-center">
             <ArrowLeftIcon />

@@ -111,10 +111,7 @@ export function SlotProvider({ children }: SlotProviderProps) {
     };
   }, []);
 
-  const listDeclarations = useCallback(
-    () => Array.from(declarationsRef.current.values()),
-    [],
-  );
+  const listDeclarations = useCallback(() => Array.from(declarationsRef.current.values()), []);
 
   const list = useCallback(() => Array.from(handlesRef.current.values()), []);
 
@@ -131,19 +128,12 @@ export function SlotProvider({ children }: SlotProviderProps) {
 
   const getSnapshot = useCallback(() => entriesRef.current, []);
 
-  const getEntry = useCallback(
-    (groupId: string) => entriesRef.current.get(groupId),
-    [],
-  );
+  const getEntry = useCallback((groupId: string) => entriesRef.current.get(groupId), []);
 
   const setPayload = useCallback(
     (entry: SlotEntry) => {
       const current = entriesRef.current.get(entry.groupId);
-      if (
-        current &&
-        current.domain === entry.domain &&
-        Object.is(current.payload, entry.payload)
-      ) {
+      if (current && current.domain === entry.domain && Object.is(current.payload, entry.payload)) {
         return;
       }
 

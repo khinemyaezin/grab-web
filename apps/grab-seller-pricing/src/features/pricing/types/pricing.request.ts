@@ -15,4 +15,4 @@ export type UpdatePriceRequest = {
 };
 export type ListVariantPriceSetLinksRequest = {
   variantIds: string[];
-}
+};

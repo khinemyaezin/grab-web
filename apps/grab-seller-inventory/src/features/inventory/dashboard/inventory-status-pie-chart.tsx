@@ -41,9 +41,7 @@ export default function InventoryStatusPieChart({
     { bucket: "discontinued", count: status.discontinued.count, fill: "var(--color-discontinued)" },
   ].filter((row) => row.count > 0);
 
-  const activePct = totalItems > 0
-    ? ((status.active.count / totalItems) * 100).toFixed(1)
-    : "0";
+  const activePct = totalItems > 0 ? ((status.active.count / totalItems) * 100).toFixed(1) : "0";
 
   return (
     <Card className="flex flex-col">
@@ -59,10 +57,7 @@ export default function InventoryStatusPieChart({
             No inventory items in this scope.
           </p>
         ) : (
-          <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square max-h-[250px] px-0"
-          >
+          <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px] px-0">
             <PieChart>
               <ChartTooltip content={<ChartTooltipContent nameKey="count" hideLabel />} />
               <Pie
@@ -90,9 +85,7 @@ export default function InventoryStatusPieChart({
         )}
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="text-muted-foreground">
-          {activePct}% of items are active
-        </div>
+        <div className="text-muted-foreground">{activePct}% of items are active</div>
       </CardFooter>
     </Card>
   );

@@ -11,7 +11,7 @@ export default function ItemsView() {
   const { filter, updateCriteria, updatePage } = useItemFilter();
 
   return (
-    <Card >
+    <Card>
       <CardHeader className="flex flex-col sm:flex-row sm:items-end sm:justify-between">
         <div className="sm:flex-1">
           <ItemsFilter onChange={updateCriteria} />

@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useRef } from "react";
 import { usePlatform } from "@khinemyaezin/seller-ui";
-import type { EventPayloads } from "@khinemyaezin/seller-contracts";
+import type { WorkflowUpdatedV1 } from "@khinemyaezin/seller-contracts";
 import {
   DEFAULT_WORKFLOW_TIMEOUT_MS,
   TERMINAL_WORKFLOW_STATUSES,
 } from "@/features/products/lib/create-sellable-product-workflow";
 
-export type WorkflowUpdatedV1 = EventPayloads["workflow:updated:v1"] & {
-  idempotencyKey?: string;
-};
+export type { WorkflowUpdatedV1 };
 
 export class WorkflowTimeoutError extends Error {
   constructor(message: string = "Workflow timed out") {

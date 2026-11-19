@@ -9,7 +9,10 @@ import {
   useValidateAllSlots,
 } from "@khinemyaezin/seller-ui";
 import { type HateoasLink } from "@khinemyaezin/seller-api";
-import { isDescriptionsDirty, toReplaceDescriptionsPayload } from "@/features/products/api/product-descriptions";
+import {
+  isDescriptionsDirty,
+  toReplaceDescriptionsPayload,
+} from "@/features/products/api/product-descriptions";
 import { isGalleryDirty, toReplaceMediaPayload } from "@/features/products/api/product-media";
 import { invalidateProductQueries } from "@/features/products/api/use-products";
 import { useUpdateSellableProductCommand } from "./use-product-update-command";
@@ -57,7 +60,10 @@ export function useProductUpdateSubmit({
   onLifecycleEvent,
 }: UseProductUpdateSubmitOptions): UseProductUpdateSubmitResult {
   const queryClient = useQueryClient();
-  const { getValues, formState: { dirtyFields } } = useFormContext<ProductFormValue>();
+  const {
+    getValues,
+    formState: { dirtyFields },
+  } = useFormContext<ProductFormValue>();
   const [extensionDirty] = useIsExtensionDirty();
   const { validate } = useValidateAllSlots();
   const { stage } = useProductMediaSync();
@@ -67,7 +73,10 @@ export function useProductUpdateSubmit({
     const catalogDirty = isCatalogFormDirty(dirtyFields, extensionDirty);
     const current = getValues();
     const mediaDirty = isGalleryDirty(current.medias ?? [], seed.medias ?? []);
-    const descriptionsDirty = isDescriptionsDirty(current.descriptions ?? [], seed.descriptions ?? []);
+    const descriptionsDirty = isDescriptionsDirty(
+      current.descriptions ?? [],
+      seed.descriptions ?? [],
+    );
     const shouldUpdate = catalogDirty || mediaDirty || descriptionsDirty;
 
     let slotContributions: UpdateProductContributions = {};
@@ -78,10 +87,7 @@ export function useProductUpdateSubmit({
         onLifecycleEvent?.({ type: "validationFailed", errors });
         throw new Error("Validation failed");
       }
-      slotContributions = mergeContributions(
-        results,
-        PRODUCT_SLICES,
-      ) as UpdateProductContributions;
+      slotContributions = mergeContributions(results, PRODUCT_SLICES) as UpdateProductContributions;
     }
 
     const chain = await runWorkflowChain<ProductUpdateChainCtx>(
@@ -104,17 +110,15 @@ export function useProductUpdateSubmit({
             const publicationDiff = catalogDirty
               ? diffProductPublications(seed, values)
               : { publicationLines: [], unpublish: [] };
-            const activating = seed.product.status !== "ACTIVE" && values.product.status === "ACTIVE";
+            const activating =
+              seed.product.status !== "ACTIVE" && values.product.status === "ACTIVE";
             const publicationLines = activating
               ? (values.product.publicationLines ?? [])
               : publicationDiff.publicationLines;
             const unpublishLines = activating ? [] : publicationDiff.unpublish;
 
-            await execute(buildUpdateSellableProductRequest(
-              productId,
-              values,
-              intent,
-              {
+            await execute(
+              buildUpdateSellableProductRequest(productId, values, intent, {
                 ...slotContributions,
                 ...(publicationLines.length > 0 ? { publicationLines } : {}),
                 ...(unpublishLines.length > 0 ? { unpublishLines } : {}),
@@ -122,8 +126,8 @@ export function useProductUpdateSubmit({
                 ...(descriptionsDirty
                   ? { descriptions: toReplaceDescriptionsPayload(values.descriptions) }
                   : {}),
-              },
-            ));
+              }),
+            );
             return { status: "ok", patch: { entityUpdated: true } };
           },
           onFailure: "abort",

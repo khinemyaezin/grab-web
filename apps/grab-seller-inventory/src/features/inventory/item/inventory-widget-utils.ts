@@ -1,9 +1,6 @@
 import type { FieldError, FieldErrors } from "react-hook-form";
 
-export function collectFormErrors(
-  errors?: FieldErrors,
-  parentKey = ""
-): Record<string, string> {
+export function collectFormErrors(errors?: FieldErrors, parentKey = ""): Record<string, string> {
   if (!errors || typeof errors !== "object") {
     return {};
   }

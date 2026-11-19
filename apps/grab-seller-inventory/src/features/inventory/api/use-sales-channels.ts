@@ -1,7 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@khinemyaezin/seller-ui";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
-import { fetchSalesChannelRoot, salesChannelService, salesChannelsFromCollection } from "./sales-channel";
+import {
+  fetchSalesChannelRoot,
+  salesChannelService,
+  salesChannelsFromCollection,
+} from "./sales-channel";
 import type { SalesChannelResponse } from "@/features/inventory/types/sales-channel.response";
 
 export function useSalesChannels(entryLink?: HateoasLink | null) {

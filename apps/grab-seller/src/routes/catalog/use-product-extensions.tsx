@@ -47,9 +47,7 @@ export function useProductExtensions({
         slot,
         (props: Record<string, unknown>) => {
           const Widget = WidgetLazy as ComponentType<any>;
-          return (
-            <Widget {...props} platform={platform} entryLink={links[module]!} />
-          );
+          return <Widget {...props} platform={platform} entryLink={links[module]!} />;
         },
       ]),
     );

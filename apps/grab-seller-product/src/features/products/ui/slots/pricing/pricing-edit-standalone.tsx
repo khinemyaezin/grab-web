@@ -6,36 +6,36 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { ProductFormValue } from "@/features/products/types";
 
 export function PricingEditStandalone() {
-    const { control } = useFormContext<ProductFormValue>();
-    const isStandalone = useWatch({
-        control,
-        name: "variationTypes",
-        compute: (value) => isStandaloneProductForm(value),
-    })
-    const sku = useWatch({
-        control,
-        name: "product.standaloneVariant.sku",
-        defaultValue: "",
-    });
-    const variantId = useWatch({
-        control,
-        name: "product.standaloneVariant.id",
-        defaultValue: "",
-    });
+  const { control } = useFormContext<ProductFormValue>();
+  const isStandalone = useWatch({
+    control,
+    name: "variationTypes",
+    compute: (value) => isStandaloneProductForm(value),
+  });
+  const sku = useWatch({
+    control,
+    name: "product.standaloneVariant.sku",
+    defaultValue: "",
+  });
+  const variantId = useWatch({
+    control,
+    name: "product.standaloneVariant.id",
+    defaultValue: "",
+  });
 
-    if(!isStandalone) return;
+  if (!isStandalone) return;
 
-    return (
-        <Card>
-            <CardContent>
-                <PricingLineEditFullSlot
-                    groupId={STANDALONE_PRICING_EDIT_GROUP_ID}
-                    context={{
-                        sku: sku ?? "",
-                        variantId: variantId ?? "",
-                    }}
-                />
-            </CardContent>
-        </Card>
-    )
+  return (
+    <Card>
+      <CardContent>
+        <PricingLineEditFullSlot
+          groupId={STANDALONE_PRICING_EDIT_GROUP_ID}
+          context={{
+            sku: sku ?? "",
+            variantId: variantId ?? "",
+          }}
+        />
+      </CardContent>
+    </Card>
+  );
 }

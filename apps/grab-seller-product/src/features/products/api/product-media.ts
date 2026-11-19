@@ -53,7 +53,9 @@ export function authorizeStagedUpload(
   return catalogService.createProductMediaUpload(api, link, metadata);
 }
 
-export function toReplaceMediaPayload(items: ProductMediaFormItem[]): ReplaceProductMediaRequest["medias"] {
+export function toReplaceMediaPayload(
+  items: ProductMediaFormItem[],
+): ReplaceProductMediaRequest["medias"] {
   return formatMediaReplacements(items);
 }
 

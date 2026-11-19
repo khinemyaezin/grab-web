@@ -2,15 +2,16 @@ import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
 import { type HateoasLink } from "@khinemyaezin/seller-api";
 import { PRODUCT_CONTRIBUTION_SLICES } from "@khinemyaezin/seller-contracts";
-import { collectSlotFieldErrors, mergeContributions, useValidateAllSlots } from "@khinemyaezin/seller-ui";
+import {
+  collectSlotFieldErrors,
+  mergeContributions,
+  useValidateAllSlots,
+} from "@khinemyaezin/seller-ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateProductQueries } from "@/features/products/api/use-products";
 import { useCreateSellableProductCommand } from "./use-product-create-command";
 import { buildCreateSellableProductRequest } from "@/features/products/lib/create-sellable-product-request";
-import {
-  runWorkflowChain,
-  toWorkflowStepResult,
-} from "@/features/products/lib/run-workflow-chain";
+import { runWorkflowChain, toWorkflowStepResult } from "@/features/products/lib/run-workflow-chain";
 import type {
   ProductContributions,
   ProductFormValue,
@@ -65,7 +66,10 @@ export function useProductCreateSubmit({
         {
           id: "createEntity",
           run: async () => {
-            const contributions = mergeContributions(results, PRODUCT_SLICES) as ProductContributions;
+            const contributions = mergeContributions(
+              results,
+              PRODUCT_SLICES,
+            ) as ProductContributions;
             const payload = buildCreateSellableProductRequest(getValues(), contributions);
             const commandResult = await execute(payload);
             return { status: "ok" as const, patch: { productId: commandResult.productId } };
@@ -96,15 +100,7 @@ export function useProductCreateSubmit({
 
     onLifecycleEvent?.({ type: "created", productId });
     void invalidateProductQueries(queryClient, productId);
-  }, [
-    execute,
-    getValues,
-    onLifecycleEvent,
-    queryClient,
-    resetCommand,
-    stage,
-    validate,
-  ]);
+  }, [execute, getValues, onLifecycleEvent, queryClient, resetCommand, stage, validate]);
 
   return { submit };
 }

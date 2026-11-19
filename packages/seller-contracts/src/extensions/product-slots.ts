@@ -23,8 +23,7 @@ export const PRODUCT_SLOT_DOMAINS = {
   INVENTORY_EDIT: "inventory-edit",
 } as const;
 
-export type ProductSlotDomain =
-  (typeof PRODUCT_SLOT_DOMAINS)[keyof typeof PRODUCT_SLOT_DOMAINS];
+export type ProductSlotDomain = (typeof PRODUCT_SLOT_DOMAINS)[keyof typeof PRODUCT_SLOT_DOMAINS];
 
 export const PRICING_DOMAIN = PRODUCT_SLOT_DOMAINS.PRICING;
 export const PRICING_EDIT_DOMAIN = PRODUCT_SLOT_DOMAINS.PRICING_EDIT;

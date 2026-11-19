@@ -30,9 +30,7 @@ function toError(error: unknown): Error {
 function storedResult<TCtx extends object>(
   result: WorkflowStepResult<TCtx>,
 ): WorkflowStepResult<TCtx> {
-  return result.error
-    ? { status: result.status, error: result.error }
-    : { status: result.status };
+  return result.error ? { status: result.status, error: result.error } : { status: result.status };
 }
 
 function resolvePolicy<TCtx extends object>(

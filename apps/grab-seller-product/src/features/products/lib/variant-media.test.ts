@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  isVariantMediaDirty,
-  orderVariantMediaIds,
-  toVariantGalleryItems,
-} from "./variant-media";
+import { isVariantMediaDirty, orderVariantMediaIds, toVariantGalleryItems } from "./variant-media";
 import type { ProductMedia } from "@/features/products/types";
 
 const gallery: ProductMedia[] = [
@@ -23,27 +19,36 @@ describe("orderVariantMediaIds", () => {
 
 describe("toVariantGalleryItems", () => {
   it("maps assigned product media in mediaIds order", () => {
-    expect(toVariantGalleryItems(gallery, ["m2", "m1"]).map((item) => item.id)).toEqual(["m2", "m1"]);
+    expect(toVariantGalleryItems(gallery, ["m2", "m1"]).map((item) => item.id)).toEqual([
+      "m2",
+      "m1",
+    ]);
     expect(toVariantGalleryItems(gallery, ["m2", "m1"])[0].rank).toBe(0);
   });
 
   it("skips ids that are not in the product gallery", () => {
-    expect(toVariantGalleryItems(gallery, ["missing", "m1"]).map((item) => item.id)).toEqual(["m1"]);
+    expect(toVariantGalleryItems(gallery, ["missing", "m1"]).map((item) => item.id)).toEqual([
+      "m1",
+    ]);
   });
 });
 
 describe("isVariantMediaDirty", () => {
   it("is clean when order and thumbnail match the seed", () => {
-    expect(isVariantMediaDirty(
-      { mediaIds: ["m1", "m2"], thumbnailMediaId: "m1" },
-      { mediaIds: ["m1", "m2"], thumbnailMediaId: "m1" },
-    )).toBe(false);
+    expect(
+      isVariantMediaDirty(
+        { mediaIds: ["m1", "m2"], thumbnailMediaId: "m1" },
+        { mediaIds: ["m1", "m2"], thumbnailMediaId: "m1" },
+      ),
+    ).toBe(false);
   });
 
   it("is dirty when the assigned subset or thumbnail changes", () => {
-    expect(isVariantMediaDirty(
-      { mediaIds: ["m2"], thumbnailMediaId: "m2" },
-      { mediaIds: ["m1", "m2"], thumbnailMediaId: "m1" },
-    )).toBe(true);
+    expect(
+      isVariantMediaDirty(
+        { mediaIds: ["m2"], thumbnailMediaId: "m2" },
+        { mediaIds: ["m1", "m2"], thumbnailMediaId: "m1" },
+      ),
+    ).toBe(true);
   });
 });

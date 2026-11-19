@@ -20,9 +20,7 @@ export default function InventoryDashboardView() {
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-16 gap-3">
           <Package className="h-12 w-12 text-muted-foreground/40" />
-          <p className="text-center text-muted-foreground">
-            Inventory summary is not available.
-          </p>
+          <p className="text-center text-muted-foreground">Inventory summary is not available.</p>
         </CardContent>
       </Card>
     );
@@ -31,14 +29,12 @@ export default function InventoryDashboardView() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <InventoryDashboardFilter
-          locationId={locationId}
-          onLocationChange={setLocationId}
-        />
+        <InventoryDashboardFilter locationId={locationId} onLocationChange={setLocationId} />
       </div>
 
       {isLoading && (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {/* Static skeleton loading list; indices are stable across render */}
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="py-6">
@@ -71,7 +67,7 @@ export default function InventoryDashboardView() {
         </>
       )}
 
-      <ReorderSuggestionsView locationId={locationId}/>
+      <ReorderSuggestionsView locationId={locationId} />
     </div>
   );
 }

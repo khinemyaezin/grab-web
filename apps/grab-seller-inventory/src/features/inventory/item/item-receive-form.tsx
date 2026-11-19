@@ -1,5 +1,11 @@
 import { Controller, useForm } from "react-hook-form";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@khinemyaezin/seller-ui/components/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@khinemyaezin/seller-ui/components/card";
 import { Button, ButtonStatus } from "@khinemyaezin/seller-ui/components/index";
 import { ButtonGroup } from "@khinemyaezin/seller-ui/components/button-group";
 import { Input } from "@khinemyaezin/seller-ui/components/input";
@@ -10,11 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@khinemyaezin/seller-ui/components/select";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@khinemyaezin/seller-ui/components/field";
+import { Field, FieldGroup, FieldLabel } from "@khinemyaezin/seller-ui/components/field";
 import type { HateoasLink } from "@khinemyaezin/seller-api";
 import {
   RECEIVE_STOCK_TYPES,
@@ -40,7 +42,13 @@ export default function ItemReceiveForm({ link, onLifecycleEvent }: ItemReceiveF
     defaultValues: DEFAULT_VALUES,
     mode: "onSubmit",
   });
-  const { control, register, handleSubmit, reset, formState: { errors, isDirty } } = form;
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
   const mutation = useReceiveStockMutation();
 
   const onSubmit = async (values: ReceiveStockFormValues) => {
@@ -74,9 +82,7 @@ export default function ItemReceiveForm({ link, onLifecycleEvent }: ItemReceiveF
               min: { value: 1, message: "Must be at least 1" },
             })}
           />
-          {errors.quantity && (
-            <p className="text-sm text-destructive">{errors.quantity.message}</p>
-          )}
+          {errors.quantity && <p className="text-sm text-destructive">{errors.quantity.message}</p>}
         </Field>
         <Field data-invalid={!!errors.type}>
           <FieldLabel htmlFor="receive-type">Type</FieldLabel>

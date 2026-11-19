@@ -11,10 +11,7 @@ import {
 import { useSlotChangeEmitter, useRhfSlotHandle, useRhfValueSource } from "@khinemyaezin/seller-ui";
 import { projectPricingCreate } from "../lib/project-pricing";
 
-const schema = z.fromJSONSchema(PricingPayloadSchema) as z.ZodType<
-  PricingPayload,
-  PricingPayload
->;
+const schema = z.fromJSONSchema(PricingPayloadSchema) as z.ZodType<PricingPayload, PricingPayload>;
 
 const DEFAULT_VALUE: PricingPayload = {
   sku: "",

@@ -3,7 +3,7 @@
 ## 1. The Problem
 
 **What's not working?**  
-The Seller Shell currently persists authentication data in browser-readable storage (`localStorage` for tokens and user objects), and MFEs do not yet have a stable, framework-neutral way to observe authentication state. This creates pressure to share tokens, React context, package singletons, or event payloads across independently deployed MFEs.
+The Seller frontend has a shared session contract, but its former auth flow assumed JSON login and refresh endpoints. The Seller BFF now owns browser OIDC login, server-side token storage, session refresh, and logout. Unsafe API requests must also follow the BFF's CSRF contract.
 
 **What's at stake?**  
 If authentication state is shared informally, any loaded MFE or XSS issue can increase credential exposure, and teams can accidentally couple their delivery to Shell internals. Without a clear contract, future React and non-React MFEs may implement incompatible authentication assumptions.
@@ -19,11 +19,11 @@ The Seller Shell owns frontend session state and exposes it through a single, st
 
 - Define a `SellerPlatform` contract as the **single integration object** passed to every MFE. It bundles session, events, navigation, and runtime configuration into one standardized interface.
 - Model `SessionSnapshot` as a **discriminated union state machine** with `loading`, `anonymous`, and `authenticated` states — no nullable fields, no token fields.
-- Replace `grab-seller` localStorage token and user persistence with a **session bootstrap** from the authenticated backend session (`GET /api/v1/identity/profile`).
-- Implement a **refresh coordinator with a mutex** so concurrent `401` responses from multiple MFEs trigger exactly one token rotation, not parallel conflicting rotations.
+- Bootstrap and revalidate the session from `GET /api/v1/identity/session`; the BFF handles OIDC token refresh server-side.
 - Use **signal-only auth events** (empty payloads) to notify MFEs that session state changed, while `platform.session.getSnapshot()` remains the single source of truth.
-- Keep API requests credentialed with `credentials: "include"` and **deprecate bearer-token injection** for frontend consumers.
-- Apply **`SameSite=Lax`** cookies as the primary CSRF protection for same-origin deployments.
+- Keep API requests credentialed with `credentials: "include"` and attach the dynamic CSRF header discovered from the BFF for unsafe methods.
+- Start login with top-level navigation to the BFF's discovered OIDC link. Submit registration with CSRF, then navigate to OIDC login. Submit logout through a top-level form with the CSRF parameter.
+- The browser receives only the BFF's `HttpOnly` session cookie. OAuth access and refresh tokens remain server-side.
 - Define a **`MfeLifecycle` mount contract** that supports both React Module Federation today and future Web Component or framework-agnostic mount adapters.
 - Standardize shared package naming across the Shell and MFEs so contracts and runtime singletons resolve consistently.
 
@@ -34,9 +34,10 @@ MFEs remain independently deployable and keep ownership of their local UI state,
 
 ## 2.1. Visual Overview
 
-> *Diagrams to understand the architecture at a glance.*
+> _Diagrams to understand the architecture at a glance._
 
 ### High-Level Flow / Components
+
 ```mermaid
 flowchart TB
     Browser["Browser"]
@@ -80,6 +81,7 @@ flowchart TB
 ```
 
 ### Authentication and Session Flow
+
 ```mermaid
 sequenceDiagram
     actor User
@@ -93,7 +95,7 @@ sequenceDiagram
 
     Note over Shell,Platform: Cold start / page reload
     Shell->>Platform: SessionSnapshot = { status: "loading" }
-    Shell->>Gateway: GET /api/v1/identity/profile (credentials: include)
+    Shell->>Gateway: GET /api/v1/identity/session (credentials: include)
     alt Valid session cookie exists
         Gateway-->>Shell: 200 — user, roles, permissions
         Shell->>Platform: SessionSnapshot = { status: "authenticated", user, roles, permissions }
@@ -104,16 +106,12 @@ sequenceDiagram
     Platform-->>MFE: Notify all subscribers
 
     Note over User,AuthMFE: Login flow
-    User->>AuthMFE: Submit credentials
-    AuthMFE->>Gateway: POST /api/v1/identity/auth/login
-    Gateway->>Identity: Authenticate credentials
-    Identity-->>Gateway: Issue access and refresh session
-    Gateway-->>AuthMFE: Set HttpOnly cookies (SameSite=Lax, Secure, Path=/)
-    AuthMFE->>Platform: platform.events.publish("auth:login-success:v1", {})
-    Note over AuthMFE,Platform: Empty payload — signal only, no tokens or user data
-
-    Shell->>Gateway: GET /api/v1/identity/profile
-    Note over Shell,Gateway: Browser sends cookies automatically
+    User->>AuthMFE: Select Sign in
+    AuthMFE->>Gateway: Top-level navigation to /oauth2/authorization/seller
+    Gateway->>Identity: OIDC authorization code flow
+    Identity-->>Gateway: Authorization response
+    Gateway-->>Browser: Set HttpOnly session cookie and redirect to UI
+    Shell->>Gateway: GET /api/v1/identity/session
     Gateway-->>Shell: Current user, roles, permissions
     Shell->>Platform: SessionSnapshot = { status: "authenticated", ... }
     Platform-->>MFE: Notify session subscribers
@@ -124,38 +122,35 @@ sequenceDiagram
     API-->>Gateway: Business response
     Gateway-->>MFE: Business response
 
-    Note over MFE,Gateway: 401 handling with refresh mutex
-    alt Access session expired
+    Note over MFE,Gateway: Server-side token refresh
+    alt OIDC access token near expiry
         MFE->>Gateway: Protected request
-        Gateway-->>MFE: 401 Unauthorized
-        MFE->>Shell: 401 interceptor triggers platform.session.refresh()
-        Note over Shell: RefreshCoordinator mutex — only one in-flight refresh at a time
-        Shell->>Gateway: POST /api/v1/identity/auth/refresh
-        Gateway-->>Shell: Rotate cookies
-        Shell->>Platform: SessionSnapshot = { status: "authenticated", ... }
-        MFE->>Gateway: Retry eligible request once
+        Gateway->>Identity: Refresh token server-side
+        Gateway-->>MFE: Business response
     end
+
+    MFE->>Gateway: Unsafe request with CSRF header
+    Gateway-->>MFE: Business response
 
     Note over User,Shell: Tab reactivation
     alt User returns to inactive tab
-        Shell->>Gateway: GET /api/v1/identity/profile (revalidate session)
+        Shell->>Gateway: GET /api/v1/identity/session (revalidate session)
         Gateway-->>Shell: Current state or 401
         Shell->>Platform: Update SessionSnapshot accordingly
     end
 
     Note over User,Shell: Logout
     User->>Shell: Sign out
-    Shell->>Gateway: POST /api/v1/identity/auth/logout
-    Gateway-->>Shell: Clear cookies
-    Shell->>Platform: SessionSnapshot = { status: "anonymous" }
-    Platform-->>MFE: Notify all subscribers
+    Shell->>Gateway: Top-level POST logout with CSRF form parameter
+    Gateway->>Identity: Revoke OIDC session and redirect
+    Gateway-->>Browser: Clear BFF session and redirect to post-logout UI
 ```
 
 ---
 
 ## 2.2. Contract Definitions
 
-> *The TypeScript interfaces that define the integration surface between Shell and MFEs.*
+> _The TypeScript interfaces that define the integration surface between Shell and MFEs._
 
 ### SessionSnapshot (Discriminated Union State Machine)
 
@@ -195,12 +190,12 @@ interface SessionApi {
   subscribe(listener: (snapshot: SessionSnapshot) => void): () => void;
 
   /**
-   * Request a session refresh. Shell-coordinated with a mutex —
-   * concurrent calls piggyback on the same in-flight refresh.
+   * Revalidate the current session against the BFF profile endpoint.
+   * The BFF owns OAuth token refresh; the frontend does not receive tokens.
    */
   refresh(): Promise<void>;
 
-  /** Sign out and transition to anonymous state. */
+  /** Start the BFF's top-level logout and issuer redirect flow. */
   logout(): Promise<void>;
 }
 ```
@@ -222,19 +217,13 @@ interface SellerPlatform {
 }
 
 interface PlatformEvents {
-  publish<K extends keyof EventPayloads>(
-    type: K,
-    payload: EventPayloads[K]
-  ): void;
+  publish<K extends keyof EventPayloads>(type: K, payload: EventPayloads[K]): void;
   subscribe<K extends keyof EventPayloads>(
     type: K,
     handler: (payload: EventPayloads[K]) => void,
-    opts?: { replay?: boolean }
+    opts?: { replay?: boolean },
   ): () => void;
-  getSnapshot<K extends keyof EventPayloads>(
-    type: K,
-    key?: string
-  ): EventPayloads[K] | undefined;
+  getSnapshot<K extends keyof EventPayloads>(type: K, key?: string): EventPayloads[K] | undefined;
   clear(scope?: unknown): void;
 }
 
@@ -289,29 +278,15 @@ interface MfeHandle {
 
 ## 2.3. Key Implementation Details
 
-### Refresh Coordinator (Mutex Pattern)
+### Unauthorized Responses and Session Revalidation
 
-When a user's session cookie expires, multiple MFEs may receive `401` responses simultaneously. Without coordination, each MFE would trigger its own refresh request, causing concurrent cookie rotations where each rotation invalidates the previous one.
-
-The Shell's `RefreshCoordinator` uses a mutex: the first `401` starts a refresh, and all subsequent callers wait and reuse the same result.
-
-```
-MFE-A → 401 → calls platform.session.refresh() → starts refresh → waits → ✅
-MFE-B → 401 → calls platform.session.refresh() → sees in-flight → waits → ✅ (same result)
-MFE-C → 401 → calls platform.session.refresh() → sees in-flight → waits → ✅ (same result)
-```
-
-One refresh, one cookie rotation, no conflicts.
-
-### 401 Interceptor in the API Client
-
-The shared API client (`seller-api`) intercepts `401` responses and coordinates with the Shell through `platform.session.refresh()` before retrying the failed request once. If the retry also fails, the session is treated as expired and the user is redirected to login.
+The shared API client expires the in-memory session on `401` and does not retry the request or call a JSON refresh endpoint. A `403` remains an authorization error. The Shell uses `platform.session.refresh()` to re-read the BFF session profile when it needs to revalidate current user state.
 
 ### Session Bootstrap Sequence (Cold Start)
 
 ```
 1. Shell renders skeleton UI → SessionSnapshot = { status: "loading" }
-2. Shell calls GET /api/v1/identity/profile (credentials: include)
+2. Shell calls GET /api/v1/identity/session (credentials: include)
 3. 200 → SessionSnapshot = { status: "authenticated", user, roles, permissions }
    401 → SessionSnapshot = { status: "anonymous" }
    Network error → Show offline banner, retry with exponential backoff
@@ -324,18 +299,38 @@ When a user returns to an inactive browser tab, the Shell revalidates the sessio
 
 ### CSRF Protection Policy
 
-For same-origin deployments (Shell and gateway share the same domain), `SameSite=Lax` cookie attribute is the primary CSRF protection. This requires no frontend code — the browser refuses to send cookies on cross-origin state-changing requests. If future deployment requires cross-site traffic or `SameSite=None`, a synchronizer token (CSRF token) or double-submit cookie pattern must be added before that change.
+Unsafe methods obtain the BFF's CSRF token through the discovered `get-csrf-token` link and send the returned header name and value. The token is kept in memory and fetched again after top-level OIDC navigation. Logout uses the returned parameter name and token in a top-level form post. Cookie `SameSite` settings are defense in depth, not a replacement for the CSRF token.
+
+---
+
+## 2.2 Implementation Notes (Remediation Plan Phase 2/7)
+
+1. **`SessionApi.expire()`:**
+   - In addition to user-initiated `logout()`, `SessionApi` exposes `expire()`.
+   - `expire()` immediately transitions the in-memory `SessionSnapshot` to `{ status: "anonymous" }` without firing a backend network call.
+   - It is invoked when a protected request returns `401` or when the backend event stream invalidates the session.
+   - This ensures the UI transitions to anonymous immediately, redirecting to login without cascading retry loops.
+
+2. **Publish and Reactive Subscriptions (`useSessionSnapshot`):**
+   - The platform session holds a single authoritative snapshot and notifies registered subscribers via `platform.session.subscribe(listener)`.
+   - In React applications and remotes, components subscribe reactively using the `useSessionSnapshot(platform)` hook from `@khinemyaezin/seller-ui`.
+   - The hook is powered by `useSyncExternalStore`, eliminating tearing and ensuring concurrent React 19 safety.
+
+3. **Tab Visibility Revalidation:**
+   - A `document.addEventListener("visibilitychange", ...)` listener in `AuthProvider` automatically calls the session profile endpoint when an inactive tab returns to foreground (`document.visibilityState === "visible"`).
+   - If the session expired or the user logged out in another tab, the snapshot is updated to anonymous immediately.
 
 ---
 
 ## 3. Why This Approach
 
 **Primary reasons:**
+
 1. **Reduced credential exposure:** `HttpOnly` cookies keep raw access and refresh credentials unavailable to Shell and MFE JavaScript. No token fields exist in any contract or event payload.
 2. **Single integration surface:** The `SellerPlatform` object is the only thing an MFE needs to integrate. It replaces ad-hoc props, shared React contexts, global singletons, and event bus imports with one standardized interface.
 3. **Clear ownership:** The Shell owns application session state, while MFEs own their own UI state, data fetching, and cache invalidation. The discriminated union state machine makes ownership boundaries explicit at the type level.
 4. **Framework independence:** `SellerPlatform` is a plain JavaScript interface. It works for React Module Federation today, `mount()`/`unmount()` adapters for Web Components tomorrow, and any future framework.
-5. **Safe concurrent refresh:** The mutex pattern prevents the most common production bug in cookie-based MFE architectures: concurrent token rotations from parallel `401` responses.
+5. **Server-side token lifecycle:** The BFF refreshes OAuth credentials server-side, so frontend MFEs do not race to rotate tokens or handle token material.
 6. **Independent deployment:** MFEs depend on versioned contracts (`@grab/seller-contracts`) rather than importing Shell internals or sharing mutable global stores.
 7. **Backend authority:** Authorization remains enforced by backend services and HATEOAS capabilities, not frontend route checks.
 
@@ -343,16 +338,16 @@ For same-origin deployments (Shell and gateway share the same domain), `SameSite
 
 ## 4. Trade-offs
 
-| Pros | Cons |
-|-------|-------|
-| Raw tokens are never exposed to frontend code, event payloads, or contracts. | Cookie-based auth requires correct gateway, domain, HTTPS, `SameSite`, and CSRF configuration. |
-| `SellerPlatform` gives every MFE a single, uniform integration surface. | The platform contract must be versioned and maintained; breaking changes affect all MFEs. |
-| Discriminated union `SessionSnapshot` gives MFEs exhaustive, compiler-checked state handling. | MFEs must handle all three states (`loading`, `anonymous`, `authenticated`), even if trivially. |
-| Refresh mutex prevents concurrent token rotation conflicts. | Adds complexity to the Shell; the mutex must handle timeout, failure, and re-entrancy correctly. |
-| Signal-only events keep one source of truth (`SessionSnapshot`). | MFEs must call `platform.session.getSnapshot()` after receiving an event, rather than using event data directly. |
-| The same contract serves React and non-React MFEs. | Non-React MFEs need a mount adapter that wraps `SellerPlatform` into their framework's lifecycle. |
-| MFEs keep local data ownership and cache boundaries. | Consumers may need to refetch data after session or domain events. |
-| Tab visibility revalidation prevents stale sessions. | Adds an extra network request on each tab re-activation. |
+| Pros                                                                                          | Cons                                                                                                             |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Raw tokens are never exposed to frontend code, event payloads, or contracts.                  | Cookie-based auth requires correct gateway, domain, HTTPS, `SameSite`, and CSRF configuration.                   |
+| `SellerPlatform` gives every MFE a single, uniform integration surface.                       | The platform contract must be versioned and maintained; breaking changes affect all MFEs.                        |
+| Discriminated union `SessionSnapshot` gives MFEs exhaustive, compiler-checked state handling. | MFEs must handle all three states (`loading`, `anonymous`, `authenticated`), even if trivially.                  |
+| BFF-managed refresh avoids frontend token rotation races.                                     | Unsafe requests require CSRF discovery and the configured API origin must reach the BFF.                         |
+| Signal-only events keep one source of truth (`SessionSnapshot`).                              | MFEs must call `platform.session.getSnapshot()` after receiving an event, rather than using event data directly. |
+| The same contract serves React and non-React MFEs.                                            | Non-React MFEs need a mount adapter that wraps `SellerPlatform` into their framework's lifecycle.                |
+| MFEs keep local data ownership and cache boundaries.                                          | Consumers may need to refetch data after session or domain events.                                               |
+| Tab visibility revalidation prevents stale sessions.                                          | Adds an extra network request on each tab re-activation.                                                         |
 
 ---
 

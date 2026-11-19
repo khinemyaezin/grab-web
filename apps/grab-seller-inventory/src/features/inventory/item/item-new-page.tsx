@@ -23,16 +23,13 @@ export default function ItemNewPage() {
         toast("error", event.message);
         break;
       case "navigation":
-        navigate(`../${event.itemId}`)
+        navigate(`../${event.itemId}`);
     }
   };
 
   return (
     <div className="container mx-auto max-w-2xl p-6">
-      <Header
-        title="Add stock item"
-        description="Provision inventory for a SKU at a location."
-      >
+      <Header title="Add stock item" description="Provision inventory for a SKU at a location.">
         <ButtonGroup>
           <Button type="button" variant="secondary" asChild>
             <Link to=".." className="flex gap-2 items-center">
